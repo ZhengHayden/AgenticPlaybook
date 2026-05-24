@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Playbook — GC AGI Hub</title>
+<title>Agentic Workflow Delivery Playbook | McKinsey &amp; Company</title>
 <style>
   /* ===== McKinsey design tokens ===== */
   :root{
@@ -28,28 +28,11 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{background:var(--mck-page);font-family:var(--sans);color:var(--mck-grey-900);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;}
 
-  /* ===== PS hub toolbar ===== */
-  .ps-topbar{
-    position:fixed;top:0;left:0;right:0;height:48px;background:#fff;border-bottom:1px solid var(--mck-grey-200);
-    display:flex;align-items:center;justify-content:space-between;padding:0 24px 0 252px;z-index:1101;font-size:12px;
-  }
-  .ps-topbar a{color:var(--mck-deep);text-decoration:none;font-weight:600;}
-  .ps-topbar a:hover{color:var(--mck-blue);}
-  .ps-topbar .links{display:flex;align-items:center;gap:16px;}
-  .ps-topbar .title{font-weight:600;color:var(--mck-navy);letter-spacing:0.2px;}
-  .ps-topbar [data-internal-only]{display:none;}
-  body.ps-internal .ps-topbar [data-internal-only]{display:inline-flex;}
-  #userBadge .ps-session-label{display:inline-block;padding:2px 8px;font-size:10px;font-weight:600;background:var(--mck-grey-100);color:var(--mck-grey-700);border-radius:3px;}
-  #userBadge .ps-session-logout{margin-left:8px;font-size:11px;font-weight:600;color:var(--mck-grey-500);background:none;border:none;cursor:pointer;font-family:inherit;}
-  #userBadge .ps-session-logout:hover{color:#b42318;}
-
   /* ===== Navigation rail ===== */
   .nav{
-    position:fixed;top:48px;left:0;width:240px;height:calc(100vh - 48px);background:var(--mck-navy);color:#fff;
+    position:fixed;top:0;left:0;width:240px;height:100vh;background:var(--mck-navy);color:#fff;
     padding:24px 18px;overflow-y:auto;z-index:1000;font-size:12px;
   }
-  .nav a.hidden-by-audience{display:none;}
-  .slide.hidden-by-audience{display:none !important;}
   .nav-brand{font-family:var(--serif);font-size:18px;line-height:1.2;border-bottom:2px solid var(--mck-blue);padding-bottom:12px;margin-bottom:14px;letter-spacing:0.2px;}
   .nav-brand small{display:block;font-family:var(--sans);font-size:10px;color:var(--mck-grey-300);text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;}
   .nav-section{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mck-grey-300);margin:14px 0 6px;}
@@ -57,7 +40,7 @@
   .nav a:hover{background:rgba(255,255,255,0.06);border-left-color:var(--mck-blue);color:#fff;}
 
   /* ===== Slide stage ===== */
-  .stage{margin-left:240px;margin-top:48px;padding:32px 32px 80px;}
+  .stage{margin-left:240px;padding:32px 32px 80px;}
   .slide{
     width:1240px;max-width:100%;aspect-ratio:16/9;background:var(--mck-bg);
     margin:0 auto 28px;box-shadow:0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(5,28,44,0.06);
@@ -205,70 +188,67 @@
   /* Print */
   @media print{
     body{background:#fff;}
-    .ps-topbar{display:none;}
     .nav{display:none;}
-    .stage{margin-left:0;margin-top:0;padding:0;}
+    .stage{margin-left:0;padding:0;}
     .slide{box-shadow:none;margin:0;break-after:page;page-break-after:always;}
-    .slide.hidden-by-audience{display:flex !important;}
   }
 </style>
 </head>
 <body>
 
-<header class="ps-topbar no-print">
-  <div class="links">
-    <a href="./dashboard.html">← Hub</a>
-    <a href="./candidate-archetype-tracker.html" data-internal-only>Portfolio</a>
-  </div>
-  <span class="title" id="deckModeLabel">GC AGI Hub · Playbook</span>
-  <div id="userBadge"></div>
-</header>
-
 <!-- ===== NAVIGATION ===== -->
-<nav class="nav no-print">
-  <div class="nav-brand">GC AGI Hub<small>Delivery playbook</small></div>
-  <div class="nav-section" data-audience="client">Front matter</div>
-  <a href="#s01" data-audience="client">01 &nbsp;Cover</a>
-  <a href="#s02" data-audience="client">02 &nbsp;How to use this playbook</a>
-  <a href="#s03" data-audience="client">03 &nbsp;Four-phase delivery model</a>
-  <div class="nav-section" data-audience="internal">Phase 1 · Impact Sizing</div>
-  <a href="#s11" data-audience="internal">1.1 &nbsp;Data request package</a>
-  <a href="#s12" data-audience="internal">1.2 &nbsp;Week-0 daily agenda</a>
-  <a href="#s13" data-audience="internal">1.3 &nbsp;Sample deliverables</a>
-  <a href="#s14" data-audience="internal">1.4 &nbsp;Binary readiness screen</a>
-  <a href="#s15" data-audience="internal">1.5 &nbsp;2×2 prioritization matrix</a>
-  <a href="#s16" data-audience="internal">1.6 &nbsp;Detailed scoring rubric</a>
-  <div class="nav-section" data-audience="internal">Phase 2 · Design</div>
-  <a href="#s21" data-audience="internal">2.1 &nbsp;Data request package</a>
-  <a href="#s22" data-audience="internal">2.2 &nbsp;Two-week dual-track agenda</a>
-  <a href="#s23" data-audience="internal">2.3 &nbsp;Sample architecture doc</a>
-  <a href="#s24" data-audience="internal">2.4 &nbsp;Five agent archetypes</a>
-  <a href="#s25" data-audience="internal">2.5 &nbsp;Three interaction modes</a>
-  <a href="#s26" data-audience="internal">2.6 &nbsp;A2A orchestration patterns</a>
-  <a href="#s27" data-audience="internal">2.7 &nbsp;Agent specification sample</a>
-  <div class="nav-section" data-audience="internal">Phase 3 · MVP</div>
-  <a href="#s31" data-audience="internal">3.1 &nbsp;Data request package</a>
-  <a href="#s32" data-audience="internal">3.2 &nbsp;Three-week build agenda</a>
-  <a href="#s33" data-audience="internal">3.3 &nbsp;Sample deliverables</a>
-  <a href="#s34" data-audience="internal">3.4 &nbsp;Test plan structure</a>
-  <a href="#s35" data-audience="internal">3.5 &nbsp;Acceptance criteria sample</a>
-  <div class="nav-section" data-audience="internal">Phase 4 · Production</div>
-  <a href="#s41" data-audience="internal">4.1 &nbsp;Data request package</a>
-  <a href="#s42" data-audience="internal">4.2 &nbsp;Six-week deployment agenda</a>
-  <a href="#s43" data-audience="internal">4.3 &nbsp;Sample deliverables</a>
-  <a href="#s44" data-audience="internal">4.4 &nbsp;Deployment runbook sample</a>
-  <a href="#s45" data-audience="internal">4.5 &nbsp;Adoption &amp; change plan</a>
-  <div class="nav-section" data-audience="client">Back matter</div>
-  <a href="#s51" data-audience="client">5.1 &nbsp;Phase-gate decision summary</a>
-  <a href="#s52" data-audience="internal">5.2 &nbsp;Resource model</a>
-  <a href="#s53" data-audience="internal">5.3 &nbsp;Glossary &amp; references</a>
+<nav class="nav">
+  <div class="nav-brand">Agentic Workflow Playbook<small>McKinsey &amp; Company</small></div>
+  <div id="userBadge" style="margin:8px 0 12px;"></div>
+  <div class="nav-section">Front matter</div>
+  <a href="#s01">01 &nbsp;Cover</a>
+  <a href="#s02">02 &nbsp;How to use this playbook</a>
+  <a href="#s03">03 &nbsp;Four-phase delivery model</a>
+  <div class="nav-section">Phase 1 · Impact Sizing</div>
+  <a href="#s10"><b>1.0 &nbsp;Phase framing</b></a>
+  <a href="#s11">1.1 · Two concepts — PRS &amp; ORS</a>
+  <a href="#s12">1.2 · Funnel &amp; priority score</a>
+  <a href="#s13">1.3 &nbsp;Data request package</a>
+  <a href="#s14">1.4 &nbsp;Week-0 daily agenda</a>
+  <a href="#s15">1.5 &nbsp;Sample deliverables</a>
+  <a href="#s16">1.6 &nbsp;Binary readiness screen</a>
+  <a href="#s17">1.7 &nbsp;2×2 prioritization matrix</a>
+  <a href="#s18">1.8 · How priority scoring works</a>
+  <a href="#s19">1.9 &nbsp;Detailed scoring rubric</a>
+  <div class="nav-section">Phase 2 · Design</div>
+  <a href="#s20"><b>2.0 &nbsp;Phase framing</b></a>
+  <a href="#s21">2.1 &nbsp;Data request package</a>
+  <a href="#s22">2.2 &nbsp;Two-week dual-track agenda</a>
+  <a href="#s23">2.3 &nbsp;Sample architecture doc</a>
+  <a href="#s24">2.4 &nbsp;Five agent archetypes</a>
+  <a href="#s25">2.5 &nbsp;Three interaction modes</a>
+  <a href="#s26">2.6 &nbsp;A2A orchestration patterns</a>
+  <a href="#s27">2.7 &nbsp;Agent specification sample</a>
+  <div class="nav-section">Phase 3 · MVP</div>
+  <a href="#s30"><b>3.0 &nbsp;Phase framing</b></a>
+  <a href="#s31">3.1 &nbsp;Data request package</a>
+  <a href="#s32">3.2 &nbsp;Three-week build agenda</a>
+  <a href="#s33">3.3 &nbsp;Sample deliverables</a>
+  <a href="#s34">3.4 &nbsp;Test plan structure</a>
+  <a href="#s35">3.5 &nbsp;Acceptance criteria sample</a>
+  <div class="nav-section">Phase 4 · Production</div>
+  <a href="#s40"><b>4.0 &nbsp;Phase framing</b></a>
+  <a href="#s41">4.1 &nbsp;Data request package</a>
+  <a href="#s42">4.2 &nbsp;Six-week deployment agenda</a>
+  <a href="#s43">4.3 &nbsp;Sample deliverables</a>
+  <a href="#s44">4.4 &nbsp;Deployment runbook sample</a>
+  <a href="#s45">4.5 &nbsp;Adoption &amp; change plan</a>
+  <div class="nav-section">Back matter</div>
+  <a href="#s51">5.1 &nbsp;Phase-gate decision summary</a>
+  <a href="#s52">5.2 &nbsp;Resource model</a>
+  <a href="#s53">5.3 &nbsp;Glossary &amp; references</a>
 </nav>
 
 <main class="stage">
 <!-- ============================================================
      SLIDE 01 — COVER
      ============================================================ -->
-<section class="slide cover" id="s01" data-audience="client">
+<section class="slide cover" id="s01">
   <div class="mck-mark">McKinsey &amp; Company</div>
   <div class="eyebrow">Operations Practice · AI &amp; Agentic Delivery</div>
   <h1>Agentic Workflow<br/>Delivery <em>Playbook</em></h1>
@@ -283,7 +263,7 @@
 <!-- ============================================================
      SLIDE 02 — HOW TO USE
      ============================================================ -->
-<section class="slide" id="s02" data-audience="client">
+<section class="slide" id="s02">
   <div class="slide-kicker"><span class="tag">Reading guide</span><span class="phase">02 · Front matter</span></div>
   <h2 class="action-title">This playbook closes the gap between an <b>activity description</b> and an <b>executable engagement</b> — pick up the templates, run the gates, ship the deliverables</h2>
   <p class="sub-title">Read sequentially for first engagements; jump to a phase index for repeat use</p>
@@ -329,7 +309,7 @@
 <!-- ============================================================
      SLIDE 03 — 4-PHASE LEAD PAGE
      ============================================================ -->
-<section class="slide" id="s03" data-audience="client">
+<section class="slide" id="s03">
   <div class="slide-kicker"><span class="tag">Overall approach</span><span class="phase">03 · Lead page</span></div>
   <h2 class="action-title">Four phases — <b>Impact Sizing → Design → MVP → Production</b> — move an enterprise workflow from candidate to value over 13–17 weeks with progressively narrowing scope and tightening evidence</h2>
   <p class="sub-title">Each phase has a binding gate; failure to pass returns the workflow to a prior phase or to the next-wave roadmap</p>
@@ -350,7 +330,7 @@
       <ul>
         <li>Candidate workflow longlist (10–20)</li>
         <li>Binary readiness screen (6 criteria)</li>
-        <li>ODS × ORS 2×2 funnel classification</li>
+        <li>PRS × ORS 2×2 funnel classification</li>
         <li>Depth scoring on Q1/Q2 candidates</li>
       </ul>
       <h5>Deliverables</h5>
@@ -496,10 +476,268 @@
 </section>
 
 <!-- ============================================================
-     SLIDE 1.1 — PHASE 1 DATA REQUEST
+     SLIDE 1.0 — PHASE 1 FRAMING (C-LEVEL)
      ============================================================ -->
-<section class="slide" id="s11" data-audience="internal">
-  <div class="slide-kicker"><span class="tag">Phase 1 · Impact sizing</span><span class="phase">1.1 · Data request package</span></div>
+<section class="slide" id="s10">
+  <div class="slide-kicker"><span class="tag">Phase 1 · Impact sizing</span><span class="phase">1.0 · Phase framing</span></div>
+
+  <!-- Phase position strip -->
+  <div style="display:flex;background:var(--mck-grey-100);border:1px solid var(--mck-grey-200);font-size:10px;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;">
+    <div style="flex:1;padding:9px 14px;background:var(--mck-navy);color:#fff;font-weight:600;"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">1.</span> &nbsp;Impact sizing &nbsp;<span style="color:#a9c8ff;font-size:9px;margin-left:6px;">you are here</span></div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">2.</span> &nbsp;Design</div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">3.</span> &nbsp;MVP</div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">4.</span> &nbsp;Production</div>
+  </div>
+
+  <h2 class="action-title">Phase 1 answers the single most expensive question — <b>"where should agents work for us first?"</b> — turning a long list of ideas into a defensible, sequenced portfolio with the confidence to say no</h2>
+  <p class="sub-title">A one-week diagnostic that protects against the most common failure mode: committing to the wrong workflow before knowing why</p>
+
+  <div class="grid grid-3" style="flex:1;">
+    <div class="panel tint" style="border-top:5px solid var(--mck-blue);">
+      <h5 style="border-bottom-color:var(--mck-blue);">What this phase achieves</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A clear answer to "where do we start" —</b> and, equally important, where we deliberately don't</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>Decisions that hold up to scrutiny —</b> every shortlisted workflow has evidence behind it, not opinion</li>
+        <li style="padding:6px 0;"><b>A multi-year sequence —</b> the second and third waves are visible too, so this isn't a one-off bet</li>
+      </ul>
+    </div>
+    <div class="panel tint" style="border-top:5px solid var(--mck-teal);">
+      <h5 style="border-bottom-color:var(--mck-teal);">How we approach it</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A layered funnel —</b> broad to narrow, fast to deep: binary readiness first, then a 2×2 fit test, then ranked scoring on the survivors</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>Two questions in the 2×2 — <span style="color:var(--mck-blue);">Process Readiness</span> and <span style="color:#007a76;">Organization Readiness</span> —</b> can we tell if the agent did the work correctly? · is the organization ready to absorb the change?</li>
+        <li style="padding:6px 0;"><b>One number for the survivors — <span style="color:#8a6310;">Priority Score</span> —</b> combining the prize (Value), the agentic fit (DDI) and the discount for what could go wrong (Risk)</li>
+      </ul>
+    </div>
+    <div class="panel tint" style="border-top:5px solid var(--mck-amber);">
+      <h5 style="border-bottom-color:var(--mck-amber);">What you walk away with</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A ranked portfolio —</b> with explicit go / wait / defer decisions and the reasoning written down</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A 2×2 view —</b> that makes priorities self-evident to your board in 30 seconds</li>
+        <li style="padding:6px 0;"><b>A 1–2 year roadmap —</b> first wave ready to enter design within days; later waves sequenced and rationalized</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== Synthesis strip — the 3 layered analytical tools ===== -->
+  <div style="margin-top:12px;padding:10px 14px;background:var(--mck-grey-100);border-left:4px solid var(--mck-navy);">
+    <div style="display:grid;grid-template-columns:160px 1fr 1fr 1fr;gap:12px;align-items:stretch;">
+      <div style="display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:1.5px;color:var(--mck-grey-700);font-weight:600;">Three layered tools</div>
+        <div style="font-family:var(--serif);font-size:12px;color:var(--mck-navy);margin-top:3px;line-height:1.3;">A fast-to-deep filter — each layer concentrates effort on the most likely winners</div>
+      </div>
+      <div style="background:#fff;padding:7px 10px;border-top:3px solid var(--mck-blue);">
+        <div style="font-size:9.5px;text-transform:uppercase;color:var(--mck-blue);letter-spacing:1px;font-weight:600;">① Binary readiness screen</div>
+        <div style="font-size:11px;color:var(--mck-navy);line-height:1.4;margin-top:3px;">Day 1 · 6 yes/no criteria eliminate structurally unready candidates before any scoring time is invested</div>
+        <div style="font-size:9.5px;color:var(--mck-grey-500);margin-top:4px;letter-spacing:0.5px;">Deep-dive → <b style="color:var(--mck-blue);">1.6</b></div>
+      </div>
+      <div style="background:#fff;padding:7px 10px;border-top:3px solid var(--mck-teal);">
+        <div style="font-size:9.5px;text-transform:uppercase;color:#007a76;letter-spacing:1px;font-weight:600;">② Process × Organization Readiness funnel</div>
+        <div style="font-size:11px;color:var(--mck-navy);line-height:1.4;margin-top:3px;">Days 2–3 · survivors routed to one of four action paths based on whether correctness can be defined and whether the organization is ready to absorb the change</div>
+        <div style="font-size:9.5px;color:var(--mck-grey-500);margin-top:4px;letter-spacing:0.5px;">Concepts → <b style="color:#007a76;">1.1</b> &nbsp;·&nbsp; Overview → <b style="color:#007a76;">1.2</b> &nbsp;·&nbsp; Matrix detail → <b style="color:#007a76;">1.7</b></div>
+      </div>
+      <div style="background:#fff;padding:7px 10px;border-top:3px solid var(--mck-amber);">
+        <div style="font-size:9.5px;text-transform:uppercase;color:#8a6310;letter-spacing:1px;font-weight:600;">③ Priority score</div>
+        <div style="font-size:11px;color:var(--mck-navy);line-height:1.4;margin-top:3px;">Days 4–5 · top-quadrant candidates scored on Value × Fit × Risk — one defensible number ranks the survivors</div>
+        <div style="font-size:9.5px;color:var(--mck-grey-500);margin-top:4px;letter-spacing:0.5px;">In business terms → <b style="color:#8a6310;">1.8</b> &nbsp;·&nbsp; Formula reference → <b style="color:#8a6310;">1.9</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Handoff strip -->
+  <div style="background:var(--mck-navy);color:#fff;padding:9px 14px;font-size:11px;margin-top:10px;display:flex;align-items:center;gap:14px;line-height:1.45;">
+    <span style="color:var(--mck-grey-300);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;min-width:120px;">Handoff →</span>
+    <span><b style="color:#a9c8ff;">To Phase 2 (Design):</b> &nbsp;the top-priority workflow becomes the brief for Design; its 2×2 quadrant determines the design <i>profile</i> — fast-track for "Quick Win" workflows, change-management-led for "Sponsor &amp; Align" workflows</span>
+  </div>
+
+  <div class="slide-footer">
+    <span class="src">Source: Req/overall problem.md (Phase 0 purpose); Req/impact sizing problem.md (core question, success criteria); concepts detailed on 1.1, 1.2, 1.8</span>
+    <span class="pg">04</span>
+    <span class="brand">McKinsey &amp; Company</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 1.1 — PRS & ORS CONCEPT PAGE
+     ============================================================ -->
+<section class="slide" id="s11">
+  <div class="slide-kicker"><span class="tag">Phase 1 · Impact sizing</span><span class="phase">1.1 · Two concepts — Process &amp; Organization Readiness</span></div>
+
+  <!-- Phase position strip -->
+  <div style="display:flex;background:var(--mck-grey-100);border:1px solid var(--mck-grey-200);font-size:10px;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;">
+    <div style="flex:1;padding:9px 14px;background:var(--mck-navy);color:#fff;font-weight:600;"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">1.</span> &nbsp;Impact sizing &nbsp;<span style="color:#a9c8ff;font-size:9px;margin-left:6px;">you are here</span></div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">2.</span> &nbsp;Design</div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">3.</span> &nbsp;MVP</div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">4.</span> &nbsp;Production</div>
+  </div>
+
+  <h2 class="action-title">Two questions sit beneath every prioritization decision — <b>"can we tell if the agent did the work correctly?"</b> and <b>"is the organization ready to absorb the change?"</b> — captured as <span style="color:var(--mck-blue);">Process Readiness</span> and <span style="color:#007a76;">Organization Readiness</span></h2>
+  <p class="sub-title">These two dimensions are what distinguish agentic workflow prioritization from generic automation scoring — they front-load the failure modes that otherwise surface only in MVP or Production</p>
+
+  <div class="callout" style="margin-bottom:14px;font-size:11.5px;"><b>Why these two specifically for agentic work ·</b> &nbsp; Over 40% of agentic AI projects are forecast to be cancelled by end-2027, almost always because (a) the team couldn't validate the agent's outputs at scale or (b) the organization couldn't absorb the change in working pattern. PRS and ORS test for both failure modes <b>before</b> design time is invested.</p>
+
+  <div class="grid grid-2" style="flex:1;">
+    <!-- PRS card -->
+    <div class="panel tint" style="border-top:5px solid var(--mck-blue);">
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">
+        <span style="font-family:var(--serif);font-size:38px;color:var(--mck-blue);font-weight:600;letter-spacing:-0.5px;">PRS</span>
+        <span style="font-size:11px;color:var(--mck-grey-700);">Process Readiness Score</span>
+      </div>
+      <p style="font-size:13px;font-style:italic;color:var(--mck-navy);border-left:3px solid var(--mck-blue);padding:4px 10px;margin-bottom:10px;">"Can we <b>define</b> what 'correct' looks like for this work — and check it without an expert judgement call every time?"</p>
+
+      <h5 style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mck-grey-700);">Why it matters</h5>
+      <p style="font-size:11px;line-height:1.55;margin:4px 0 10px;">If correctness can't be defined, the agent can't be tested at scale, can't be trusted with autonomy, and can't be improved through iteration. Every cycle becomes a subjective debate.</p>
+
+      <h5 style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mck-grey-700);">What we actually look at</h5>
+      <table class="mck compact" style="margin-top:4px;">
+        <tbody>
+          <tr><td class="lead" style="width:46%">Is the output structured?</td><td>Form fields and fixed schemas score high; free-text creative work scores low</td></tr>
+          <tr><td class="lead">Can correctness be rule-checked?</td><td>Deterministic pass/fail (e.g., amount matches) high; expert-only judgment low</td></tr>
+          <tr><td class="lead">Is there variance tolerance?</td><td>Multiple valid answers OK = higher; zero-tolerance exact match = lower</td></tr>
+          <tr><td class="lead">Do correct examples exist?</td><td>100+ historically approved outputs = high; brand-new process = low</td></tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:#defcfa;padding:8px 10px;border-radius:3px;font-size:10.5px;line-height:1.4;"><b style="color:#1c6b2a;">High PRS · invoice matching</b><br/>Numbers tie out within $0.01, or they don't. 1,000+ historical matches available.</div>
+        <div style="background:#fde2d8;padding:8px 10px;border-radius:3px;font-size:10.5px;line-height:1.4;"><b style="color:#a8553c;">Low PRS · marketing copy</b><br/>"Is this on-brand?" requires the CMO's eye; no two reviewers agree.</div>
+      </div>
+    </div>
+
+    <!-- ORS card -->
+    <div class="panel tint" style="border-top:5px solid var(--mck-teal);">
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">
+        <span style="font-family:var(--serif);font-size:38px;color:var(--mck-teal);font-weight:600;letter-spacing:-0.5px;">ORS</span>
+        <span style="font-size:11px;color:var(--mck-grey-700);">Organization Readiness Score</span>
+      </div>
+      <p style="font-size:13px;font-style:italic;color:var(--mck-navy);border-left:3px solid var(--mck-teal);padding:4px 10px;margin-bottom:10px;">"Is the organization actually ready to live with this change?"</p>
+
+      <h5 style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mck-grey-700);">Why it matters</h5>
+      <p style="font-size:11px;line-height:1.55;margin:4px 0 10px;">McKinsey research consistently shows organizational factors out-predict technical factors for automation success. A perfect agent the team won't use is shelfware — and damages credibility for the next AI investment.</p>
+
+      <h5 style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mck-grey-700);">What we actually look at</h5>
+      <table class="mck compact" style="margin-top:4px;">
+        <tbody>
+          <tr><td class="lead" style="width:46%">Is there a real sponsor?</td><td>Mandating exec with budget = high; nominal owner with no authority = low</td></tr>
+          <tr><td class="lead">How does the team feel?</td><td>"We've been asking for this" = high; "this will replace us" = low</td></tr>
+          <tr><td class="lead">How clean is the systems landscape?</td><td>1–2 systems with documented APIs = high; 5+ legacy systems, no APIs = low</td></tr>
+          <tr><td class="lead">What's the change track record?</td><td>Recent successful automation = high; previous failed initiative = low</td></tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:#defcfa;padding:8px 10px;border-radius:3px;font-size:10.5px;line-height:1.4;"><b style="color:#1c6b2a;">High ORS · finance ops</b><br/>VP-sponsored, team enthusiastic, 1 ERP with full APIs, recent RPA wins.</div>
+        <div style="background:#fde2d8;padding:8px 10px;border-radius:3px;font-size:10.5px;line-height:1.4;"><b style="color:#a8553c;">Low ORS · multi-region claims</b><br/>No single owner, fearful team, 6 legacy systems, two failed projects.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How we evaluate / handoff strip -->
+  <div style="background:var(--mck-navy);color:#fff;padding:10px 14px;font-size:11px;margin-top:14px;display:grid;grid-template-columns:130px 1fr;gap:14px;line-height:1.5;align-items:center;">
+    <span style="color:var(--mck-grey-300);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">How we evaluate</span>
+    <span>Two consultants score each axis <b>independently</b> on observable evidence (no gut feel) · scores compared and reconciled where the gap exceeds 0.4 · target inter-rater agreement κ ≥ 0.70 — the same standard used in clinical research</span>
+    <span style="color:var(--mck-grey-300);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">Next →</span>
+    <span><b style="color:#a9c8ff;">Together PRS and ORS form a 2×2 funnel</b> — the next page shows how survivors are then ranked with a single Priority Score</span>
+  </div>
+
+  <div class="slide-footer">
+    <span class="src">Source: Req/tools/prioritization-matrix.md (PRS/ORS axes &amp; rationale); Req/impact sizing proposals.md (organizational factors finding)</span>
+    <span class="pg">05</span>
+    <span class="brand">McKinsey &amp; Company</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 1.2 — FUNNEL & PRIORITY SCORE CONCEPT PAGE
+     ============================================================ -->
+<section class="slide" id="s12">
+  <div class="slide-kicker"><span class="tag">Phase 1 · Impact sizing</span><span class="phase">1.2 · The funnel &amp; the priority score</span></div>
+
+  <!-- Phase position strip -->
+  <div style="display:flex;background:var(--mck-grey-100);border:1px solid var(--mck-grey-200);font-size:10px;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;">
+    <div style="flex:1;padding:9px 14px;background:var(--mck-navy);color:#fff;font-weight:600;"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">1.</span> &nbsp;Impact sizing &nbsp;<span style="color:#a9c8ff;font-size:9px;margin-left:6px;">you are here</span></div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">2.</span> &nbsp;Design</div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">3.</span> &nbsp;MVP</div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">4.</span> &nbsp;Production</div>
+  </div>
+
+  <h2 class="action-title">We use a <b>layered funnel</b> — broad to narrow, fast to deep — that concentrates effort on the workflows most likely to deliver value, then ranks the survivors with a single, defensible <b>Priority Score</b></h2>
+  <p class="sub-title">The score isn't the answer — it is the conversation starter at the sponsor table, with calibrated anchors so two consultants land on the same number</p>
+
+  <!-- Funnel visual -->
+  <div style="display:grid;grid-template-columns:280px 1fr;gap:18px;margin-bottom:14px;">
+    <div>
+      <h5 style="font-family:var(--serif);font-size:13px;color:var(--mck-navy);border-bottom:2px solid var(--mck-blue);padding-bottom:4px;margin-bottom:8px;">The 3-layer funnel</h5>
+      <!-- Visual funnel -->
+      <div style="background:var(--mck-blue);color:#fff;padding:8px 12px;font-size:11px;font-weight:600;text-align:center;width:100%;">Layer 1 · Binary screen<br/><span style="font-weight:400;font-size:9.5px;color:#cdd9ff;">Day 1 · "is this even possible?"</span></div>
+      <div style="background:var(--mck-teal);color:#fff;padding:8px 12px;font-size:11px;font-weight:600;text-align:center;width:88%;margin:2px auto 0;">Layer 2 · PRS × ORS 2×2<br/><span style="font-weight:400;font-size:9.5px;color:#d2f4f1;">Days 2–3 · "where does it fit?"</span></div>
+      <div style="background:var(--mck-amber);color:var(--mck-navy);padding:8px 12px;font-size:11px;font-weight:600;text-align:center;width:72%;margin:2px auto 0;">Layer 3 · Priority scoring<br/><span style="font-weight:400;font-size:9.5px;color:#5b4309;">Days 4–5 · "rank the survivors"</span></div>
+      <div style="background:var(--mck-coral);color:var(--mck-navy);padding:8px 12px;font-size:11px;font-weight:600;text-align:center;width:54%;margin:2px auto 0;">Sponsor decision<br/><span style="font-weight:400;font-size:9.5px;color:#5a2a18;">Day 5 · "go / wait / defer"</span></div>
+
+      <p style="font-size:10.5px;line-height:1.5;color:var(--mck-grey-700);margin-top:10px;font-style:italic;">From ~10–20 candidates on Day 1 to a ranked top 2–3 by Day 5. Each layer eliminates the wrong kind of candidate before deeper work is invested.</p>
+    </div>
+
+    <div>
+      <h5 style="font-family:var(--serif);font-size:13px;color:var(--mck-navy);border-bottom:2px solid var(--mck-blue);padding-bottom:4px;margin-bottom:8px;">Why a layered funnel — and not "score everything"</h5>
+      <table class="mck compact" style="margin-top:4px;">
+        <thead><tr><th style="width:22%">Layer</th><th style="width:18%">What it filters</th><th>The thing it protects against</th></tr></thead>
+        <tbody>
+          <tr><td class="lead">Layer 1 · Binary screen</td><td>Structural unreadiness</td><td>Tribal knowledge · paper inputs · no owner · unstable process — issues that doom delivery regardless of business value</td></tr>
+          <tr><td class="lead">Layer 2 · 2×2 funnel</td><td>Mis-fit candidates</td><td>Workflows where outputs can't be validated <i>or</i> the organization can't absorb the change — the two slow-death failure modes</td></tr>
+          <tr><td class="lead">Layer 3 · Priority score</td><td>Optimization &amp; risk</td><td>Picking the right one among several solid candidates · forcing rigor onto the value vs risk trade-off so the sponsor's decision is defensible</td></tr>
+        </tbody>
+      </table>
+
+      <h5 style="font-family:var(--serif);font-size:13px;color:var(--mck-navy);border-bottom:2px solid var(--mck-blue);padding-bottom:4px;margin:14px 0 8px;">What goes into the Priority Score — in business language</h5>
+      <div class="grid grid-3" style="gap:8px;">
+        <div style="background:#fff;border:1px solid var(--mck-grey-200);border-top:3px solid var(--mck-blue);padding:8px 10px;">
+          <div style="font-size:9.5px;text-transform:uppercase;color:var(--mck-blue);letter-spacing:1px;font-weight:600;margin-bottom:3px;">① The prize</div>
+          <div style="font-size:11px;font-weight:600;color:var(--mck-navy);margin-bottom:4px;">What's it worth if we win?</div>
+          <p style="font-size:10.5px;line-height:1.4;">Cost saved · errors avoided · cycle time reduced · how directly it advances a stated strategic priority. Anchored to dollar ranges so $200k and $2M don't get the same score.</p>
+        </div>
+        <div style="background:#fff;border:1px solid var(--mck-grey-200);border-top:3px solid var(--mck-teal);padding:8px 10px;">
+          <div style="font-size:9.5px;text-transform:uppercase;color:#007a76;letter-spacing:1px;font-weight:600;margin-bottom:3px;">② The fit</div>
+          <div style="font-size:11px;font-weight:600;color:var(--mck-navy);margin-bottom:4px;">Is an agent the right tool here?</div>
+          <p style="font-size:10.5px;line-height:1.4;">How much of the work is <i>decisions</i> versus <i>execution</i>. Decision-heavy work plays to an agent's strength; pure execution may be cheaper as RPA — we'd be over-engineering.</p>
+        </div>
+        <div style="background:#fff;border:1px solid var(--mck-grey-200);border-top:3px solid var(--mck-coral);padding:8px 10px;">
+          <div style="font-size:9.5px;text-transform:uppercase;color:#a8553c;letter-spacing:1px;font-weight:600;margin-bottom:3px;">③ The risk discount</div>
+          <div style="font-size:11px;font-weight:600;color:var(--mck-navy);margin-bottom:4px;">What could realistically go wrong?</div>
+          <p style="font-size:10.5px;line-height:1.4;">Four risk categories — implementation complexity, adoption resistance, compliance exposure, dependency on flaky systems. Each high-risk category trims the value figure.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Score interpretation -->
+  <div style="background:var(--mck-grey-100);padding:10px 14px;display:grid;grid-template-columns:1fr 2fr;gap:18px;align-items:center;">
+    <div>
+      <h5 style="font-family:var(--serif);font-size:12px;color:var(--mck-navy);margin-bottom:6px;">How the score is read at the sponsor table</h5>
+      <p style="font-size:10.5px;line-height:1.5;color:var(--mck-grey-700);font-style:italic;">The number doesn't make the call — it removes the noise and shows the sponsor where the choices actually lie. Two solid candidates at 3.8 and 3.6 is a strategic choice, not a math problem.</p>
+    </div>
+    <table class="mck compact">
+      <thead><tr><th class="center" style="width:14%">Score</th><th>What it means in business terms</th><th>Sponsor action</th></tr></thead>
+      <tbody>
+        <tr><td class="center"><b>≥ 4.0</b></td><td>Strong candidate — value clear, fit good, risks manageable</td><td><span class="chip chip-teal">Allocate top team · candidate for flagship case</span></td></tr>
+        <tr><td class="center"><b>3.0 – 4.0</b></td><td>Solid candidate — proceed with standard approach</td><td><span class="chip chip-blue">Proceed to Design</span></td></tr>
+        <tr><td class="center"><b>2.0 – 3.0</b></td><td>Marginal — value real but risk or fit is questionable</td><td><span class="chip chip-amber">Sponsor-justified only</span></td></tr>
+        <tr><td class="center"><b>&lt; 2.0</b></td><td>Not viable in this engagement window</td><td><span class="chip chip-coral">Park · re-screen later</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="slide-footer">
+    <span class="src">Source: Req/impact sizing proposals.md (Adaptive Layered Assessment); Req/tools/detailed-scoring-guide.md (Priority Score formula re-expressed in business terms)</span>
+    <span class="pg">06</span>
+    <span class="brand">McKinsey &amp; Company</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 1.3 — PHASE 1 DATA REQUEST
+     ============================================================ -->
+<section class="slide" id="s13">
+  <div class="slide-kicker"><span class="tag">Phase 1 · Impact sizing</span><span class="phase">1.3 · Data request package</span></div>
   <h2 class="action-title">Send this <b>pre-engagement data request</b> 5 business days before kickoff — it produces the longlist, screening evidence, and 2×2 inputs we need by Day 1</h2>
   <p class="sub-title">Format: editable Excel workbook with one sheet per section + a 30-minute walkthrough call with the client PMO</p>
 
@@ -514,7 +752,7 @@
           <tr><td>3</td><td class="lead">Data &amp; systems</td><td>Source systems · API availability (Y/N) · data format (struct/semi/unstruct) · access path</td><td>IT architecture lead</td><td>Tests Criterion 2 (Data accessibility) + ORS Integration</td></tr>
           <tr><td>4</td><td class="lead">Volume &amp; cycle time</td><td>Monthly volume · avg cycle time · peak periods · time-to-output SLA</td><td>Operations analytics</td><td>Tests Criterion 3 + drives Value scoring</td></tr>
           <tr><td>5</td><td class="lead">Ownership &amp; sponsor</td><td>Named owner · authority level · weekly hours committed · executive sponsor · sponsor budget Y/N</td><td>Function head</td><td>Tests Criteria 4 + ORS Sponsor Authority</td></tr>
-          <tr><td>6</td><td class="lead">Output samples</td><td>10–20 historical "correct" output examples per workflow (PDFs, screenshots, records)</td><td>Process owner</td><td>Tests Criterion 5 + ODS Ground Truth</td></tr>
+          <tr><td>6</td><td class="lead">Output samples</td><td>10–20 historical "correct" output examples per workflow (PDFs, screenshots, records)</td><td>Process owner</td><td>Tests Criterion 5 + PRS Ground Truth</td></tr>
           <tr><td>7</td><td class="lead">Change pipeline</td><td>Planned system migrations, reorgs, or regulatory changes in next 12 months</td><td>PMO / Strategy</td><td>Tests Criterion 6 (Stability)</td></tr>
           <tr><td>8</td><td class="lead">Cost &amp; risk inputs</td><td>FTE loaded rate · annual error cost · regulatory penalty exposure · prior automation history</td><td>Finance + Risk</td><td>Drives RAS (risk-adjusted score) calculation</td></tr>
         </tbody>
@@ -545,17 +783,17 @@
   <div class="callout"><b>Field practice ·</b> &nbsp;Tabs 1, 4 and 5 are mandatory before Day 1. Tabs 2, 3, 6 can come in by Day 2. Tabs 7, 8 can be filled in during interviews if needed.</div>
 
   <div class="slide-footer">
-    <span class="src">Source: Req/tools/binary-readiness-screen.md — Criteria 1–6; Req/tools/prioritization-matrix.md — ODS/ORS indicators</span>
-    <span class="pg">04</span>
+    <span class="src">Source: Req/tools/binary-readiness-screen.md — Criteria 1–6; Req/tools/prioritization-matrix.md — PRS/ORS indicators</span>
+    <span class="pg">07</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
 
 <!-- ============================================================
-     SLIDE 1.2 — PHASE 1 DAILY AGENDA
+     SLIDE 1.4 — PHASE 1 DAILY AGENDA
      ============================================================ -->
-<section class="slide" id="s12" data-audience="internal">
-  <div class="slide-kicker"><span class="tag">Phase 1 · Impact sizing</span><span class="phase">1.2 · Week-0 daily agenda</span></div>
+<section class="slide" id="s14">
+  <div class="slide-kicker"><span class="tag">Phase 1 · Impact sizing</span><span class="phase">1.4 · Week-0 daily agenda</span></div>
   <h2 class="action-title">Five days, three layers — <b>Binary Screen → 2×2 Funnel → Depth Scoring</b> — converge from longlist of 10–20 to a ranked portfolio with quadrant-specific action paths</h2>
   <p class="sub-title">Layered design concentrates effort on survivors; Day 1 eliminates 30–40% before scoring time is spent</p>
 
@@ -579,14 +817,14 @@
       </tr>
       <tr>
         <td class="lead">Day 2<br/><span class="chip chip-teal">14% time</span></td>
-        <td class="lead">ODS scoring — Output Determinism</td>
+        <td class="lead">Process Readiness scoring</td>
         <td>Functional consultant</td>
         <td>Process owners + QA leads</td>
-        <td>4 indicators × 4 weights per workflow; ODS total 0–2; threshold 1.2; <b>ODS scoring table</b> completed</td>
+        <td>4 indicators × 4 weights per workflow; PRS total 0–2; threshold 1.2; <b>PRS scoring table</b> completed</td>
       </tr>
       <tr>
         <td class="lead">Day 3<br/><span class="chip chip-teal">14% time</span></td>
-        <td class="lead">ORS scoring — Organizational Readiness</td>
+        <td class="lead">Organization Readiness scoring</td>
         <td>Functional consultant</td>
         <td>Sponsors + Change/HR + IT leads</td>
         <td>4 indicators (sponsor, team, integration, change history); ORS total 0–2; <b>quadrant assignment</b> for each workflow</td>
@@ -629,16 +867,16 @@
 
   <div class="slide-footer">
     <span class="src">Source: Req/impact sizing proposals.md — Proposal C "Adaptive Layered Assessment"; time budgets from layered-assessment time allocation</span>
-    <span class="pg">05</span>
+    <span class="pg">08</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
 
 <!-- ============================================================
-     SLIDE 1.3 — PHASE 1 SAMPLE DELIVERABLES
+     SLIDE 1.5 — PHASE 1 SAMPLE DELIVERABLES
      ============================================================ -->
-<section class="slide" id="s13" data-audience="internal">
-  <div class="slide-kicker"><span class="tag">Phase 1 · Impact sizing</span><span class="phase">1.3 · Sample deliverables</span></div>
+<section class="slide" id="s15">
+  <div class="slide-kicker"><span class="tag">Phase 1 · Impact sizing</span><span class="phase">1.5 · Sample deliverables</span></div>
   <h2 class="action-title">The Week-0 deliverable pack is a <b>three-part report</b> — Portfolio Ranking, 2×2 with action paths, and 1–2 year Wave Roadmap — produced from the same scoring workbook</h2>
   <p class="sub-title">Sample shown below for a notional 6-workflow assessment in a financial services client</p>
 
@@ -646,7 +884,7 @@
     <div class="panel" style="flex:1.4;">
       <h5>Part A — Prioritized Workflow Portfolio (sample)</h5>
       <table class="mck compact" style="margin-top:6px;">
-        <thead><tr><th>#</th><th>Workflow</th><th class="center">Screen<br/>(/6)</th><th class="center">ODS</th><th class="center">ORS</th><th class="center">Quadrant</th><th class="center">VM</th><th class="center">DDI</th><th class="center">RAS</th><th class="center">Priority</th><th class="center">Rank</th><th class="center">Decision</th></tr></thead>
+        <thead><tr><th>#</th><th>Workflow</th><th class="center">Screen<br/>(/6)</th><th class="center">Process Read.</th><th class="center">Organ. Read.</th><th class="center">Quadrant</th><th class="center">VM</th><th class="center">DDI</th><th class="center">RAS</th><th class="center">Priority</th><th class="center">Rank</th><th class="center">Decision</th></tr></thead>
         <tbody>
           <tr><td>1</td><td class="lead">Invoice 3-way matching</td><td class="center">6/6</td><td class="center">1.70</td><td class="center">1.55</td><td class="center"><span class="chip chip-teal">Q1</span></td><td class="center">4.2</td><td class="center">0.42</td><td class="center">3.78</td><td class="center"><b>4.18</b></td><td class="center">1</td><td class="center"><span class="chip chip-teal">Pass</span></td></tr>
           <tr><td>2</td><td class="lead">Sanctions screening triage</td><td class="center">6/6</td><td class="center">1.50</td><td class="center">1.35</td><td class="center"><span class="chip chip-teal">Q1</span></td><td class="center">3.9</td><td class="center">0.58</td><td class="center">3.32</td><td class="center"><b>3.80</b></td><td class="center">2</td><td class="center"><span class="chip chip-teal">Pass</span></td></tr>
@@ -663,14 +901,14 @@
       <div class="panel">
         <h5>Part B — 2×2 quadrant view</h5>
         <div class="matrix" style="margin-top:6px;">
-          <div></div><div class="lbl">Low ODS</div><div class="lbl">High ODS (≥1.2)</div>
+          <div></div><div class="lbl">Low PRS</div><div class="lbl">High PRS (≥1.2)</div>
           <div class="y-lbl">High ORS ⟶</div>
           <div class="q q3"><small>Invest &amp; Prove</small><h6>#4 Credit memo</h6></div>
           <div class="q q1"><small>Quick Win</small><h6>#1 Invoice match<br/>#2 Sanctions triage</h6></div>
           <div class="y-lbl" style="grid-row:3"></div>
           <div class="q q4"><small>Defer &amp; Mature</small><h6>#5 Marketing copy</h6></div>
           <div class="q q2"><small>Sponsor &amp; Align</small><h6>#3 KYC refresh</h6></div>
-          <div class="x-lbl">Output Determinism Score (ODS) →</div>
+          <div class="x-lbl">Process Readiness Score (PRS) →</div>
         </div>
       </div>
       <div class="panel">
@@ -687,16 +925,16 @@
 
   <div class="slide-footer">
     <span class="src">Source: Req/tools/prioritization-matrix.md (matrix + roadmap) + Req/tools/detailed-scoring-guide.md (scoring formulas)</span>
-    <span class="pg">06</span>
+    <span class="pg">09</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
 
 <!-- ============================================================
-     SLIDE 1.4 — DEEP DIVE: BINARY READINESS SCREEN
+     SLIDE 1.6 — DEEP DIVE: BINARY READINESS SCREEN
      ============================================================ -->
-<section class="slide" id="s14" data-audience="internal">
-  <div class="slide-kicker"><span class="tag">Phase 1 · Deep-dive</span><span class="phase">1.4 · Binary readiness screen</span></div>
+<section class="slide" id="s16">
+  <div class="slide-kicker"><span class="tag">Phase 1 · Deep-dive</span><span class="phase">1.6 · Binary readiness screen</span></div>
   <h2 class="action-title">Six binary criteria — <b>5-of-6 Yes required</b> — eliminate structurally unready candidates before any time is spent on quantitative scoring</h2>
   <p class="sub-title">One exception is allowed if mitigation plan is documented; "Maria-only-knows" tribal knowledge is automatic fail</p>
 
@@ -747,17 +985,17 @@
 
   <div class="slide-footer">
     <span class="src">Source: Req/tools/binary-readiness-screen.md (criteria definitions, interview protocol, fact-collection table)</span>
-    <span class="pg">07</span>
+    <span class="pg">10</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
 
 <!-- ============================================================
-     SLIDE 1.5 — DEEP DIVE: 2×2 MATRIX
+     SLIDE 1.7 — DEEP DIVE: 2×2 MATRIX
      ============================================================ -->
-<section class="slide" id="s15" data-audience="internal">
-  <div class="slide-kicker"><span class="tag">Phase 1 · Deep-dive</span><span class="phase">1.5 · 2×2 prioritization matrix</span></div>
-  <h2 class="action-title">The <b>ODS × ORS</b> matrix routes each surviving workflow to one of four <b>quadrant-specific action paths</b> — preventing premature commitment to candidates destined to fail in MVP or Production</h2>
+<section class="slide" id="s17">
+  <div class="slide-kicker"><span class="tag">Phase 1 · Deep-dive</span><span class="phase">1.7 · 2×2 prioritization matrix</span></div>
+  <h2 class="action-title">The <b>PRS × ORS</b> matrix routes each surviving workflow to one of four <b>quadrant-specific action paths</b> — preventing premature commitment to candidates destined to fail in MVP or Production</h2>
   <p class="sub-title">Threshold 1.2 on each axis; weights and indicators codified for inter-rater reliability (target Cohen's κ ≥ 0.70)</p>
 
   <div class="row" style="flex:1;">
@@ -766,7 +1004,7 @@
       <table class="mck compact">
         <thead><tr><th>Axis</th><th>Indicator</th><th class="center">Weight</th><th>Score 0</th><th>Score 1</th><th>Score 2</th></tr></thead>
         <tbody>
-          <tr><td rowspan="4" class="lead">ODS<br/><span class="chip chip-blue">X-axis</span></td><td>Output structure</td><td class="center">0.30</td><td>Unstructured free-text</td><td>Semi-structured template</td><td>Fully structured schema</td></tr>
+          <tr><td rowspan="4" class="lead">PRS<br/><span class="chip chip-blue">X-axis</span></td><td>Output structure</td><td class="center">0.30</td><td>Unstructured free-text</td><td>Semi-structured template</td><td>Fully structured schema</td></tr>
           <tr><td>Correctness verifiability</td><td class="center">0.30</td><td>Expert subjective review</td><td>Mix of rules + judgment</td><td>Deterministic rule-checkable</td></tr>
           <tr><td>Variance tolerance</td><td class="center">0.20</td><td>Zero tolerance</td><td>Low — minor variations</td><td>High — multiple valid outputs</td></tr>
           <tr><td>Ground truth availability</td><td class="center">0.20</td><td>No history</td><td>&lt;50 labeled examples</td><td>≥100 labeled examples</td></tr>
@@ -776,7 +1014,7 @@
           <tr><td>Change history</td><td class="center">0.20</td><td>Prior failure</td><td>Mixed</td><td>Recent success</td></tr>
         </tbody>
       </table>
-      <div class="callout"><b>Calc ·</b> &nbsp; ODS = Σ(weight × score) — range 0.0–2.0 · <b>Threshold 1.2</b> splits High/Low &nbsp;|&nbsp; ORS same logic.</div>
+      <div class="callout"><b>Calc ·</b> &nbsp; PRS = Σ(weight × score) — range 0.0–2.0 · <b>Threshold 1.2</b> splits High/Low &nbsp;|&nbsp; ORS same logic.</div>
     </div>
 
     <div style="flex:1;">
@@ -784,10 +1022,10 @@
       <table class="mck compact">
         <thead><tr><th>Quadrant</th><th>Strategic meaning</th><th>Action path</th><th>Timing</th></tr></thead>
         <tbody>
-          <tr><td><span class="chip chip-teal">Q1</span> Quick Win<br/><i>High ODS, High ORS</i></td><td>Verifiable + ready</td><td>Direct to Depth scoring · fast-track Design &amp; MVP · lighthouse case</td><td>M1–3</td></tr>
-          <tr><td><span class="chip chip-blue">Q2</span> Sponsor &amp; Align<br/><i>High ODS, Low ORS</i></td><td>Technical OK, org not ready</td><td>Depth scoring + <b>change-mgmt flag</b> · Trust-Led prod deployment · pair with Q1 evidence</td><td>M4–9</td></tr>
-          <tr><td><span class="chip chip-amber">Q3</span> Invest &amp; Prove<br/><i>Low ODS, High ORS</i></td><td>Eager team, verification hard</td><td>Depth scoring only if <b>HITL viable</b> · Guardian/Co-Pilot only · 2× MVP eval time</td><td>M3–6</td></tr>
-          <tr><td><span class="chip chip-grey">Q4</span> Defer &amp; Mature<br/><i>Low ODS, Low ORS</i></td><td>Not yet — both gaps</td><td>Eliminate from scope · document maturity gaps · re-evaluate trigger logged</td><td>M9–18</td></tr>
+          <tr><td><span class="chip chip-teal">Q1</span> Quick Win<br/><i>High PRS, High ORS</i></td><td>Verifiable + ready</td><td>Direct to Depth scoring · fast-track Design &amp; MVP · lighthouse case</td><td>M1–3</td></tr>
+          <tr><td><span class="chip chip-blue">Q2</span> Sponsor &amp; Align<br/><i>High PRS, Low ORS</i></td><td>Technical OK, org not ready</td><td>Depth scoring + <b>change-mgmt flag</b> · Trust-Led prod deployment · pair with Q1 evidence</td><td>M4–9</td></tr>
+          <tr><td><span class="chip chip-amber">Q3</span> Invest &amp; Prove<br/><i>Low PRS, High ORS</i></td><td>Eager team, verification hard</td><td>Depth scoring only if <b>HITL viable</b> · Guardian/Co-Pilot only · 2× MVP eval time</td><td>M3–6</td></tr>
+          <tr><td><span class="chip chip-grey">Q4</span> Defer &amp; Mature<br/><i>Low PRS, Low ORS</i></td><td>Not yet — both gaps</td><td>Eliminate from scope · document maturity gaps · re-evaluate trigger logged</td><td>M9–18</td></tr>
         </tbody>
       </table>
 
@@ -802,16 +1040,153 @@
 
   <div class="slide-footer">
     <span class="src">Source: Req/tools/prioritization-matrix.md — Axis definitions, four quadrant action paths, inter-rater protocol</span>
-    <span class="pg">08</span>
+    <span class="pg">11</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
 
 <!-- ============================================================
-     SLIDE 1.6 — DEEP DIVE: DETAILED SCORING
+     SLIDE 1.8 — HOW PRIORITY SCORING WORKS (BUSINESS LANGUAGE)
      ============================================================ -->
-<section class="slide" id="s16" data-audience="internal">
-  <div class="slide-kicker"><span class="tag">Phase 1 · Deep-dive</span><span class="phase">1.6 · Detailed scoring rubric</span></div>
+<section class="slide" id="s18">
+  <div class="slide-kicker"><span class="tag">Phase 1 · Deep-dive</span><span class="phase">1.8 · How priority scoring is built</span></div>
+
+  <h2 class="action-title">The Priority Score is built from three plain-business components — <b>Value · Fit · Risk</b> — each sized from observable evidence <b>before</b> any formula is applied; the math on the next page is just arithmetic on these three numbers</h2>
+  <p class="sub-title">Page 1.2 introduced the components in summary; this page shows how each one is sized — in business language a sponsor can challenge — so the formulas on 1.9 are transparent and defensible</p>
+
+  <!-- ============= COMPONENT 1: VM ============= -->
+  <div style="border:1px solid var(--mck-grey-200);border-left:5px solid var(--mck-blue);background:#fff;padding:12px 16px;margin-bottom:10px;">
+    <div style="display:grid;grid-template-columns:170px 1fr 280px;gap:18px;align-items:start;">
+      <div>
+        <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mck-blue);font-weight:600;">Component ① of 3</div>
+        <div style="font-family:var(--serif);font-size:22px;color:var(--mck-navy);font-weight:600;margin-top:2px;">Business Value</div>
+        <div style="font-size:10.5px;color:var(--mck-grey-700);">VM · Value Magnitude</div>
+        <p style="font-size:11.5px;font-style:italic;color:var(--mck-navy);border-left:2px solid var(--mck-blue);padding:4px 8px;margin-top:8px;">"If we win, what's it actually worth?"</p>
+      </div>
+
+      <div>
+        <h5 style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mck-grey-700);margin-bottom:4px;">How it's sized — four sub-dimensions, each on a 1–5 anchored scale</h5>
+        <table class="mck compact">
+          <thead><tr><th style="width:24%">Sub-dimension</th><th class="center" style="width:8%">Weight</th><th>What we measure (anchored)</th><th class="center" style="width:14%">"1"</th><th class="center" style="width:14%">"3"</th><th class="center" style="width:14%">"5"</th></tr></thead>
+          <tbody>
+            <tr><td class="lead">Cost savings</td><td class="center">35%</td><td>Annual $ saved — labour + errors + penalty avoidance</td><td class="center">&lt;$50k</td><td class="center">$200–500k</td><td class="center">&gt;$1M</td></tr>
+            <tr><td class="lead">Quality improvement</td><td class="center">25%</td><td>% reduction in current error / rework rate</td><td class="center">&lt;10%</td><td class="center">30–50%</td><td class="center">&gt;75%</td></tr>
+            <tr><td class="lead">Speed improvement</td><td class="center">20%</td><td>% reduction in end-to-end cycle time (incl. queue)</td><td class="center">&lt;20%</td><td class="center">40–60%</td><td class="center">&gt;80%</td></tr>
+            <tr><td class="lead">Strategic alignment</td><td class="center">20%</td><td>How visibly this advances a stated strategic priority</td><td class="center">Operational only</td><td class="center">Named OKR</td><td class="center">Flagship narrative</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background:#eef3ff;padding:10px 12px;border-radius:3px;">
+        <h5 style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mck-blue);margin-bottom:4px;">The "sponsor question" we ask</h5>
+        <p style="font-size:11.5px;line-height:1.5;font-style:italic;color:var(--mck-navy);">"If this automation succeeds, which executive mentions it in their next quarterly review? The higher up that person sits, the higher the strategic score."</p>
+        <h5 style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mck-blue);margin-top:8px;margin-bottom:4px;">Worked example · invoice match</h5>
+        <p style="font-size:10.5px;line-height:1.45;">Cost <b>4</b> ($700k labour + error savings) · Quality <b>4</b> (60% error ↓) · Speed <b>3</b> (50% cycle ↓) · Strategic <b>3</b> (CFO digital agenda) &nbsp;⟶&nbsp; <b style="color:var(--mck-blue);">VM = 3.6</b></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= COMPONENT 2: DDI ============= -->
+  <div style="border:1px solid var(--mck-grey-200);border-left:5px solid var(--mck-teal);background:#fff;padding:12px 16px;margin-bottom:10px;">
+    <div style="display:grid;grid-template-columns:170px 1fr 280px;gap:18px;align-items:start;">
+      <div>
+        <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:#007a76;font-weight:600;">Component ② of 3</div>
+        <div style="font-family:var(--serif);font-size:22px;color:var(--mck-navy);font-weight:600;margin-top:2px;">Agentic Fit</div>
+        <div style="font-size:10.5px;color:var(--mck-grey-700);">DDI · Decision Density Index</div>
+        <p style="font-size:11.5px;font-style:italic;color:var(--mck-navy);border-left:2px solid var(--mck-teal);padding:4px 8px;margin-top:8px;">"Is an agent actually the right tool here — or would simpler automation be cheaper?"</p>
+      </div>
+
+      <div>
+        <h5 style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mck-grey-700);margin-bottom:4px;">How it's sized — walk the process, classify every decision point</h5>
+        <table class="mck compact">
+          <thead><tr><th style="width:18%">Decision type</th><th class="center" style="width:10%">Weight</th><th>What it looks like</th><th style="width:40%">Plain-English example</th></tr></thead>
+          <tbody>
+            <tr><td class="lead">Binary</td><td class="center">×1</td><td>Two outcomes from one simple condition</td><td><i>"If amount &gt; $10k, route to senior approver"</i></td></tr>
+            <tr><td class="lead">Multi-option</td><td class="center">×2</td><td>Three-plus paths driven by several factors</td><td><i>"Based on customer segment, order size, payment history → pick from 5 pricing tiers"</i></td></tr>
+            <tr><td class="lead">Judgment</td><td class="center">×3</td><td>Reasoning, weighing trade-offs, interpreting context</td><td><i>"Evaluate supplier proposal across 8 criteria → recommend negotiate, accept or reject"</i></td></tr>
+          </tbody>
+        </table>
+        <div style="background:var(--mck-grey-100);padding:6px 10px;font-size:10.5px;font-family:'Menlo','Consolas',monospace;margin-top:6px;border-left:3px solid var(--mck-teal);">DDI = Σ(decision weights) ÷ total process steps &nbsp;→&nbsp; then normalised 0.0–1.0 against all candidates this round</div>
+      </div>
+
+      <div style="background:#e6f9f8;padding:10px 12px;border-radius:3px;">
+        <h5 style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:#007a76;margin-bottom:4px;">How to read the number — business meaning</h5>
+        <table class="mck compact" style="margin-top:2px;">
+          <tbody>
+            <tr><td class="center" style="width:32%"><b>0.0 – 0.2</b></td><td>Mostly execution — RPA likely cheaper · agent is over-engineering</td></tr>
+            <tr><td class="center"><b>0.2 – 0.4</b></td><td>Some decisions — agent earns its keep at decision nodes only</td></tr>
+            <tr><td class="center"><b>0.4 – 0.6</b></td><td>Good agentic fit — recommended</td></tr>
+            <tr><td class="center"><b>0.6 – 1.0</b></td><td>Decision-rich — agent's reasoning is the primary value</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:10.5px;line-height:1.4;margin-top:6px;font-style:italic;color:var(--mck-grey-700);"><b>Why this matters ·</b> &nbsp;An expensive agent on a low-DDI workflow is a McKinsey-grade mistake — you spent agent money to do RPA work.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= COMPONENT 3: RAS ============= -->
+  <div style="border:1px solid var(--mck-grey-200);border-left:5px solid var(--mck-coral);background:#fff;padding:12px 16px;margin-bottom:10px;">
+    <div style="display:grid;grid-template-columns:170px 1fr 280px;gap:18px;align-items:start;">
+      <div>
+        <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:#a8553c;font-weight:600;">Component ③ of 3</div>
+        <div style="font-family:var(--serif);font-size:22px;color:var(--mck-navy);font-weight:600;margin-top:2px;">Risk-Adjusted Value</div>
+        <div style="font-size:10.5px;color:var(--mck-grey-700);">RAS · Risk-Adjusted Score</div>
+        <p style="font-size:11.5px;font-style:italic;color:var(--mck-navy);border-left:2px solid var(--mck-coral);padding:4px 8px;margin-top:8px;">"What's the discount applied to the prize once we name what could realistically go wrong?"</p>
+      </div>
+
+      <div>
+        <h5 style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--mck-grey-700);margin-bottom:4px;">How it's sized — four risk categories, each rated Low / Medium / High</h5>
+        <table class="mck compact">
+          <thead><tr><th style="width:22%">Risk category</th><th>What we look at</th><th class="center" style="width:14%">Low</th><th class="center" style="width:14%">Med</th><th class="center" style="width:14%">High</th></tr></thead>
+          <tbody>
+            <tr><td class="lead">Implementation</td><td>Technical complexity — decision density × number of systems to integrate</td><td class="center">Simple, ≤2 systems</td><td class="center">3–4 systems</td><td class="center">Complex, 5+ systems</td></tr>
+            <tr><td class="lead">Adoption</td><td>Organization readiness carried from ORS — sponsor strength &amp; team receptivity</td><td class="center">Eager &amp; sponsored</td><td class="center">Neutral team</td><td class="center">Weak sponsor / resistance</td></tr>
+            <tr><td class="lead">Compliance</td><td>Regulatory exposure × cost per error</td><td class="center">No reg, low err cost</td><td class="center">Light reg or $1–50k err</td><td class="center">Heavy reg &amp; &gt;$50k err</td></tr>
+            <tr><td class="lead">Dependency</td><td>Reliability of external systems the agent depends on</td><td class="center">0–1 stable APIs</td><td class="center">2–3 mixed</td><td class="center">4+ or any &lt;99% SLA</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background:#fde2d8;padding:10px 12px;border-radius:3px;">
+        <h5 style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:#a8553c;margin-bottom:4px;">How risk discounts the value</h5>
+        <table class="mck compact">
+          <thead><tr><th class="center"># High risks</th><th class="center">Discount</th><th class="center">VM = 4.0 becomes…</th></tr></thead>
+          <tbody>
+            <tr><td class="center">0</td><td class="center">0%</td><td class="center"><b>4.00</b></td></tr>
+            <tr><td class="center">1</td><td class="center">−15%</td><td class="center"><b>3.40</b></td></tr>
+            <tr><td class="center">2</td><td class="center">−30%</td><td class="center"><b>2.80</b></td></tr>
+            <tr><td class="center">3</td><td class="center">−45%</td><td class="center"><b>2.20</b></td></tr>
+            <tr><td class="center">4</td><td class="center">−60%</td><td class="center"><b>1.60</b></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:10.5px;line-height:1.4;margin-top:6px;font-style:italic;color:var(--mck-grey-700);"><b>Read this carefully ·</b> &nbsp;A flagship-value candidate (5.0) with 3 High risks lands at 2.75 — beneath an "ordinary" candidate (3.5) with 0 High risks at 3.50. The risk discount is doing its job.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom synthesis -->
+  <div style="background:var(--mck-navy);color:#fff;padding:12px 16px;display:grid;grid-template-columns:1fr 2fr;gap:18px;align-items:center;line-height:1.5;">
+    <div>
+      <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:1.5px;color:#a9c8ff;margin-bottom:4px;">Bringing it together</div>
+      <div style="font-family:var(--serif);font-size:18px;line-height:1.25;">Priority Score = <span style="color:#a9c8ff;">Risk-Adjusted Value</span> × <span style="color:#a9c8ff;">(1 + Agentic-Fit bonus)</span></div>
+    </div>
+    <div style="font-size:11.5px;">
+      In business words: we start with the prize <b>(VM)</b>, discount it for what could go wrong <b>(RAS)</b>, then add a confidence bonus for how well an agent suits this work <b>(DDI)</b>. The result is one number — between roughly 0 and 6 — that lets the sponsor compare candidates apples-to-apples. <b style="color:#a9c8ff;">→ The next page (1.9) is the formula sheet — same logic, with the precise weights and decision rule that produced this page's numbers.</b>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span class="src">Source: Req/tools/detailed-scoring-guide.md (VM dimensions &amp; anchors, DDI calculation, risk anchors, Priority Score formula) — re-expressed in business language</span>
+    <span class="pg">12</span>
+    <span class="brand">McKinsey &amp; Company</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 1.9 — DEEP DIVE: DETAILED SCORING
+     ============================================================ -->
+<section class="slide" id="s19">
+  <div class="slide-kicker"><span class="tag">Phase 1 · Deep-dive</span><span class="phase">1.9 · Detailed scoring rubric</span></div>
   <h2 class="action-title">Depth-layer scoring combines <b>Value Magnitude · Decision Density · Risk</b> into a single <b>Priority Score</b> with calibrated anchors so independent assessors converge within 1 point</h2>
   <p class="sub-title">Hard-floor for Design entry: PriorityScore ≥ 3.0 · Target ICC ≥ 0.75 across assessors</p>
 
@@ -862,7 +1237,66 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 
   <div class="slide-footer">
     <span class="src">Source: Req/tools/detailed-scoring-guide.md — VM dimensions, DDI calculation, risk anchors, PriorityScore formula</span>
-    <span class="pg">09</span>
+    <span class="pg">13</span>
+    <span class="brand">McKinsey &amp; Company</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 2.0 — PHASE 2 FRAMING (C-LEVEL)
+     ============================================================ -->
+<section class="slide" id="s20">
+  <div class="slide-kicker"><span class="tag">Phase 2 · Design</span><span class="phase">2.0 · Phase framing</span></div>
+
+  <!-- Phase position strip -->
+  <div style="display:flex;background:var(--mck-grey-100);border:1px solid var(--mck-grey-200);font-size:10px;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;">
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-700);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">1.</span> &nbsp;Impact sizing &nbsp;<span style="color:var(--mck-teal);font-size:9px;margin-left:6px;">✓ complete</span></div>
+    <div style="flex:1;padding:9px 14px;background:var(--mck-navy);color:#fff;font-weight:600;border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">2.</span> &nbsp;Design &nbsp;<span style="color:#a9c8ff;font-size:9px;margin-left:6px;">you are here</span></div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">3.</span> &nbsp;MVP</div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">4.</span> &nbsp;Production</div>
+  </div>
+
+  <h2 class="action-title">Phase 2 produces the <b>blueprint everyone agrees on — before money is spent on building</b> — translating a business workflow into something engineers can build and the business can govern</h2>
+  <p class="sub-title">Two weeks to align business intent with technical architecture; the most expensive mistakes happen here, not later in MVP or Production</p>
+
+  <div class="grid grid-3" style="flex:1;">
+    <div class="panel tint" style="border-top:5px solid var(--mck-blue);">
+      <h5 style="border-bottom-color:var(--mck-blue);">What this phase achieves</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A shared, signed-off picture —</b> of how the workflow will run once agents are in place, with humans clearly placed at decision points</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A crystal-clear definition of success —</b> in plain language, testable, not aspirational</li>
+        <li style="padding:6px 0;"><b>Scope discipline —</b> what gets built first, what's deliberately deferred, and the reasoning behind both</li>
+      </ul>
+    </div>
+    <div class="panel tint" style="border-top:5px solid var(--mck-teal);">
+      <h5 style="border-bottom-color:var(--mck-teal);">How we approach it</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>Two perspectives in parallel —</b> business understanding (your process, your people) and technical design (the agent architecture), running side-by-side</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>Three structured checkpoints —</b> at days 3, 7, and 10 — that force the two perspectives to meet and resolve gaps</li>
+        <li style="padding:6px 0;"><b>Every step decided —</b> for each workflow step we answer two questions: who does what, and where do humans stay in the loop</li>
+      </ul>
+    </div>
+    <div class="panel tint" style="border-top:5px solid var(--mck-amber);">
+      <h5 style="border-bottom-color:var(--mck-amber);">What you walk away with</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A single blueprint document —</b> that an engineering team can pick up and build from with zero ambiguity</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>Pass / fail criteria everyone agrees on —</b> in plain "given this, when X happens, the outcome should be Y" language</li>
+        <li style="padding:6px 0;"><b>A locked, achievable first-build scope —</b> with a named risk register and dated mitigations</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Handoff strip -->
+  <div style="background:var(--mck-navy);color:#fff;padding:10px 14px;font-size:11px;margin-top:14px;display:grid;grid-template-columns:130px 1fr;gap:14px;line-height:1.5;align-items:center;">
+    <span style="color:var(--mck-grey-300);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">← From Phase 1</span>
+    <span><b style="color:#a9c8ff;">In:</b> top-priority workflow + 2×2 quadrant (design profile) + risk indicators</span>
+    <span style="color:var(--mck-grey-300);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">To Phase 3 →</span>
+    <span><b style="color:#a9c8ff;">Out:</b> signed blueprint + success criteria + first-build scope + the dataset the client commits to providing for testing</span>
+  </div>
+
+  <div class="slide-footer">
+    <span class="src">Source: Req/overall problem.md (Phase 2 purpose); Req/design problem.md (core question, success criteria); Req/design proposals.md (dual-track method)</span>
+    <span class="pg">14</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -870,7 +1304,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 <!-- ============================================================
      SLIDE 2.1 — PHASE 2 DATA REQUEST
      ============================================================ -->
-<section class="slide" id="s21" data-audience="internal">
+<section class="slide" id="s21">
   <div class="slide-kicker"><span class="tag">Phase 2 · Design</span><span class="phase">2.1 · Data request package</span></div>
   <h2 class="action-title">Design opens with a <b>structured data request</b> targeted at the prioritized workflow — process detail, system access, ground-truth examples, and risk inputs</h2>
   <p class="sub-title">Returned 5 business days before kickoff; gap >40% triggers a Day-0 reset call before clock starts</p>
@@ -916,7 +1350,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 
   <div class="slide-footer">
     <span class="src">Source: Req/design problem.md (artifact list); Req/design proposals.md Proposal C (dual-track inputs)</span>
-    <span class="pg">10</span>
+    <span class="pg">15</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -924,7 +1358,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 <!-- ============================================================
      SLIDE 2.2 — PHASE 2 DAILY AGENDA (DUAL-TRACK)
      ============================================================ -->
-<section class="slide" id="s22" data-audience="internal">
+<section class="slide" id="s22">
   <div class="slide-kicker"><span class="tag">Phase 2 · Design</span><span class="phase">2.2 · Two-week dual-track agenda</span></div>
   <h2 class="action-title">Run two parallel tracks — <b>Discovery</b> (consultant-led) and <b>Design</b> (architect-led) — with three integration ceremonies that prevent divergence and force convergence on the architecture</h2>
   <p class="sub-title">~80 person-hours total · Day 3 / Day 7 / Day 10 syncs are the binding ceremonies</p>
@@ -974,7 +1408,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 
   <div class="slide-footer">
     <span class="src">Source: Req/design proposals.md — Proposal C "Sprint-Adapted Dual-Track Process"</span>
-    <span class="pg">11</span>
+    <span class="pg">16</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -982,7 +1416,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 <!-- ============================================================
      SLIDE 2.3 — PHASE 2 SAMPLE DELIVERABLES
      ============================================================ -->
-<section class="slide" id="s23" data-audience="internal">
+<section class="slide" id="s23">
   <div class="slide-kicker"><span class="tag">Phase 2 · Design</span><span class="phase">2.3 · Sample deliverables</span></div>
   <h2 class="action-title">The Design deliverable is a <b>single Architecture Design Document</b> with 9 mandatory sections — the format is the contract that ensures MVP can be built unambiguously</h2>
   <p class="sub-title">Sample TOC and section-by-section content guide shown below; template lives at <i>/templates/P2_ADD_v1.docx</i></p>
@@ -1036,7 +1470,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 
   <div class="slide-footer">
     <span class="src">Source: Req/design proposals.md — Proposal C deliverable template (9-section ADD)</span>
-    <span class="pg">12</span>
+    <span class="pg">17</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1044,7 +1478,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 <!-- ============================================================
      SLIDE 2.4 — DEEP DIVE: 5 AGENT ARCHETYPES
      ============================================================ -->
-<section class="slide" id="s24" data-audience="internal">
+<section class="slide" id="s24">
   <div class="slide-kicker"><span class="tag">Phase 2 · Deep-dive</span><span class="phase">2.4 · Five agent archetypes</span></div>
   <h2 class="action-title">Every workflow step is classified as one of <b>five archetypes</b> — Orchestrator · Executor · Analyst · Retriever · Evaluator — making architecture a classification exercise rather than a creative leap</h2>
   <p class="sub-title">Mutually exclusive · collectively exhaustive · selection trigger codified for each</p>
@@ -1096,7 +1530,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 
   <div class="slide-footer">
     <span class="src">Source: Req/design proposals.md — Proposal A "The Five Agent Archetypes"; complexity gate from Proposal B</span>
-    <span class="pg">13</span>
+    <span class="pg">18</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1104,7 +1538,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 <!-- ============================================================
      SLIDE 2.5 — DEEP DIVE: 3 INTERACTION MODES
      ============================================================ -->
-<section class="slide" id="s25" data-audience="internal">
+<section class="slide" id="s25">
   <div class="slide-kicker"><span class="tag">Phase 2 · Deep-dive</span><span class="phase">2.5 · Three Agent-Human interaction modes</span></div>
   <h2 class="action-title">Every step is assigned an interaction mode — <b>Autopilot · Co-Pilot · Guardian</b> — chosen by the <b>worst plausible failure severity</b>, not by team preference</h2>
   <p class="sub-title">A "trust contract" between the agent and the human; selection is risk-based and visible in the architecture document</p>
@@ -1169,7 +1603,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 
   <div class="slide-footer">
     <span class="src">Source: Req/design proposals.md — Proposal A "The Three Interaction Modes"; trust-contract framing from Creative Exploration</span>
-    <span class="pg">14</span>
+    <span class="pg">19</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1177,7 +1611,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 <!-- ============================================================
      SLIDE 2.6 — DEEP DIVE: A2A ORCHESTRATION PATTERNS
      ============================================================ -->
-<section class="slide" id="s26" data-audience="internal">
+<section class="slide" id="s26">
   <div class="slide-kicker"><span class="tag">Phase 2 · Deep-dive</span><span class="phase">2.6 · Agent-to-agent orchestration patterns</span></div>
   <h2 class="action-title">Six <b>A2A patterns</b> cover known multi-agent coordination needs — selection is dependency-based, not preference-based</h2>
   <p class="sub-title">Pick the simplest pattern that satisfies the dependency structure; complexity is a cost, not a feature</p>
@@ -1195,7 +1629,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 
   <div class="slide-footer">
     <span class="src">Source: Req/design problem.md (A2A pattern taxonomy); Req/design proposals.md Proposal A (six patterns + selection criteria)</span>
-    <span class="pg">15</span>
+    <span class="pg">20</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1203,7 +1637,7 @@ RAS = VM × (1 − 0.15 × HighRiskCount)
 <!-- ============================================================
      SLIDE 2.7 — DEEP DIVE: AGENT SPEC SAMPLE
      ============================================================ -->
-<section class="slide" id="s27" data-audience="internal">
+<section class="slide" id="s27">
   <div class="slide-kicker"><span class="tag">Phase 2 · Deep-dive</span><span class="phase">2.7 · Agent specification — sample</span></div>
   <h2 class="action-title">Each agent gets one <b>spec sheet</b> in the ADD — a self-contained brief that an engineer can pick up and start building from with <b>zero clarification</b></h2>
   <p class="sub-title">Worked example: "Invoice Match Executor" agent in an AP workflow</p>
@@ -1260,7 +1694,66 @@ Return JSON: { lines:[...], journal:{...} | null,
 
   <div class="slide-footer">
     <span class="src">Source: Req/design problem.md (agent spec required content); Req/design proposals.md ADD §3 Agent Specifications</span>
-    <span class="pg">16</span>
+    <span class="pg">21</span>
+    <span class="brand">McKinsey &amp; Company</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 3.0 — PHASE 3 FRAMING (C-LEVEL)
+     ============================================================ -->
+<section class="slide" id="s30">
+  <div class="slide-kicker"><span class="tag">Phase 3 · MVP</span><span class="phase">3.0 · Phase framing</span></div>
+
+  <!-- Phase position strip -->
+  <div style="display:flex;background:var(--mck-grey-100);border:1px solid var(--mck-grey-200);font-size:10px;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;">
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-700);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">1.</span> &nbsp;Impact sizing &nbsp;<span style="color:var(--mck-teal);font-size:9px;margin-left:6px;">✓ complete</span></div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-700);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">2.</span> &nbsp;Design &nbsp;<span style="color:var(--mck-teal);font-size:9px;margin-left:6px;">✓ complete</span></div>
+    <div style="flex:1;padding:9px 14px;background:var(--mck-navy);color:#fff;font-weight:600;border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">3.</span> &nbsp;MVP &nbsp;<span style="color:#a9c8ff;font-size:9px;margin-left:6px;">you are here</span></div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-500);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">4.</span> &nbsp;Production</div>
+  </div>
+
+  <h2 class="action-title">Phase 3 replaces <b>opinion with evidence</b> — we build the agent against real cases in a safe environment and prove it works <b>before any production investment</b></h2>
+  <p class="sub-title">Three weeks, three demos, one binding go/no-go gate — measured against a curated set of real historical cases that everyone has agreed represent reality</p>
+
+  <div class="grid grid-3" style="flex:1;">
+    <div class="panel tint" style="border-top:5px solid var(--mck-blue);">
+      <h5 style="border-bottom-color:var(--mck-blue);">What this phase achieves</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>Confidence the design actually works —</b> on data that looks like reality, not slideware</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A transparent scorecard —</b> your team can challenge and trust; no hidden caveats</li>
+        <li style="padding:6px 0;"><b>A clear view of strengths and limits —</b> where the agent excels, and where it appropriately asks for human help</li>
+      </ul>
+    </div>
+    <div class="panel tint" style="border-top:5px solid var(--mck-teal);">
+      <h5 style="border-bottom-color:var(--mck-teal);">How we approach it</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>Build first, then iterate against numbers —</b> targets are measured, not debated</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>Real historical cases as the truth standard —</b> the same cases your team has handled, used as ground truth for the agent</li>
+        <li style="padding:6px 0;"><b>One demo per week, openly challenged —</b> Week 1 build, Week 2 iterate, Week 3 harden — and a fourth week added when human judgment must be in the validation loop</li>
+      </ul>
+    </div>
+    <div class="panel tint" style="border-top:5px solid var(--mck-amber);">
+      <h5 style="border-bottom-color:var(--mck-amber);">What you walk away with</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A working agent in a safe sandbox —</b> you can run it against any case, any time</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A test report —</b> showing performance versus pre-agreed targets, with failure analysis</li>
+        <li style="padding:6px 0;"><b>A readiness checklist —</b> completed line by line, that is the basis for the production go/no-go</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Handoff strip -->
+  <div style="background:var(--mck-navy);color:#fff;padding:10px 14px;font-size:11px;margin-top:14px;display:grid;grid-template-columns:130px 1fr;gap:14px;line-height:1.5;align-items:center;">
+    <span style="color:var(--mck-grey-300);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">← From Phase 2</span>
+    <span><b style="color:#a9c8ff;">In:</b> signed blueprint + success criteria + first-build scope + the dataset committed by the client</span>
+    <span style="color:var(--mck-grey-300);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">To Phase 4 →</span>
+    <span><b style="color:#a9c8ff;">Out:</b> validated agent + test evidence + production-readiness checklist — the inputs your IT, security, and operations teams need to clear go-live</span>
+  </div>
+
+  <div class="slide-footer">
+    <span class="src">Source: Req/overall problem.md (Phase 3 purpose); MVP validation framework principles</span>
+    <span class="pg">22</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1268,7 +1761,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 <!-- ============================================================
      SLIDE 3.1 — PHASE 3 DATA REQUEST
      ============================================================ -->
-<section class="slide" id="s31" data-audience="internal">
+<section class="slide" id="s31">
   <div class="slide-kicker"><span class="tag">Phase 3 · MVP</span><span class="phase">3.1 · Data request package</span></div>
   <h2 class="action-title">MVP turns on <b>test data &amp; eval infrastructure</b> — request the golden set, edge cases, and access tokens by the time Design SYNC 3 closes</h2>
   <p class="sub-title">If golden set isn't delivered by Day 2 of MVP, halt build and escalate — eval is the gate, not the build</p>
@@ -1311,7 +1804,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 
   <div class="slide-footer">
     <span class="src">Source: Req/overall problem.md (MVP validation framework); Req/design proposals.md ADD §6 (acceptance criteria) and §7 (MVP scope)</span>
-    <span class="pg">17</span>
+    <span class="pg">23</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1319,7 +1812,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 <!-- ============================================================
      SLIDE 3.2 — PHASE 3 WEEKLY AGENDA
      ============================================================ -->
-<section class="slide" id="s32" data-audience="internal">
+<section class="slide" id="s32">
   <div class="slide-kicker"><span class="tag">Phase 3 · MVP</span><span class="phase">3.2 · Three-week build agenda</span></div>
   <h2 class="action-title">Three weeks · <b>Build → Evaluate → Harden</b> — each week ends with a demo against the holdout golden set</h2>
   <p class="sub-title">Q3 (Invest &amp; Prove) candidates add a fourth week for HITL eval panel work</p>
@@ -1373,7 +1866,7 @@ Return JSON: { lines:[...], journal:{...} | null,
       </tr>
       <tr>
         <td class="lead">Week 4<sup>opt</sup><br/><span class="chip chip-coral">HITL</span></td>
-        <td class="lead">Eval panel for low-ODS cases</td>
+        <td class="lead">Eval panel for low-PRS cases</td>
         <td>Consultant</td>
         <td>SME panel + Engineer</td>
         <td>For Q3 / Guardian workflows: SME panel rates output sample · inter-rater scored · panel feedback loops into prompt + rubric</td>
@@ -1400,7 +1893,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 
   <div class="slide-footer">
     <span class="src">Source: Req/overall problem.md (MVP framework); industry practice on agentic eval-first sprints (3-week structure adapted from Req/design proposals.md MVP scope guidance)</span>
-    <span class="pg">18</span>
+    <span class="pg">24</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1408,7 +1901,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 <!-- ============================================================
      SLIDE 3.3 — PHASE 3 SAMPLE DELIVERABLES
      ============================================================ -->
-<section class="slide" id="s33" data-audience="internal">
+<section class="slide" id="s33">
   <div class="slide-kicker"><span class="tag">Phase 3 · MVP</span><span class="phase">3.3 · Sample deliverables</span></div>
   <h2 class="action-title">Four artifacts close the MVP phase — <b>Working agent · Eval harness · Test report · Production-readiness checklist</b></h2>
   <p class="sub-title">All four are required to pass the gate to Production; partial pack = phase incomplete</p>
@@ -1472,7 +1965,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 
   <div class="slide-footer">
     <span class="src">Source: Req/overall problem.md — Phase 3 deliverables / MVP gate criteria</span>
-    <span class="pg">19</span>
+    <span class="pg">25</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1480,15 +1973,15 @@ Return JSON: { lines:[...], journal:{...} | null,
 <!-- ============================================================
      SLIDE 3.4 — DEEP DIVE: TEST PLAN STRUCTURE
      ============================================================ -->
-<section class="slide" id="s34" data-audience="internal">
+<section class="slide" id="s34">
   <div class="slide-kicker"><span class="tag">Phase 3 · Deep-dive</span><span class="phase">3.4 · Test plan structure</span></div>
   <h2 class="action-title">A solid test plan combines <b>four layers</b> — unit · contract · scenario · adversarial — each producing different evidence the gate needs</h2>
-  <p class="sub-title">Each layer is automated where possible; HITL is reserved for Layer 3 when ODS is low</p>
+  <p class="sub-title">Each layer is automated where possible; HITL is reserved for Layer 3 when PRS is low</p>
 
   <div class="grid grid-4" style="flex:1;">
     <div class="col-card"><h4>Layer 1 · Unit</h4><div class="duration">Agent step level</div><h5>What it tests</h5><ul><li>Tool call correctness</li><li>Output schema validity</li><li>Single-step prompt outputs</li></ul><h5>How automated</h5><ul><li>Pytest / unittest</li><li>Run on every commit</li></ul><h5>Pass criterion</h5><ul><li>100% green</li></ul></div>
     <div class="col-card teal"><h4>Layer 2 · Contract</h4><div class="duration">Agent ↔ Tool / Agent ↔ Agent</div><h5>What it tests</h5><ul><li>API payload shape</li><li>Error path handling</li><li>Timeout + retry behavior</li></ul><h5>How automated</h5><ul><li>Mock tool servers</li><li>Negative-path fixtures</li></ul><h5>Pass criterion</h5><ul><li>All error codes handled</li></ul></div>
-    <div class="col-card amber"><h4>Layer 3 · Scenario / Eval</h4><div class="duration">End-to-end</div><h5>What it tests</h5><ul><li>Correctness on golden set</li><li>HITL escalation triggers</li><li>Latency &amp; cost</li></ul><h5>How automated</h5><ul><li>Eval harness · LLM-judge for Q3</li><li>HITL panel rubric for low ODS</li></ul><h5>Pass criterion</h5><ul><li>≥85% on holdout (target)</li></ul></div>
+    <div class="col-card amber"><h4>Layer 3 · Scenario / Eval</h4><div class="duration">End-to-end</div><h5>What it tests</h5><ul><li>Correctness on golden set</li><li>HITL escalation triggers</li><li>Latency &amp; cost</li></ul><h5>How automated</h5><ul><li>Eval harness · LLM-judge for Q3</li><li>HITL panel rubric for low PRS</li></ul><h5>Pass criterion</h5><ul><li>≥85% on holdout (target)</li></ul></div>
     <div class="col-card coral"><h4>Layer 4 · Adversarial</h4><div class="duration">Safety &amp; robustness</div><h5>What it tests</h5><ul><li>Prompt injection</li><li>Out-of-domain inputs</li><li>Hallucination / confabulation</li></ul><h5>How automated</h5><ul><li>Curated adversarial set</li><li>Red-team prompts</li></ul><h5>Pass criterion</h5><ul><li>≥90% safe behavior</li></ul></div>
   </div>
 
@@ -1516,7 +2009,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 
   <div class="slide-footer">
     <span class="src">Source: Req/overall problem.md — MVP validation framework; standard eval-harness practice for agentic systems</span>
-    <span class="pg">20</span>
+    <span class="pg">26</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1524,7 +2017,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 <!-- ============================================================
      SLIDE 3.5 — DEEP DIVE: ACCEPTANCE CRITERIA SAMPLE
      ============================================================ -->
-<section class="slide" id="s35" data-audience="internal">
+<section class="slide" id="s35">
   <div class="slide-kicker"><span class="tag">Phase 3 · Deep-dive</span><span class="phase">3.5 · Acceptance criteria sample (Given/When/Then)</span></div>
   <h2 class="action-title">Acceptance criteria are written in <b>Given/When/Then</b> form — testable, atomic, traceable to a golden case — and are the only language the eval harness understands</h2>
   <p class="sub-title">Worked example: 12 ACs for the Invoice-Match Executor showing happy path, exceptions, safety, and observability</p>
@@ -1560,7 +2053,66 @@ Return JSON: { lines:[...], journal:{...} | null,
 
   <div class="slide-footer">
     <span class="src">Source: Req/design proposals.md ADD §6; standard BDD-style acceptance criteria practice</span>
-    <span class="pg">21</span>
+    <span class="pg">27</span>
+    <span class="brand">McKinsey &amp; Company</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 4.0 — PHASE 4 FRAMING (C-LEVEL)
+     ============================================================ -->
+<section class="slide" id="s40">
+  <div class="slide-kicker"><span class="tag">Phase 4 · Production</span><span class="phase">4.0 · Phase framing</span></div>
+
+  <!-- Phase position strip -->
+  <div style="display:flex;background:var(--mck-grey-100);border:1px solid var(--mck-grey-200);font-size:10px;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;">
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-700);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">1.</span> &nbsp;Impact sizing &nbsp;<span style="color:var(--mck-teal);font-size:9px;margin-left:6px;">✓ complete</span></div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-700);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">2.</span> &nbsp;Design &nbsp;<span style="color:var(--mck-teal);font-size:9px;margin-left:6px;">✓ complete</span></div>
+    <div style="flex:1;padding:9px 14px;color:var(--mck-grey-700);border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">3.</span> &nbsp;MVP &nbsp;<span style="color:var(--mck-teal);font-size:9px;margin-left:6px;">✓ complete</span></div>
+    <div style="flex:1;padding:9px 14px;background:var(--mck-navy);color:#fff;font-weight:600;border-left:1px solid var(--mck-grey-300);"><span style="font-family:var(--serif);font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;">4.</span> &nbsp;Production &nbsp;<span style="color:#a9c8ff;font-size:9px;margin-left:6px;">you are here</span></div>
+  </div>
+
+  <h2 class="action-title">Phase 4 turns a <b>proven prototype into a live, operating, adopted capability</b> — where adoption work is treated as equal in weight to technical hardening, because organizational factors out-predict technical factors for success</h2>
+  <p class="sub-title">Six weeks to move from validated MVP to two clean weeks live in production — risk is reduced by adding traffic gradually, not by waiting longer</p>
+
+  <div class="grid grid-3" style="flex:1;">
+    <div class="panel tint" style="border-top:5px solid var(--mck-blue);">
+      <h5 style="border-bottom-color:var(--mck-blue);">What this phase achieves</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A live, operational agent —</b> delivering measurable business value against the KPIs agreed in Design</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>People who use the new way —</b> the team doing the work today understands it, trusts it, and chooses it</li>
+        <li style="padding:6px 0;"><b>A handover your team can sustain —</b> without us; the engagement closes cleanly, not as a dependency</li>
+      </ul>
+    </div>
+    <div class="panel tint" style="border-top:5px solid var(--mck-teal);">
+      <h5 style="border-bottom-color:var(--mck-teal);">How we approach it</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A layered rollout —</b> observe (shadow) → assist (parallel) → run (cutover) → stabilize (hyper-care); each stage adds risk only when the prior stage is clean</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>Adoption alongside hardening —</b> training, communications, and floor-walking start before cutover, not after</li>
+        <li style="padding:6px 0;"><b>Measured pass criteria at every stage —</b> we don't move to the next stage until the current one has held its numbers for three consecutive days</li>
+      </ul>
+    </div>
+    <div class="panel tint" style="border-top:5px solid var(--mck-amber);">
+      <h5 style="border-bottom-color:var(--mck-amber);">What you walk away with</h5>
+      <ul style="list-style:none;padding-left:0;font-size:12px;line-height:1.6;margin-top:10px;">
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A production agent —</b> meeting pre-agreed KPIs for two consecutive weeks of live operation</li>
+        <li style="padding:6px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>A runbook your oncall team owns —</b> reviewed, rehearsed, and accepted before we leave</li>
+        <li style="padding:6px 0;"><b>The first workflow live —</b> and the next waves from your Phase-1 roadmap already sequenced</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Handoff strip -->
+  <div style="background:var(--mck-navy);color:#fff;padding:10px 14px;font-size:11px;margin-top:14px;display:grid;grid-template-columns:130px 1fr;gap:14px;line-height:1.5;align-items:center;">
+    <span style="color:var(--mck-grey-300);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">← From Phase 3</span>
+    <span><b style="color:#a9c8ff;">In:</b> validated agent + test evidence + production-readiness checklist</span>
+    <span style="color:var(--mck-grey-300);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">↑ Engagement closes</span>
+    <span><b style="color:#a9c8ff;">Out:</b> live production workflow + signed handover memo + KPI dashboard — <b style="color:#fff;">and the wave roadmap from Phase 1 guides what to start next</b></span>
+  </div>
+
+  <div class="slide-footer">
+    <span class="src">Source: Req/overall problem.md (Phase 4 purpose); Req/impact sizing proposals.md (organizational factors as success predictors); Req/tools/prioritization-matrix.md (Trust-Led rollout profile)</span>
+    <span class="pg">28</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1568,7 +2120,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 <!-- ============================================================
      SLIDE 4.1 — PHASE 4 DATA REQUEST
      ============================================================ -->
-<section class="slide" id="s41" data-audience="internal">
+<section class="slide" id="s41">
   <div class="slide-kicker"><span class="tag">Phase 4 · Production</span><span class="phase">4.1 · Data request package</span></div>
   <h2 class="action-title">Production opens with a <b>security · integration · operations</b> intake — the enterprise IT machinery is the long pole, request inputs at the MVP gate, not after</h2>
   <p class="sub-title">Many items have client-side calendar dependencies (CAB cycles, security review queues); start the clock with Design SYNC 3 read-out</p>
@@ -1612,7 +2164,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 
   <div class="slide-footer">
     <span class="src">Source: Req/overall problem.md — enterprise integration complexity constraint (Constraints table); Production deployment framework requirements</span>
-    <span class="pg">22</span>
+    <span class="pg">29</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1620,7 +2172,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 <!-- ============================================================
      SLIDE 4.2 — PHASE 4 WEEKLY AGENDA
      ============================================================ -->
-<section class="slide" id="s42" data-audience="internal">
+<section class="slide" id="s42">
   <div class="slide-kicker"><span class="tag">Phase 4 · Production</span><span class="phase">4.2 · Six-week deployment agenda</span></div>
   <h2 class="action-title">Six weeks · <b>Harden → Integrate → Shadow → Parallel → Cutover → Hyper-care</b> — risk is reduced by adding traffic gradually, not by waiting longer</h2>
   <p class="sub-title">"Trust-Led" profile (Q2/Q3 origins) extends Shadow + Parallel by 1–2 weeks each</p>
@@ -1646,7 +2198,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 
   <div class="slide-footer">
     <span class="src">Source: Req/overall problem.md — Production deployment framework; Trust-Led profile from Req/tools/prioritization-matrix.md (Q2 timeline guidance)</span>
-    <span class="pg">23</span>
+    <span class="pg">30</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1654,7 +2206,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 <!-- ============================================================
      SLIDE 4.3 — PHASE 4 SAMPLE DELIVERABLES
      ============================================================ -->
-<section class="slide" id="s43" data-audience="internal">
+<section class="slide" id="s43">
   <div class="slide-kicker"><span class="tag">Phase 4 · Production</span><span class="phase">4.3 · Sample deliverables</span></div>
   <h2 class="action-title">Engagement closes with a <b>Production deployment pack</b> — live agent · operations runbook · KPI dashboard · adoption package — and a signed handover memo</h2>
   <p class="sub-title">Two weeks of live operation with KPI met is the exit gate; without it, hyper-care extends</p>
@@ -1711,7 +2263,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 
   <div class="slide-footer">
     <span class="src">Source: Req/overall problem.md — Phase 4 deliverable definitions and engagement exit criteria</span>
-    <span class="pg">24</span>
+    <span class="pg">31</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1719,7 +2271,7 @@ Return JSON: { lines:[...], journal:{...} | null,
 <!-- ============================================================
      SLIDE 4.4 — DEEP DIVE: DEPLOYMENT RUNBOOK SAMPLE
      ============================================================ -->
-<section class="slide" id="s44" data-audience="internal">
+<section class="slide" id="s44">
   <div class="slide-kicker"><span class="tag">Phase 4 · Deep-dive</span><span class="phase">4.4 · Deployment runbook — sample</span></div>
   <h2 class="action-title">A production runbook codifies <b>five operational disciplines</b> — release · monitor · escalate · rollback · review — and is the artifact oncall picks up at 3am</h2>
   <p class="sub-title">Written for someone who didn't build the system; assumes nothing, indexes everything</p>
@@ -1773,7 +2325,7 @@ Escalation:
 
   <div class="slide-footer">
     <span class="src">Source: Req/overall problem.md — Production framework (operations and rollback requirements); standard SRE runbook structure adapted for agentic systems</span>
-    <span class="pg">25</span>
+    <span class="pg">32</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1781,7 +2333,7 @@ Escalation:
 <!-- ============================================================
      SLIDE 4.5 — DEEP DIVE: ADOPTION & CHANGE
      ============================================================ -->
-<section class="slide" id="s45" data-audience="internal">
+<section class="slide" id="s45">
   <div class="slide-kicker"><span class="tag">Phase 4 · Deep-dive</span><span class="phase">4.5 · Adoption &amp; change plan — sample</span></div>
   <h2 class="action-title">Adoption work is <b>front-loaded</b>, not bolted on at cutover — Q2 (Sponsor &amp; Align) workflows require it; even Q1 workflows benefit from a light-touch version</h2>
   <p class="sub-title">McKinsey research repeatedly shows organizational factors out-predict technical factors for automation success</p>
@@ -1828,7 +2380,7 @@ Escalation:
 
   <div class="slide-footer">
     <span class="src">Source: Req/tools/prioritization-matrix.md — Sponsor &amp; Align quadrant; Req/impact sizing proposals.md (Surprising Findings — organizational factors)</span>
-    <span class="pg">26</span>
+    <span class="pg">33</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1836,7 +2388,7 @@ Escalation:
 <!-- ============================================================
      SLIDE 5.1 — DECISION GATES SUMMARY
      ============================================================ -->
-<section class="slide" id="s51" data-audience="client">
+<section class="slide" id="s51">
   <div class="slide-kicker"><span class="tag">Back matter</span><span class="phase">5.1 · Decision gates summary</span></div>
   <h2 class="action-title">Three binding gates separate the four phases — pass with <b>evidence</b>, not <b>opinion</b>; failing a gate is the playbook working, not the playbook breaking</h2>
   <p class="sub-title">Sponsor + MCK engagement lead jointly sign every gate; conditional pass states are explicit, not implicit</p>
@@ -1920,7 +2472,7 @@ Escalation:
 
   <div class="slide-footer">
     <span class="src">Source: Req/overall problem.md — Definition of success + phase gate criteria across all four phases</span>
-    <span class="pg">27</span>
+    <span class="pg">34</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1928,7 +2480,7 @@ Escalation:
 <!-- ============================================================
      SLIDE 5.2 — RESOURCE MODEL
      ============================================================ -->
-<section class="slide" id="s52" data-audience="internal">
+<section class="slide" id="s52">
   <div class="slide-kicker"><span class="tag">Back matter</span><span class="phase">5.2 · Resource model</span></div>
   <h2 class="action-title">A standard engagement is <b>~4 person-months MCK + ~6 client-FTE-weeks</b> over 13–17 weeks — staffed by two MCK practitioners with an engineer joining at MVP</h2>
   <p class="sub-title">Lean by design; if a phase requires expansion, the framework provides escalation triggers rather than default staffing inflation</p>
@@ -1975,7 +2527,7 @@ Escalation:
 
   <div class="slide-footer">
     <span class="src">Source: Req/overall problem.md — Lean resourcing constraint (Constraints table) + phase resource estimates synthesized from Req/design proposals.md feasibility analyses</span>
-    <span class="pg">28</span>
+    <span class="pg">35</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -1983,7 +2535,7 @@ Escalation:
 <!-- ============================================================
      SLIDE 5.3 — GLOSSARY & REFERENCES
      ============================================================ -->
-<section class="slide" id="s53" data-audience="internal">
+<section class="slide" id="s53">
   <div class="slide-kicker"><span class="tag">Back matter</span><span class="phase">5.3 · Glossary &amp; references</span></div>
   <h2 class="action-title">Common vocabulary — taxonomies and source documents that anchor this playbook</h2>
   <p class="sub-title">Keep this slide visible during sponsor read-outs; vocabulary drift is the cheapest avoidable risk</p>
@@ -1997,8 +2549,8 @@ Escalation:
           <tr><td class="lead">Interaction mode</td><td>Risk-based agent-human contract: Autopilot (full autonomy), Co-Pilot (shared), Guardian (human decides)</td></tr>
           <tr><td class="lead">A2A pattern</td><td>Coordination topology between agents: Sequential · Parallel · Hierarchical · Negotiation · Reactive · Blackboard</td></tr>
           <tr><td class="lead">HITL</td><td>Human-in-the-Loop — points in the workflow where a human reviews, decides or supervises agent output</td></tr>
-          <tr><td class="lead">ODS</td><td>Output Determinism Score (0–2) — how objectively verifiable a workflow's outputs are</td></tr>
-          <tr><td class="lead">ORS</td><td>Organizational Readiness Score (0–2) — capacity to absorb the agentic workflow change</td></tr>
+          <tr><td class="lead">Process Readiness (PRS)</td><td>Process Readiness Score (0–2) — how well "correct output" can be defined and verified for this workflow</td></tr>
+          <tr><td class="lead">Organization Readiness (ORS)</td><td>Organization Readiness Score (0–2) — capacity of sponsor, team, systems and change history to absorb the agentic workflow change</td></tr>
           <tr><td class="lead">DDI</td><td>Decision Density Index — share of meaningful decisions per workflow step; differentiates agentic candidates from RPA</td></tr>
           <tr><td class="lead">VM / RAS</td><td>Value Magnitude / Risk-Adjusted Score — depth-layer scoring components</td></tr>
           <tr><td class="lead">Priority Score</td><td>Final ranking score: RAS × (1 + 0.25 × DDI_normalized); ≥3.0 required to enter Design</td></tr>
@@ -2018,7 +2570,7 @@ Escalation:
         <li style="padding:4px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>design problem.md</b> · H2 — Design methodology problem; taxonomies, A2A, HITL scope</li>
         <li style="padding:4px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>design proposals.md</b> · 3 proposals (Taxonomy-First · Decision-Tree · <b>Dual-Track</b>)</li>
         <li style="padding:4px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>tools/binary-readiness-screen.md</b> · 6 criteria, interview protocol, fact-collection</li>
-        <li style="padding:4px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>tools/prioritization-matrix.md</b> · ODS × ORS indicators, 4 quadrants, 1–2yr roadmap</li>
+        <li style="padding:4px 0;border-bottom:1px dotted var(--mck-grey-200);"><b>tools/prioritization-matrix.md</b> · PRS × ORS indicators, 4 quadrants, 1–2yr roadmap</li>
         <li style="padding:4px 0;"><b>tools/detailed-scoring-guide.md</b> · VM dimensions, DDI, risk anchors, Priority Score</li>
       </ul>
 
@@ -2036,7 +2588,7 @@ Escalation:
 
   <div class="slide-footer">
     <span class="src">Source: All Req/ documents under /Users/Hayden_Zheng/CodeRepo/ClaudeDemo/Req/ — see file references inline</span>
-    <span class="pg">29</span>
+    <span class="pg">36</span>
     <span class="brand">McKinsey &amp; Company</span>
   </div>
 </section>
@@ -2046,45 +2598,9 @@ Escalation:
 <script src="./js/auth.js"></script>
 <script>
   (function () {
-    const session = PSAuth.requireAccess("cxo");
+    const session = PSAuth.requireAccess("playbook");
     if (!session) return;
-
     PSAuth.renderUserBadge("userBadge");
-
-    const clientMode =
-      new URLSearchParams(location.search).get("view") === "cxo" || PSAuth.isClient();
-
-    if (PSAuth.isWarroom() || PSAuth.isArchitect()) {
-      document.body.classList.add("ps-internal");
-    }
-
-    function applyAudienceFilter() {
-      if (!clientMode) return;
-      document.title = "CXO Deck — GC AGI Hub";
-      document.getElementById("deckModeLabel").textContent = "GC AGI Hub · CXO Deck";
-      document.querySelectorAll('[data-audience="internal"]').forEach((el) => {
-        el.classList.add("hidden-by-audience");
-      });
-      const first = document.querySelector('.slide[data-audience="client"]');
-      if (first && location.hash) {
-        const target = document.querySelector(location.hash);
-        if (target?.classList.contains("hidden-by-audience")) {
-          location.hash = "#" + first.id;
-        }
-      } else if (first && !location.hash) {
-        location.hash = "#" + first.id;
-      }
-    }
-
-    applyAudienceFilter();
-
-    document.querySelectorAll('.nav a[href^="#"]').forEach((link) => {
-      link.addEventListener("click", () => {
-        document.querySelectorAll(".nav a").forEach((a) => a.style.fontWeight = "");
-        link.style.fontWeight = "600";
-        link.style.borderLeftColor = "var(--mck-blue)";
-      });
-    });
   })();
 </script>
 </body>

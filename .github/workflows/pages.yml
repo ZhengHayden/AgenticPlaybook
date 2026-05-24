@@ -55,6 +55,43 @@ jobs:
           cp -R app/out/. _site/app/
           touch _site/.nojekyll
 
+      - name: Inline auth.js into HTMLs and drop plaintext JS
+        # Reason: staticrypt only encrypts HTML files. Leaving auth.js plaintext
+        # would leak demo passwords + role hierarchy. Inlining means the auth
+        # code lives inside the encrypted HTML body and is never served as JS.
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+          const path = require("path");
+          const authPath = "_site/Playbook_for_PS/js/auth.js";
+          if (!fs.existsSync(authPath)) {
+            console.log("auth.js not present, skipping inline step");
+            process.exit(0);
+          }
+          const authJs = fs.readFileSync(authPath, "utf8");
+          const inline = `<script>\n${authJs}\n</script>`;
+          const pattern = /<script\s+src="\.\/(?:[^"]*\/)?js\/auth\.js"><\/script>/g;
+          let touched = 0;
+          (function walk(dir) {
+            for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+              const p = path.join(dir, e.name);
+              if (e.isDirectory()) walk(p);
+              else if (e.name.endsWith(".html")) {
+                const before = fs.readFileSync(p, "utf8");
+                const after = before.replace(pattern, inline);
+                if (after !== before) {
+                  fs.writeFileSync(p, after);
+                  touched++;
+                  console.log("inlined auth.js → " + p);
+                }
+              }
+            }
+          })("_site");
+          fs.rmSync(authPath);
+          try { fs.rmdirSync(path.dirname(authPath)); } catch {}
+          console.log(`Inlined auth.js into ${touched} HTML file(s); plaintext JS removed.`);
+          NODE
+
       - name: Validate staticrypt secret
         env:
           STATICRYPT_PASSWORD: ${{ secrets.STATICRYPT_PASSWORD }}
