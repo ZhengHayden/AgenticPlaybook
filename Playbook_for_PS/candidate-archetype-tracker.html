@@ -207,6 +207,23 @@
       [contenteditable]:focus { outline: none; }
       .delete-row-btn { display: none; }
     }
+
+    .readonly-banner {
+      background: var(--mck-amber);
+      color: var(--mck-navy);
+      padding: 8px 24px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+    body.readonly-mode .owner-only,
+    body.readonly-mode .add-client-btn,
+    body.readonly-mode .delete-row-btn {
+      display: none !important;
+    }
+    body.readonly-mode [contenteditable]:focus { outline: none; }
+    body.readonly-mode #saveStatus { opacity: 0.5; }
   </style>
 </head>
 <body>
@@ -218,22 +235,27 @@
     </div>
     <span class="title">GC AGI Hub · Portfolio</span>
     <div class="actions">
-      <span id="saveStatus">Ready</span>
+      <span id="saveStatus">Loading…</span>
       <button type="button" id="exportBtn" class="btn btn-ghost">Export JSON</button>
-      <label class="btn btn-ghost">
+      <label class="btn btn-ghost owner-only">
         Import
         <input type="file" id="importInput" accept=".json,application/json" class="hidden" style="display:none" />
       </label>
-      <button type="button" id="resetBtn" class="btn btn-danger">Reset</button>
+      <button type="button" id="resetBtn" class="btn btn-danger owner-only">Reset</button>
+      <button type="button" id="connectBtn" class="btn btn-ghost">Connect</button>
       <div id="userBadge"></div>
     </div>
   </header>
+
+  <div id="readOnlyBanner" class="readonly-banner no-print hidden">
+    Read-only view — data is fetched live from the shared gist. Only the portfolio owner can edit.
+  </div>
 
   <nav class="nav no-print">
     <div class="nav-brand">GC AGI Hub<small>Portfolio tracker</small></div>
     <div class="nav-section">Transformation themes</div>
     <div id="themeNav"></div>
-    <p class="nav-hint">Click any cell to edit. Changes save automatically in this browser.</p>
+    <p class="nav-hint" id="navHint">Loading shared portfolio…</p>
   </nav>
 
   <main class="stage">
@@ -304,8 +326,6 @@
     PSAuth.requireAccess("portfolio");
     PSAuth.renderUserBadge("userBadge");
 
-    const STORAGE_KEY = "agentic-playbook-ps-candidate-tracker-v1";
-
     const THEME_STYLES = {
       "advanced-use-case": { badge: "Use case led", chip: "chip-blue" },
       "agentic-roadmap": { badge: "Strategy led", chip: "chip-navy" },
@@ -354,38 +374,126 @@
       ],
     };
 
+    const GIST_ID = "c34ee81e1c7d9d019bb11ef320ce47c2";
+    const GIST_API = `https://api.github.com/gists/${GIST_ID}`;
+    const GIST_FILENAME = "tracker.json";
+    const TOKEN_KEY = "agentic-playbook-ps-gist-token-v1";
+
     let data = structuredClone(DEFAULT_DATA);
     let saveTimer = null;
+    let gistToken = "";
+    let currentFilename = GIST_FILENAME;
+
+    try { gistToken = localStorage.getItem(TOKEN_KEY) || ""; } catch {}
 
     const themesContainer = document.getElementById("themesContainer");
     const themeNav = document.getElementById("themeNav");
     const saveStatus = document.getElementById("saveStatus");
     const themeTemplate = document.getElementById("themeTemplate");
     const clientRowTemplate = document.getElementById("clientRowTemplate");
+    const readOnlyBanner = document.getElementById("readOnlyBanner");
+    const navHint = document.getElementById("navHint");
+    const connectBtn = document.getElementById("connectBtn");
 
-    function load() {
+    const isOwner = () => Boolean(gistToken);
+
+    async function loadFromGist() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed?.themes?.length) data = parsed;
-        }
+        const res = await fetch(GIST_API, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const gist = await res.json();
+        const files = gist.files || {};
+        const file = files[GIST_FILENAME] || Object.values(files)[0];
+        if (!file) return null;
+        currentFilename = file.filename || GIST_FILENAME;
+        const content = file.truncated && file.raw_url
+          ? await fetch(file.raw_url, { cache: "no-store" }).then((r) => r.text())
+          : file.content;
+        if (!content?.trim()) return null;
+        const parsed = JSON.parse(content);
+        return parsed?.themes?.length ? parsed : null;
       } catch (e) {
-        console.warn("Could not load saved data", e);
+        console.warn("Gist load failed", e);
+        return null;
+      }
+    }
+
+    async function saveToGist() {
+      if (!gistToken) return;
+      saveStatus.textContent = "Saving…";
+      saveStatus.classList.remove("saved");
+      try {
+        const filePatch = { content: JSON.stringify(data, null, 2) };
+        if (currentFilename !== GIST_FILENAME) filePatch.filename = GIST_FILENAME;
+        const res = await fetch(GIST_API, {
+          method: "PATCH",
+          headers: {
+            "Accept": "application/vnd.github+json",
+            "Authorization": `Bearer ${gistToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ files: { [currentFilename]: filePatch } }),
+        });
+        if (!res.ok) {
+          const detail = await res.text();
+          throw new Error(`HTTP ${res.status}: ${detail.slice(0, 200)}`);
+        }
+        currentFilename = GIST_FILENAME;
+        const t = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        saveStatus.textContent = "Saved " + t;
+        saveStatus.classList.add("saved");
+      } catch (e) {
+        console.error("Gist save failed", e);
+        saveStatus.textContent = "Save failed";
+        saveStatus.classList.remove("saved");
+        alert("Could not save to gist: " + e.message + "\n\nCheck that your token has the `gist` scope and hasn't expired.");
       }
     }
 
     function scheduleSave() {
+      if (!gistToken) return;
       clearTimeout(saveTimer);
       saveStatus.textContent = "Saving…";
       saveStatus.classList.remove("saved");
-      saveTimer = setTimeout(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        const t = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-        saveStatus.textContent = "Saved " + t;
-        saveStatus.classList.add("saved");
-      }, 400);
+      saveTimer = setTimeout(saveToGist, 1500);
     }
+
+    function applyMode() {
+      const owner = isOwner();
+      document.body.classList.toggle("readonly-mode", !owner);
+      readOnlyBanner.classList.toggle("hidden", owner);
+      connectBtn.textContent = owner ? "Disconnect" : "Connect";
+      connectBtn.classList.toggle("btn-danger", owner);
+      connectBtn.classList.toggle("btn-ghost", !owner);
+      navHint.textContent = owner
+        ? "Click any cell to edit. Changes sync to the shared gist."
+        : "Read-only view. Latest data from the shared gist.";
+      themesContainer.querySelectorAll("[contenteditable]").forEach((el) => {
+        el.setAttribute("contenteditable", owner ? "true" : "false");
+      });
+    }
+
+    connectBtn.addEventListener("click", () => {
+      if (isOwner()) {
+        if (!confirm("Disconnect the gist token? You'll return to read-only mode.")) return;
+        gistToken = "";
+        try { localStorage.removeItem(TOKEN_KEY); } catch {}
+        applyMode();
+        saveStatus.textContent = "Disconnected";
+        return;
+      }
+      const token = prompt(
+        "Paste a GitHub Personal Access Token with `gist` scope.\n" +
+        "Create one at: https://github.com/settings/tokens\n\n" +
+        "Stored only in this browser's localStorage."
+      );
+      if (!token) return;
+      const trimmed = token.trim();
+      gistToken = trimmed;
+      try { localStorage.setItem(TOKEN_KEY, trimmed); } catch {}
+      applyMode();
+      saveStatus.textContent = "Connected";
+    });
 
     function applyStatusStyle(el) {
       const text = (el.textContent || "").trim().toLowerCase();
@@ -513,17 +621,20 @@
     document.getElementById("importInput").addEventListener("change", (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      if (!isOwner()) {
+        alert("Read-only view. Connect your gist token to import.");
+        e.target.value = "";
+        return;
+      }
       const reader = new FileReader();
       reader.onload = () => {
         try {
           const parsed = JSON.parse(reader.result);
           if (!parsed?.themes?.length) throw new Error("Invalid format");
-          if (confirm("Replace current tracker data with imported file?")) {
+          if (confirm("Replace shared tracker data with imported file? This will overwrite the gist for everyone.")) {
             data = parsed;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             render();
-            saveStatus.textContent = "Imported";
-            saveStatus.classList.add("saved");
+            saveToGist();
           }
         } catch {
           alert("Could not import file. Expected JSON with a themes array.");
@@ -534,17 +645,30 @@
     });
 
     document.getElementById("resetBtn").addEventListener("click", () => {
-      if (confirm("Reset all themes and client rows to defaults? This cannot be undone.")) {
+      if (!isOwner()) {
+        alert("Read-only view. Connect your gist token to reset.");
+        return;
+      }
+      if (confirm("Reset shared tracker to defaults? This will overwrite the gist for everyone.")) {
         data = structuredClone(DEFAULT_DATA);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         render();
-        saveStatus.textContent = "Reset to defaults";
-        saveStatus.classList.remove("saved");
+        saveToGist();
       }
     });
 
-    load();
-    render();
+    (async () => {
+      const remote = await loadFromGist();
+      if (remote) data = remote;
+      render();
+      applyMode();
+      if (!remote) {
+        saveStatus.textContent = isOwner()
+          ? "Gist empty — first edit will seed it"
+          : "Gist empty — showing defaults";
+      } else {
+        saveStatus.textContent = "Loaded";
+      }
+    })();
   </script>
 </body>
 </html>
