@@ -4,9 +4,9 @@
       "id": "advanced-use-case",
       "title": "Advanced Use Case Driven",
       "characteristics": "Sponsors pursue cutting-edge agentic workflows on specific, high-complexity use cases (e.g. multi-step knowledge work, cross-system orchestration). Strong technical or innovation sponsorship; appetite for co-innovation and iterative validation. Success is measured by workflow outcomes on the chosen use case, not by enterprise roadmap completeness first.",
-      "clients": [{ "VOION": "", "Richard": "", "progress": "", "plan": "", "Active": "", "notes": "" },
-      "clients": [{ "CNPC": "", "Eric": "", "progress": "", "plan": "", "status": "", "notes": "" },
-      "clients": [{ "SFS": "", "Jack": "", "progress": "", "plan": "", "status": "", "notes": "" }
+      "clients": [{ "VOION": "", "Richard": "", "progress": "", "plan": "", "Active": "", "notes": "" }],
+      "clients": [{ "CNPC": "", "Eric": "", "progress": "", "plan": "", "status": "", "notes": "" }],
+      "clients": [{ "SFS": "", "Jack": "", "progress": "", "plan": "", "status": "", "notes": "" }],
       "clients": [{ "name": "", "owner": "", "progress": "", "plan": "", "status": "", "notes": "" }]
     },
     {
@@ -19,15 +19,15 @@
       "id": "labor-productivity",
       "title": "Labor Productivity Improvement Driven",
       "characteristics": "Primary driver is measurable labor efficiency: cycle time, throughput, FTE redeployment, or cost-per-transaction. Favors high-volume, more deterministic workflows and clear ROI framing. Operations or finance sponsorship is typical; Quick Win–style entry paths are common.",
-      "clients": [{ "NEXT": "", "Hayden": "", "progress": "", "plan": "", "Active": "", "notes": "" },
+      "clients": [{ "NEXT": "", "Hayden": "", "progress": "", "plan": "", "Active": "", "notes": "" }],
       "clients": [{ "name": "", "owner": "", "progress": "", "plan": "", "status": "", "notes": "" }]
     },
     {
       "id": "wef-lighthouse",
       "title": "WEF Lighthouse Driven",
       "characteristics": "Motivated by World Economic Forum / manufacturing lighthouse–style excellence: showcase sites, peer benchmarking, and physical–digital convergence. Narratives often tie to supply chain resilience, quality, sustainability, or smart operations. Visibility and referenceability matter alongside hard ROI.",
-      "clients": [{ "SEMCORP": "", "owner": "", "progress": "", "plan": "", "status": "", "notes": "" },
-      "clients": [{ "Huaxing TCL": "", "Hayden": "", "progress": "", "plan": "", "status": "", "notes": "" },
+      "clients": [{ "SEMCORP": "", "owner": "", "progress": "", "plan": "", "status": "", "notes": "" }],
+      "clients": [{ "Huaxing TCL": "", "Hayden": "", "progress": "", "plan": "", "status": "", "notes": "" }],
       "clients": [{ "name": "", "owner": "", "progress": "", "plan": "", "status": "", "notes": "" }]
     }
   ]
