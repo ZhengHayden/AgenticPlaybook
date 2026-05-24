@@ -48,6 +48,12 @@ jobs:
           cp agentic-workflow-executive-playbook.html _site/
           cp agentic-workflow-operating-blueprint.html _site/
           cp agentic-workflow-practitioner-field-guide.html _site/
+          if [ -d Playbook_for_PS ]; then
+            cp -R Playbook_for_PS _site/
+            if [ -f _site/Playbook_for_PS/agentic-playbook-interactive.html ] && [ ! -f _site/Playbook_for_PS/index.html ]; then
+              cp _site/Playbook_for_PS/agentic-playbook-interactive.html _site/Playbook_for_PS/index.html
+            fi
+          fi
           mkdir -p _site/app
           cp -R app/out/. _site/app/
           touch _site/.nojekyll
