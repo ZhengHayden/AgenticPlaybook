@@ -248,7 +248,7 @@
   </header>
 
   <div id="readOnlyBanner" class="readonly-banner no-print hidden">
-    Read-only view — latest data is fetched from the shared repo on every load. Sign in as architect to edit.
+    Read-only view — latest data is fetched from the shared repo on every load. Sign in to edit.
   </div>
 
   <nav class="nav no-print">
@@ -401,7 +401,7 @@
     const navHint = document.getElementById("navHint");
     const saveBtn = document.getElementById("saveBtn");
 
-    const isOwner = () => Boolean(window.PSAuth?.isArchitect?.());
+    const isOwner = () => Boolean(window.PSAuth?.isWarroom?.());
 
     async function loadFromRepo() {
       try {
@@ -479,7 +479,7 @@
     if (saveBtn) {
       saveBtn.addEventListener("click", () => {
         if (!isOwner()) {
-          alert("Sign in with an architect account to save changes.");
+          alert("Sign in with a war-room or architect account to save changes.");
           return;
         }
         if (!hasUnsavedChanges()) {
