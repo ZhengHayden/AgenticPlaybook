@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agentic Workflow Playbook — Professional Services</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"DM Sans"', 'system-ui', 'sans-serif'] },
+          colors: {
+            brand: { 50:'#eef2ff', 500:'#6366f1', 600:'#4f46e5', 700:'#4338ca', 900:'#312e81' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    .kbd { @apply px-1.5 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-xs font-mono text-slate-600; }
+    .playbook-slide { display: none; }
+    .playbook-slide.active { display: block; }
+    .nav-item.active { @apply bg-indigo-50 text-indigo-800 font-medium; }
+    .slide-frame { height: 100%; overflow: auto; }
+
+    /* Slide content typography & layout (legacy class compatibility) */
+    .slide-content { padding: 0; display: flex; flex-direction: column; gap: 1.5rem; height: 100%; }
+    .slide-content h1 { font-size: clamp(2rem, 4.5vw, 3.25rem); line-height: 1.05; letter-spacing: -0.04em; font-weight: 600; color: #0f172a; margin: 0; max-width: 52rem; }
+    .slide-content h2 { font-size: clamp(1.75rem, 3.2vw, 2.5rem); line-height: 1.08; letter-spacing: -0.03em; font-weight: 600; color: #0f172a; margin: 0; max-width: 56rem; }
+    .slide-content h3 { font-size: 1.125rem; font-weight: 600; color: #1e293b; margin: 0; line-height: 1.25; }
+    .slide-content p, .slide-content li { color: #64748b; font-size: 0.95rem; line-height: 1.55; margin: 0; }
+    .slide-content ul { margin: 0; padding-left: 1.2rem; }
+    .kicker, .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #4f46e5; }
+    .subtitle { font-size: 1.15rem; color: #475569; line-height: 1.45; max-width: 42rem; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; flex: 1; min-height: 0; align-items: stretch; }
+    .split.wide-right { grid-template-columns: 0.85fr 1.15fr; }
+    @media (max-width: 900px) { .split, .split.wide-right { grid-template-columns: 1fr; } }
+    .grid-2, .grid-3, .grid-4, .grid-5 { display: grid; gap: 0.875rem; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .grid-5 { grid-template-columns: repeat(5, 1fr); }
+    @media (max-width: 1100px) { .grid-4, .grid-5 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .grid-2, .grid-4, .grid-5 { grid-template-columns: 1fr; } }
+
+    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+    .card.dark { background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%); border-color: #334155; color: #e2e8f0; }
+    .card.dark h3, .card.dark p, .card.dark li { color: #cbd5e1; }
+    .card.dark .eyebrow, .card.dark .on-dark-eye { color: #a5b4fc; }
+    .card.compact { padding: 1rem; }
+    .card.title-panel { justify-content: space-between; }
+    .metric .value, .card .value { font-size: 2rem; font-weight: 700; color: #0f172a; line-height: 1; }
+    .card.dark .value { color: #f8fafc; }
+    .metric .label, .card .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #94a3b8; display: block; margin-top: 0.25rem; }
+    .metric-gold { border-color: #fcd34d; background: #fffbeb; }
+    .metric-olive { border-color: #86efac; background: #f0fdf4; }
+    .rule { height: 1px; background: #e2e8f0; margin: 0.75rem 0; }
+    .dark-rule { background: #475569; }
+    .source-note { font-size: 0.8rem; color: #94a3b8; font-style: italic; }
+
+    .phase-ribbon { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; flex: 1; }
+    @media (max-width: 1000px) { .phase-ribbon { grid-template-columns: repeat(2, 1fr); } }
+    .phase, .card.phase-block, .card.day { display: flex; flex-direction: column; justify-content: space-between; gap: 0.75rem; min-height: 8rem; }
+    .phase strong, .card.day strong { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; }
+    .tone-accent { border-left: 4px solid #f97316; background: #fff7ed; }
+    .tone-blue { border-left: 4px solid #3b82f6; background: #eff6ff; }
+    .tone-gold, .tone-amber { border-left: 4px solid #eab308; background: #fefce8; }
+    .tone-green, .tone-teal { border-left: 4px solid #22c55e; background: #f0fdf4; }
+    .tone-clay, .tone-red { border-left: 4px solid #ef4444; background: #fef2f2; }
+
+    .step-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .step { display: flex; gap: 1rem; padding: 1rem; background: #f8fafc; border-radius: 0.75rem; border: 1px solid #e2e8f0; }
+    .step .num { flex-shrink: 0; width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; background: #4f46e5; color: white; font-weight: 700; font-size: 0.85rem; border-radius: 0.5rem; }
+
+    .funnel { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 0.75rem; flex: 1; }
+    .quadrant { padding: 1.25rem; border-radius: 1rem; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; gap: 0.75rem; }
+    .q-gold { background: #fffbeb; border-color: #fde68a; }
+    .q-green { background: #f0fdf4; border-color: #bbf7d0; }
+    .q-red { background: #fef2f2; border-color: #fecaca; }
+    .q-blue { background: #eff6ff; border-color: #bfdbfe; }
+    .tag { font-size: 0.65rem; background: rgba(0,0,0,.06); padding: 0.15rem 0.5rem; border-radius: 999px; margin-left: 0.35rem; font-weight: 600; }
+
+    .gate { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1.25rem; }
+    .gate strong { display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: #4f46e5; margin-bottom: 0.5rem; }
+
+    .matrix-table, .matrix, .worksheet { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .matrix-table th, .matrix th, .worksheet th { text-align: left; padding: 0.65rem 0.75rem; background: #f1f5f9; color: #334155; font-weight: 600; border-bottom: 2px solid #e2e8f0; }
+    .matrix-table td, .matrix td, .worksheet td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #e2e8f0; color: #475569; vertical-align: top; }
+    .worksheet td:empty { min-height: 2rem; background: #fafafa; }
+
+    .architecture-map { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; flex: 1; }
+    @media (max-width: 900px) { .architecture-map { grid-template-columns: 1fr; } }
+    .map-column { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; }
+    .pill-stack { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.5rem; }
+    .pill { font-size: 0.8rem; padding: 0.4rem 0.65rem; background: white; border: 1px solid #e2e8f0; border-radius: 0.5rem; color: #475569; }
+
+    .timeline { display: flex; flex-direction: column; gap: 0.5rem; }
+    .track { display: grid; grid-template-columns: 7rem 1fr; gap: 0.75rem; align-items: center; }
+    .track-label { font-size: 0.75rem; font-weight: 600; color: #64748b; }
+    .bar { height: 0.65rem; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .bar span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #6366f1, #818cf8); }
+    .bar-build { width: 28%; background: #6366f1 !important; }
+    .bar-sync-1 { width: 8%; background: #f97316 !important; }
+    .bar-design { width: 32%; background: #3b82f6 !important; }
+    .bar-sync-2 { width: 8%; background: #f97316 !important; }
+    .bar-validate { width: 24%; background: #22c55e !important; }
+    .bar-quick-win { width: 22%; background: #22c55e !important; }
+    .bar-invest-prove { width: 28%; background: #eab308 !important; }
+    .bar-sponsor-align { width: 35%; background: #3b82f6 !important; }
+    .bar-defer-mature { width: 45%; background: #94a3b8 !important; }
+
+    .arrow-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+    @media (max-width: 1000px) { .arrow-row { grid-template-columns: 1fr 1fr; } }
+    .system-map { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: stretch; }
+    @media (max-width: 900px) { .system-map { grid-template-columns: 1fr; } }
+    .lane { display: flex; flex-direction: column; gap: 0.75rem; }
+    .connector { writing-mode: vertical-rl; text-orientation: mixed; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #94a3b8; display: flex; align-items: center; justify-content: center; }
+    .node { padding: 0.75rem 1rem; background: #eef2ff; border: 1px dashed #a5b4fc; border-radius: 0.5rem; font-size: 0.85rem; color: #4338ca; font-weight: 500; }
+    .decision-tree { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+    @media (max-width: 800px) { .decision-tree { grid-template-columns: 1fr; } }
+    .branch { padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 1rem; }
+    .branch .node { margin-top: 0.75rem; }
+
+    .callout { padding: 1.25rem; background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border: 1px solid #c7d2fe; border-radius: 1rem; }
+    .callout h3 { color: #3730a3; }
+    .runbook { display: flex; flex-direction: column; gap: 0.5rem; }
+    .runbook-item { display: grid; grid-template-columns: 5rem 1fr; gap: 0.75rem; padding: 0.75rem; background: #f8fafc; border-radius: 0.5rem; }
+    .time { font-size: 0.75rem; font-weight: 700; color: #4f46e5; }
+    .checklist { display: flex; flex-direction: column; gap: 0.5rem; }
+    .check { display: flex; gap: 0.65rem; align-items: flex-start; }
+    .box { flex-shrink: 0; width: 1rem; height: 1rem; border: 2px solid #94a3b8; border-radius: 0.25rem; margin-top: 0.15rem; }
+
+    @media print {
+      #sidebar, #topbar, #footer { display: none !important; }
+      .playbook-slide, .playbook-slide.active { display: block !important; page-break-after: always; }
+      main { padding: 0 !important; }
+    }
+  </style>
+</head>
+<body class="h-full bg-slate-50 text-slate-900 antialiased overflow-hidden">
+  <div class="flex h-full">
+    <aside id="sidebar" class="hidden lg:flex w-64 flex-col border-r border-slate-200 bg-white shrink-0">
+      <div class="p-4 border-b border-slate-100">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-600">Playbook</p>
+        <p class="text-sm font-semibold text-slate-900 mt-1">Agentic Workflow PS</p>
+      </div>
+      <nav class="flex-1 overflow-y-auto p-2 space-y-0.5" id="slideNav">
+        <button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-100" data-nav="0"><span class="font-medium text-slate-900">Home</span></button>
+<p class="px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-indigo-600">Executive</p>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="1" title="Executive playbook">Executive playbook</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="2" title="Why now">Why now</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="3" title="Operating model">Operating model</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="4" title="Phase 0">Phase 0</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="5" title="Sizing funnel">Sizing funnel</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="6" title="Sizing gate">Sizing gate</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="7" title="Phase 1">Phase 1</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="8" title="Design sprint">Design sprint</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="9" title="Design gate">Design gate</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="10" title="Phase 2">Phase 2</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="11" title="Implementation gate">Implementation gate</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="12" title="Phase 3">Phase 3</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="13" title="Scale roadmap">Scale roadmap</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="14" title="Roles">Roles</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="15" title="Deliverables">Deliverables</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="16" title="End state">End state</button>
+<p class="px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-indigo-600">Blueprint</p>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="17" title="Operating blueprint">Operating blueprint</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="18" title="Blueprint stack">Blueprint stack</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="19" title="Sizing architecture">Sizing architecture</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="20" title="Complexity gate">Complexity gate</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="21" title="Agent taxonomy">Agent taxonomy</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="22" title="Human interaction">Human interaction</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="23" title="MVP validation">MVP validation</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="24" title="Scale architecture">Scale architecture</button>
+<p class="px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-indigo-600">Practitioner</p>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="25" title="Field guide">Field guide</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="26" title="Engagement map">Engagement map</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="27" title="Week 0">Week 0</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="28" title="Scoring worksheet">Scoring worksheet</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="29" title="Design sprint">Design sprint</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="30" title="Design worksheet">Design worksheet</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="31" title="MVP runbook">MVP runbook</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="32" title="Production readiness">Production readiness</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="33" title="Scale runbook">Scale runbook</button>
+<button type="button" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-800 truncate" data-nav="34" title="Closeout">Closeout</button>
+      </nav>
+      <div class="p-3 border-t border-slate-100 text-xs text-slate-400">
+        35 slides · 3 tracks
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0">
+      <header id="topbar" class="shrink-0 flex items-center justify-between gap-4 px-4 md:px-6 py-3 border-b border-slate-200/80 bg-white/80 backdrop-blur-md">
+        <div class="flex items-center gap-3 min-w-0">
+          <button type="button" id="menuBtn" class="lg:hidden p-2 rounded-lg hover:bg-slate-100" aria-label="Open navigation">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div class="min-w-0">
+            <p id="chapterBadge" class="text-[10px] font-bold uppercase tracking-widest text-indigo-600 truncate">Home</p>
+            <p id="slideTitle" class="text-sm font-semibold text-slate-900 truncate">Agentic Workflow Development Playbook</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" id="tocBtn" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700">Contents</button>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-hidden p-4 md:p-6 lg:p-8">
+        <div id="slideViewport" class="h-full max-w-6xl mx-auto bg-white rounded-2xl border border-slate-200/80 shadow-xl shadow-slate-200/50 overflow-hidden flex flex-col">
+          <div class="flex-1 overflow-auto p-6 md:p-10 lg:p-12">
+            <section class="playbook-slide active" data-chapter="hub" data-label="Home" data-slide-index="0">
+  <div class="slide-content flex flex-col justify-center gap-10">
+    <div class="max-w-4xl">
+      <p class="text-xs font-bold uppercase tracking-[0.22em] text-indigo-600">Agentic workflow transformation</p>
+      <h1 class="mt-4 text-4xl md:text-6xl font-semibold tracking-tight text-slate-900 leading-[1.08]">From candidate workflow to scaled agentic operation.</h1>
+      <p class="mt-6 text-lg md:text-xl text-slate-600 leading-relaxed max-w-3xl">A phase-gated playbook for Professional Services: size opportunities, design agent architecture, validate MVPs, and scale with evidence-based gates.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-4 max-w-5xl"><button type="button" class="chapter-card group text-left p-6 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur hover:border-indigo-400 hover:shadow-xl hover:shadow-indigo-100/50 transition-all duration-200" data-goto-chapter="executive">
+  <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-600"><span class="w-2 h-2 rounded-full bg-indigo-500"></span>Executive</span>
+  <h3 class="mt-3 text-lg font-semibold text-slate-900 group-hover:text-indigo-700">Strategy & stakeholder narrative</h3>
+  <p class="mt-3 text-sm text-slate-500">16 slides in this track</p>
+</button>
+<button type="button" class="chapter-card group text-left p-6 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur hover:border-indigo-400 hover:shadow-xl hover:shadow-indigo-100/50 transition-all duration-200" data-goto-chapter="blueprint">
+  <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-600"><span class="w-2 h-2 rounded-full bg-indigo-500"></span>Blueprint</span>
+  <h3 class="mt-3 text-lg font-semibold text-slate-900 group-hover:text-indigo-700">Architecture & operating model</h3>
+  <p class="mt-3 text-sm text-slate-500">8 slides in this track</p>
+</button>
+<button type="button" class="chapter-card group text-left p-6 rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur hover:border-indigo-400 hover:shadow-xl hover:shadow-indigo-100/50 transition-all duration-200" data-goto-chapter="practitioner">
+  <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-600"><span class="w-2 h-2 rounded-full bg-indigo-500"></span>Practitioner</span>
+  <h3 class="mt-3 text-lg font-semibold text-slate-900 group-hover:text-indigo-700">Facilitation & field runbooks</h3>
+  <p class="mt-3 text-sm text-slate-500">10 slides in this track</p>
+</button></div>
+    <p class="text-sm text-slate-500 flex flex-wrap items-center gap-2">Navigate with <kbd class="kbd">→</kbd> <kbd class="kbd">←</kbd> or the sidebar · <button type="button" class="text-indigo-600 font-medium hover:underline" data-goto-chapter="executive">Start Executive track →</button></p>
+  </div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Executive playbook" data-slide-index="1">
+  <div class="slide-frame"><div class="slide-content">
+        <span class="kicker">Agentic workflow transformation</span>
+        <div class="split">
+          <div class="hero-copy">
+            <h1>From candidate workflow to scaled agentic operation.</h1>
+            <p class="subtitle">A phase-gated playbook for sizing, designing, implementing, and scaling enterprise agentic workflows with repeatable quality criteria.</p>
+          </div>
+          <div class="card dark title-panel">
+            <div>
+              <p class="eyebrow on-dark-eye">Engagement model</p>
+              <div class="rule dark-rule"></div>
+              <div class="grid-2">
+                <div>
+                  <span class="value">0</span>
+                  <span class="label">Week impact sizing</span>
+                </div>
+                <div>
+                  <span class="value">2</span>
+                  <span class="label">Week architecture sprint</span>
+                </div>
+                <div>
+                  <span class="value">2-4</span>
+                  <span class="label">Week MVP validation</span>
+                </div>
+                <div>
+                  <span class="value">1-2</span>
+                  <span class="label">Month production scale-out</span>
+                </div>
+              </div>
+            </div>
+            <p class="source-note">Source basis: materials under /00_Playbook/Req.</p>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Why now" data-slide-index="2">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">The problem</p>
+        <h2>Agentic workflow demand is rising faster than delivery methods are maturing.</h2>
+        <div class="grid-3">
+          <div class="metric card">
+            <span class="value">01</span>
+            <span class="label">Market demand</span>
+            <p>Enterprises are actively requesting agentic workflow implementations, creating immediate need for a repeatable delivery approach.</p>
+          </div>
+          <div class="metric card metric-gold">
+            <span class="value">02</span>
+            <span class="label">Quality variance</span>
+            <p>Without a codified methodology, delivery quality depends on individual consultant expertise and inconsistent judgment calls.</p>
+          </div>
+          <div class="metric card metric-olive">
+            <span class="value">03</span>
+            <span class="label">Differentiation</span>
+            <p>A rigorous methodology gives clients clear phase gates, transparent evidence, and confidence that implementation risk is being managed.</p>
+          </div>
+        </div>
+        <p class="source-note">Design intent: move from activity descriptions to an executable playbook with tools, gates, and artifacts.</p>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Operating model" data-slide-index="3">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">The delivery spine</p>
+        <h2>Four phases convert ambiguity into a production workflow, one evidence gate at a time.</h2>
+        <div class="phase-ribbon">
+          <div class="phase tone-accent">
+            <div>
+              <strong>Week 0</strong>
+              <h3>Size</h3>
+              <p>Identify candidate workflows, screen readiness, classify risk, and select the first wave.</p>
+            </div>
+            <p><b>Exit:</b> prioritized portfolio.</p>
+          </div>
+          <div class="phase tone-blue">
+            <div>
+              <strong>2 weeks</strong>
+              <h3>Design</h3>
+              <p>Translate one workflow into agent roles, interaction modes, orchestration, and testable acceptance criteria.</p>
+            </div>
+            <p><b>Exit:</b> MVP-ready architecture.</p>
+          </div>
+          <div class="phase tone-gold">
+            <div>
+              <strong>2-4 weeks</strong>
+              <h3>Implement</h3>
+              <p>Build the minimum viable workflow, connect tools and data, and validate outputs against explicit evidence.</p>
+            </div>
+            <p><b>Exit:</b> validated pilot.</p>
+          </div>
+          <div class="phase tone-green">
+            <div>
+              <strong>1-2 months</strong>
+              <h3>Scale</h3>
+              <p>Deploy with controls, adoption routines, measurement, and a roadmap for the next process waves.</p>
+            </div>
+            <p><b>Exit:</b> operating capability.</p>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Phase 0" data-slide-index="4">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Step 1 - Size the opportunity</p>
+        <h2>Start with a progressive assessment, not a blank-sheet business case.</h2>
+        <div class="split wide-right">
+          <div class="card dark">
+            <h3>Week 0 objective</h3>
+            <p>Find workflows worth designing and avoid investing in candidates that will fail later because output quality is unverifiable or the organization is not ready.</p>
+            <div class="rule dark-rule loose"></div>
+            <p><b>Recommended model:</b> Adaptive layered assessment, balancing rigor with Week 0 speed.</p>
+          </div>
+          <div class="step-list">
+            <div class="step">
+              <span class="num">1</span>
+              <div>
+                <h3>Binary readiness screen</h3>
+                <p>Require 5 of 6: process documentability, digital data access, execution volume, willing owner, definable output quality, and process stability.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">2</span>
+              <div>
+                <h3>2x2 risk funnel</h3>
+                <p>Classify survivors by Output Determinism Score and Organizational Readiness Score to set the right entry path.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">3</span>
+              <div>
+                <h3>Detailed scoring</h3>
+                <p>Rank Q1 and Q2 candidates using value magnitude, decision density, implementation velocity, and risk-adjusted return.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">4</span>
+              <div>
+                <h3>Portfolio assembly</h3>
+                <p>Select the lighthouse workflow and place later candidates into a 12-18 month transformation roadmap.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Sizing funnel" data-slide-index="5">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Step 1 tool</p>
+        <h2>The 2x2 funnel tells the team how, or whether, to proceed.</h2>
+        <div class="funnel">
+          <div class="quadrant q-gold">
+            <div>
+              <h3>Invest & Prove <span class="tag">Month 3-6</span></h3>
+              <p>Low output determinism, high readiness.</p>
+            </div>
+            <p>Proceed only if a human-in-the-loop validation pattern can substitute for deterministic correctness criteria.</p>
+          </div>
+          <div class="quadrant q-green">
+            <div>
+              <h3>Quick Win <span class="tag">Month 1-3</span></h3>
+              <p>High output determinism, high readiness.</p>
+            </div>
+            <p>Proceed directly to Design. Use as the first-wave lighthouse workflow and confidence-builder.</p>
+          </div>
+          <div class="quadrant q-red">
+            <div>
+              <h3>Defer & Mature <span class="tag">Month 9-18</span></h3>
+              <p>Low output determinism, low readiness.</p>
+            </div>
+            <p>Remove from current scope. Document maturity gaps and trigger conditions for later reassessment.</p>
+          </div>
+          <div class="quadrant q-blue">
+            <div>
+              <h3>Sponsor & Align <span class="tag">Month 4-9</span></h3>
+              <p>High output determinism, low readiness.</p>
+            </div>
+            <p>Proceed with explicit adoption risk mitigation, trust-building, and integration pre-work.</p>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Sizing gate" data-slide-index="6">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Gate 1 - Ready for Design</p>
+        <h2>Do not enter Design until the candidate is valuable, testable, and sponsor-owned.</h2>
+        <div class="grid-2">
+          <div class="gate">
+            <strong>Readiness gate</strong>
+            <ul>
+              <li>5 of 6 binary readiness criteria are Yes.</li>
+              <li>Any exception has a named mitigation owner.</li>
+              <li>Process owner can make decisions within 48 hours.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Priority gate</strong>
+            <ul>
+              <li>PriorityScore is at least 3.0.</li>
+              <li>Quadrant action path is explicit.</li>
+              <li>Top candidate is ranked against alternatives.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Validation gate</strong>
+            <ul>
+              <li>Output quality can be defined or shown through examples.</li>
+              <li>Ground truth, rules, or HITL validation pattern is identified.</li>
+              <li>Known failure modes are captured.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Deliverable</strong>
+            <ul>
+              <li>Prioritized workflow portfolio.</li>
+              <li>Risk classification and conditions.</li>
+              <li>Design brief for the selected workflow.</li>
+            </ul>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Phase 1" data-slide-index="7">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Step 2 - Design the workflow</p>
+        <h2>Design is a structured translation from process knowledge to agent architecture.</h2>
+        <div class="architecture-map">
+          <div class="map-column">
+            <h3>Agent archetypes</h3>
+            <div class="pill-stack">
+              <span class="pill">Orchestrator - decomposes and routes</span>
+              <span class="pill">Executor - performs actions via tools</span>
+              <span class="pill">Analyst - reasons and recommends</span>
+              <span class="pill">Retriever - supplies context</span>
+              <span class="pill">Evaluator - checks quality and compliance</span>
+            </div>
+          </div>
+          <div class="map-column">
+            <h3>Human interaction</h3>
+            <div class="pill-stack">
+              <span class="pill">Autopilot - execute and log</span>
+              <span class="pill">Co-Pilot - propose and refine</span>
+              <span class="pill">Guardian - prepare and escalate</span>
+            </div>
+          </div>
+          <div class="map-column">
+            <h3>Coordination design</h3>
+            <div class="pill-stack">
+              <span class="pill">Single agent with tools</span>
+              <span class="pill">Sequential handoff</span>
+              <span class="pill">Parallel specialists</span>
+              <span class="pill">Hierarchical orchestration</span>
+              <span class="pill">Evaluator feedback loop</span>
+              <span class="pill">Human escalation path</span>
+            </div>
+          </div>
+        </div>
+        <p class="source-note">Design principle: start at the lowest viable complexity, then add multi-agent structure only when workflow evidence requires it.</p>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Design sprint" data-slide-index="8">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Step 2 operating rhythm</p>
+        <h2>A 10-day architecture sprint keeps business discovery and technical design synchronized.</h2>
+        <div class="split">
+          <div class="card dark">
+            <h3>Two tracks, three syncs</h3>
+            <p>The functional consultant owns workflow reality, stakeholder alignment, risk, and acceptance criteria. The agentic architect owns architecture patterns, agent specifications, orchestration, and testability. Syncs prevent drift.</p>
+          </div>
+          <div class="timeline">
+            <div class="track">
+              <span class="track-label">Days 1-3</span>
+              <div class="bar"><span class="bar-build"></span></div>
+            </div>
+            <div class="track">
+              <span class="track-label">Sync 1</span>
+              <div class="bar"><span class="bar-sync-1"></span></div>
+            </div>
+            <div class="track">
+              <span class="track-label">Days 4-7</span>
+              <div class="bar"><span class="bar-design"></span></div>
+            </div>
+            <div class="track">
+              <span class="track-label">Sync 2</span>
+              <div class="bar"><span class="bar-sync-2"></span></div>
+            </div>
+            <div class="track">
+              <span class="track-label">Days 8-10</span>
+              <div class="bar"><span class="bar-validate"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="card compact">
+            <h3>Sync 1</h3>
+            <p>Discovery findings, risk picture, architecture hypothesis, and complexity decision.</p>
+          </div>
+          <div class="card compact">
+            <h3>Sync 2</h3>
+            <p>Acceptance criteria, architecture v1, gap analysis, and MVP scope boundaries.</p>
+          </div>
+          <div class="card compact">
+            <h3>Sync 3 / Gate</h3>
+            <p>Architecture walkthrough, decision log, and go/no-go for MVP build.</p>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Design gate" data-slide-index="9">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Gate 2 - Ready for MVP</p>
+        <h2>The design package must be specific enough for engineers to build without re-discovery.</h2>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Artifact</th>
+              <th>What it must contain</th>
+              <th>Quality standard</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Workflow architecture</td>
+              <td>Future-state process, agent boundaries, tool touchpoints, and human checkpoints.</td>
+              <td>Every step has an owner: agent, human, system, or evaluator.</td>
+            </tr>
+            <tr>
+              <td>Agent specifications</td>
+              <td>Role, inputs, outputs, tools, memory needs, permissions, and failure handling.</td>
+              <td>Each agent maps to exactly one primary archetype.</td>
+            </tr>
+            <tr>
+              <td>Interaction design</td>
+              <td>Autopilot, Co-Pilot, or Guardian mode for each major decision point.</td>
+              <td>Mode is justified by risk, reversibility, and validation confidence.</td>
+            </tr>
+            <tr>
+              <td>Acceptance criteria</td>
+              <td>Given/When/Then cases, golden examples, and measurable quality thresholds.</td>
+              <td>MVP correctness can be tested without subjective debate.</td>
+            </tr>
+            <tr>
+              <td>Handoff package</td>
+              <td>Decision log, MVP scope, risk register, and integration assumptions.</td>
+              <td>Engineering can estimate and begin implementation immediately.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Phase 2" data-slide-index="10">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Step 3 - Implement and validate</p>
+        <h2>The MVP proves output quality and operating fit before production investment.</h2>
+        <div class="grid-4">
+          <div class="phase tone-accent">
+            <div>
+              <strong>Build</strong>
+              <h3>Thin vertical slice</h3>
+              <p>Implement the minimum end-to-end workflow path, including tools, data inputs, and decision logging.</p>
+            </div>
+          </div>
+          <div class="phase tone-blue">
+            <div>
+              <strong>Evaluate</strong>
+              <h3>Golden set testing</h3>
+              <p>Run historical examples or labeled cases through the workflow and compare to explicit quality standards.</p>
+            </div>
+          </div>
+          <div class="phase tone-gold">
+            <div>
+              <strong>Operate</strong>
+              <h3>Shadow mode</h3>
+              <p>Run the agent beside current operations to observe cycle time, exception rates, and human trust.</p>
+            </div>
+          </div>
+          <div class="phase tone-green">
+            <div>
+              <strong>Decide</strong>
+              <h3>Production case</h3>
+              <p>Confirm that accuracy, adoption signals, and integration reliability justify scaling beyond pilot.</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>MVP evidence standard</h3>
+          <p>Do not ask whether the demo looks impressive. Ask whether the workflow repeatedly produces acceptable outputs, handles known exceptions, exposes failures, and gives humans the right intervention points.</p>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Implementation gate" data-slide-index="11">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Gate 3 - Ready for Production</p>
+        <h2>Production entry requires evidence across quality, integration, control, and adoption.</h2>
+        <div class="grid-2">
+          <div class="gate">
+            <strong>Output quality</strong>
+            <ul>
+              <li>Accuracy and completeness meet agreed thresholds.</li>
+              <li>Known exception classes are covered or escalated.</li>
+              <li>Evaluator checks are logged and reviewable.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Integration reliability</strong>
+            <ul>
+              <li>APIs, files, or system handoffs work in realistic conditions.</li>
+              <li>Retries, fallbacks, and dependency failures are defined.</li>
+              <li>Security and permission assumptions are validated.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Human operating model</strong>
+            <ul>
+              <li>Process owners know when to trust, intervene, or override.</li>
+              <li>Escalation paths are clear and staffed.</li>
+              <li>Shadow users show adoption intent, not passive compliance.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Business case</strong>
+            <ul>
+              <li>Cycle time, quality, or cost metrics are moving.</li>
+              <li>Production benefits exceed required run cost and risk controls.</li>
+              <li>Sponsor approves go-live scope.</li>
+            </ul>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Phase 3" data-slide-index="12">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Step 4 - Scale out</p>
+        <h2>Scaling is not cloning the pilot. It is building a managed portfolio of agentic workflows.</h2>
+        <div class="split wide-right">
+          <div class="card dark">
+            <h3>Scale-out objective</h3>
+            <p>Move from a validated prototype to a production operating capability that can absorb more workflows, more users, and more risk without losing control.</p>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <h3>Productionize the lighthouse</h3>
+              <p>Deploy the first workflow with monitoring, support ownership, access controls, audit logging, and release management.</p>
+            </div>
+            <div class="card">
+              <h3>Codify delivery assets</h3>
+              <p>Turn prompts, agent specs, evals, playbooks, and issue logs into reusable accelerators for the next wave.</p>
+            </div>
+            <div class="card">
+              <h3>Stand up governance</h3>
+              <p>Define approval rights, model/tool risk review, exception escalation, and change control for agent behavior.</p>
+            </div>
+            <div class="card">
+              <h3>Expand by quadrant</h3>
+              <p>Use Quick Wins first, then Sponsor & Align and Invest & Prove candidates once trust and validation infrastructure mature.</p>
+            </div>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Scale roadmap" data-slide-index="13">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Scale-out roadmap</p>
+        <h2>A 12-18 month portfolio view prevents every workflow from competing for the same first-wave slot.</h2>
+        <div class="timeline">
+          <div class="track">
+            <span class="track-label">Quick Win</span>
+            <div class="bar"><span class="bar-quick-win"></span></div>
+          </div>
+          <div class="track">
+            <span class="track-label">Invest & Prove</span>
+            <div class="bar"><span class="bar-invest-prove"></span></div>
+          </div>
+          <div class="track">
+            <span class="track-label">Sponsor & Align</span>
+            <div class="bar"><span class="bar-sponsor-align"></span></div>
+          </div>
+          <div class="track">
+            <span class="track-label">Defer & Mature</span>
+            <div class="bar"><span class="bar-defer-mature"></span></div>
+          </div>
+        </div>
+        <div class="grid-4">
+          <div class="card compact">
+            <h3>Months 1-3</h3>
+            <p>Prove value with 1-2 high-confidence workflows in production.</p>
+          </div>
+          <div class="card compact">
+            <h3>Months 3-6</h3>
+            <p>Validate human evaluation infrastructure for judgment-heavy work.</p>
+          </div>
+          <div class="card compact">
+            <h3>Months 4-9</h3>
+            <p>Expand with trust-building, integration cleanup, and sponsor alignment.</p>
+          </div>
+          <div class="card compact">
+            <h3>Months 9-18</h3>
+            <p>Reassess deferred candidates after readiness and validation gaps close.</p>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Roles" data-slide-index="14">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Lean delivery team</p>
+        <h2>Two people can run the method when ownership is explicit.</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Functional consultant</h3>
+            <ul>
+              <li>Extracts process knowledge and business context.</li>
+              <li>Runs interviews and readiness assessment.</li>
+              <li>Defines acceptance criteria and adoption risks.</li>
+              <li>Owns client narrative and phase-gate evidence.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Agentic architect</h3>
+            <ul>
+              <li>Selects agent archetypes and interaction modes.</li>
+              <li>Designs orchestration, tools, memory, and guardrails.</li>
+              <li>Converts the workflow into MVP-ready specs.</li>
+              <li>Owns technical feasibility and validation design.</li>
+            </ul>
+          </div>
+          <div class="card dark">
+            <h3>Agentic engineer</h3>
+            <ul>
+              <li>Builds the MVP and production workflow.</li>
+              <li>Implements integrations, evals, logs, and controls.</li>
+              <li>Hardens reliability and deployment operations.</li>
+              <li>Feeds reusable assets back into the playbook.</li>
+            </ul>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="Deliverables" data-slide-index="15">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">What the client sees</p>
+        <h2>Each phase produces an artifact that makes the next decision easier.</h2>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Phase</th>
+              <th>Primary deliverable</th>
+              <th>Decision it enables</th>
+              <th>Quality bar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Size</td>
+              <td>Prioritized workflow portfolio</td>
+              <td>Which workflow should enter Design?</td>
+              <td>Ranked, risk-classified, sponsor-owned.</td>
+            </tr>
+            <tr>
+              <td>Design</td>
+              <td>Agent architecture package</td>
+              <td>What exactly should the MVP build?</td>
+              <td>Agent roles, interactions, tools, evals, and risks are explicit.</td>
+            </tr>
+            <tr>
+              <td>Implement</td>
+              <td>MVP validation report</td>
+              <td>Should this workflow go to production?</td>
+              <td>Evidence-based quality, reliability, adoption, and ROI signals.</td>
+            </tr>
+            <tr>
+              <td>Scale</td>
+              <td>Production and portfolio roadmap</td>
+              <td>How do we expand without losing control?</td>
+              <td>Operating model, governance, monitoring, and next-wave plan.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="executive" data-label="End state" data-slide-index="16">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Definition of success</p>
+        <h2>The methodology works when a new team can deliver with confidence, not heroics.</h2>
+        <div class="split">
+          <div class="card dark">
+            <h3>Success standard</h3>
+            <p>A consulting team with no prior agentic delivery experience can pick up the playbook, execute the phases, make go/no-go decisions with evidence, and explain progress to the client at any point.</p>
+          </div>
+          <div class="step-list">
+            <div class="step">
+              <span class="num">1</span>
+              <div>
+                <h3>Repeatable phase gates</h3>
+                <p>Every transition is governed by binary or threshold criteria, not optimism.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">2</span>
+              <div>
+                <h3>Reusable templates</h3>
+                <p>Each deliverable has sections, expected evidence, and a clear quality standard.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">3</span>
+              <div>
+                <h3>Cross-domain applicability</h3>
+                <p>The same method works across finance, supply chain, HR, customer service, and other enterprise process domains.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">4</span>
+              <div>
+                <h3>Portfolio discipline</h3>
+                <p>Scale-out follows readiness and evidence, not a queue of stakeholder wishes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="blueprint" data-label="Operating blueprint" data-slide-index="17">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Agentic delivery architecture</p>
+        <div class="split">
+          <div class="hero-copy">
+            <h1>Operating blueprint for agentic workflow delivery.</h1>
+            <p class="subtitle">A systems-oriented deck for architects and delivery leads: assess the workflow, map the agent system, validate the build, and govern scale-out.</p>
+          </div>
+          <div class="card dark title-panel">
+            <h3>Blueprint promise</h3>
+            <p>Every workflow is treated as a designed operating system: inputs, agents, tools, human checkpoints, evaluators, telemetry, and governance are all explicit before scale.</p>
+            <div class="grid-2">
+              <div class="metric tone-blue"><strong>4</strong><p>Delivery phases</p></div>
+              <div class="metric tone-teal"><strong>5</strong><p>Agent archetypes</p></div>
+              <div class="metric tone-amber"><strong>3</strong><p>Human modes</p></div>
+              <div class="metric tone-clay"><strong>6</strong><p>Readiness gates</p></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="blueprint" data-label="Blueprint stack" data-slide-index="18">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">End-to-end system</p>
+        <h2>The playbook decomposes delivery into four connected architecture layers.</h2>
+        <div class="arrow-row">
+          <div class="card phase-block tone-blue"><div><strong>Layer 1</strong><h3>Opportunity system</h3><p>Candidate inventory, readiness screen, ODS x ORS funnel, priority score.</p></div><p>Output: portfolio.</p></div>
+          <div class="card phase-block tone-teal"><div><strong>Layer 2</strong><h3>Agent system</h3><p>Agent archetypes, interaction modes, A2A patterns, HITL controls.</p></div><p>Output: architecture.</p></div>
+          <div class="card phase-block tone-amber"><div><strong>Layer 3</strong><h3>Validation system</h3><p>Golden datasets, evals, shadow mode, exception testing, decision logs.</p></div><p>Output: evidence.</p></div>
+          <div class="card phase-block tone-clay"><div><strong>Layer 4</strong><h3>Scale system</h3><p>Production operations, monitoring, governance, adoption, portfolio waves.</p></div><p>Output: capability.</p></div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="blueprint" data-label="Sizing architecture" data-slide-index="19">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Size the workflow</p>
+        <h2>Use layered triage to separate attractive workflows from viable workflows.</h2>
+        <div class="system-map">
+          <div class="lane">
+            <div class="node">Candidate inventory</div>
+            <div class="node">Process owner interviews</div>
+            <div class="node">Evidence capture</div>
+          </div>
+          <div class="connector">progressive filters</div>
+          <div class="lane">
+            <div class="card"><h3>Binary readiness</h3><p>5 of 6 required: documentable, digital data, volume, owner, quality definition, stability.</p></div>
+            <div class="card"><h3>ODS x ORS funnel</h3><p>Classify Quick Win, Sponsor & Align, Invest & Prove, or Defer & Mature.</p></div>
+            <div class="card"><h3>Depth scoring</h3><p>Value Magnitude, Decision Density Index, risk-adjusted return, final priority.</p></div>
+          </div>
+        </div>
+        <table class="matrix">
+          <thead><tr><th>Gate</th><th>Question</th><th>Proceed condition</th></tr></thead>
+          <tbody>
+            <tr><td>Readiness</td><td>Can this workflow fit the engagement constraints?</td><td>At least 5 of 6 binary criteria pass.</td></tr>
+            <tr><td>Funnel</td><td>What delivery path does the risk profile imply?</td><td>Quadrant action path is explicit and sponsor accepted.</td></tr>
+            <tr><td>Priority</td><td>Is this better than the next best candidate?</td><td>PriorityScore is at least 3.0 with documented assumptions.</td></tr>
+          </tbody>
+        </table>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="blueprint" data-label="Complexity gate" data-slide-index="20">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Design decision tree</p>
+        <h2>Start with the lowest viable complexity and escalate only when the workflow demands it.</h2>
+        <div class="decision-tree">
+          <div class="branch">
+            <h3>Q1. Can one agent plus tools complete the workflow?</h3>
+            <p>If yes, use a single-agent design. Add evaluator and HITL controls only where risk or correctness requires them.</p>
+            <div class="node">Single agent with tools</div>
+          </div>
+          <div class="branch">
+            <h3>Q2. Do steps require distinct capabilities or owners?</h3>
+            <p>If yes, separate into agent roles using the five archetypes and document handoff contracts.</p>
+            <div class="node">Multi-agent architecture</div>
+          </div>
+          <div class="branch">
+            <h3>Q3. Can output correctness be automatically checked?</h3>
+            <p>If yes, use evaluator loops and automated acceptance tests. If no, design Guardian or Co-Pilot review.</p>
+            <div class="node">Evaluator or HITL validation</div>
+          </div>
+          <div class="branch">
+            <h3>Q4. Is deployment adoption-ready?</h3>
+            <p>If no, scope trust-building, shadow mode, role redesign, and sponsor alignment into production planning.</p>
+            <div class="node">Trust-led scale profile</div>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="blueprint" data-label="Agent taxonomy" data-slide-index="21">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Agent system components</p>
+        <h2>The five archetypes make architecture decisions teachable and auditable.</h2>
+        <div class="grid-5">
+          <div class="card phase-block tone-blue"><div><strong>01</strong><h3>Orchestrator</h3><p>Decomposes work, routes tasks, maintains state.</p></div></div>
+          <div class="card phase-block tone-teal"><div><strong>02</strong><h3>Executor</h3><p>Performs defined operations through tools or APIs.</p></div></div>
+          <div class="card phase-block tone-amber"><div><strong>03</strong><h3>Analyst</h3><p>Synthesizes inputs and makes recommendations.</p></div></div>
+          <div class="card phase-block tone-clay"><div><strong>04</strong><h3>Retriever</h3><p>Finds and supplies context from knowledge sources.</p></div></div>
+          <div class="card phase-block tone-blue"><div><strong>05</strong><h3>Evaluator</h3><p>Checks quality, safety, compliance, and completeness.</p></div></div>
+        </div>
+        <table class="matrix">
+          <thead><tr><th>Architecture rule</th><th>Why it matters</th></tr></thead>
+          <tbody>
+            <tr><td>Every agent has one primary archetype.</td><td>Prevents vague agents that retrieve, reason, execute, and evaluate without clear accountability.</td></tr>
+            <tr><td>Every agent has typed inputs and outputs.</td><td>Creates handoff contracts that engineers can implement and validators can test.</td></tr>
+            <tr><td>Every high-risk output has an evaluator or human checkpoint.</td><td>Turns trust into an explicit control design instead of a launch assumption.</td></tr>
+          </tbody>
+        </table>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="blueprint" data-label="Human interaction" data-slide-index="22">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Human-agent contracts</p>
+        <h2>Interaction mode is selected by risk, reversibility, and validation confidence.</h2>
+        <div class="grid-3">
+          <div class="card phase-block tone-teal"><div><strong>Autopilot</strong><h3>Execute and log</h3><p>Low-risk, reversible, high-volume tasks where correctness is measurable.</p></div><p>Example: structured invoice matching.</p></div>
+          <div class="card phase-block tone-amber"><div><strong>Co-Pilot</strong><h3>Propose and refine</h3><p>Medium-risk work where the agent drafts or recommends and humans tune the result.</p></div><p>Example: customer response drafting.</p></div>
+          <div class="card phase-block tone-clay"><div><strong>Guardian</strong><h3>Prepare and escalate</h3><p>High-risk, irreversible, regulated, or subjective decisions where humans decide.</p></div><p>Example: compliance judgment.</p></div>
+        </div>
+        <div class="card dark">
+          <h3>Blueprint principle</h3>
+          <p>Do not treat human review as a generic fallback. Specify the trigger, reviewer role, expected decision, SLA, and what the agent does after the decision.</p>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="blueprint" data-label="MVP validation" data-slide-index="23">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Build and prove</p>
+        <h2>The MVP is an evidence factory, not a demo factory.</h2>
+        <div class="grid-4">
+          <div class="card"><h3>Thin slice</h3><p>Build one complete path from trigger to output, including logging and escalation.</p></div>
+          <div class="card"><h3>Golden set</h3><p>Use historical approved outputs, explicit rules, or human evaluation panels.</p></div>
+          <div class="card"><h3>Exception bank</h3><p>Test common failure modes, boundary cases, integration outages, and ambiguous inputs.</p></div>
+          <div class="card"><h3>Decision log</h3><p>Capture why the agent acted, what evidence it used, and where humans intervened.</p></div>
+        </div>
+        <table class="matrix">
+          <thead><tr><th>Signal</th><th>Pass evidence</th><th>Failure response</th></tr></thead>
+          <tbody>
+            <tr><td>Output quality</td><td>Meets threshold on golden set and live shadow cases.</td><td>Refine prompts, tools, evals, or interaction mode.</td></tr>
+            <tr><td>System reliability</td><td>Integrations survive realistic load and dependency failure.</td><td>Add retries, queues, fallbacks, or scope reduction.</td></tr>
+            <tr><td>Human trust</td><td>Users understand when to accept, edit, reject, or escalate.</td><td>Extend shadow mode and redesign checkpoint UX.</td></tr>
+          </tbody>
+        </table>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="blueprint" data-label="Scale architecture" data-slide-index="24">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Production and portfolio</p>
+        <h2>Scale-out adds operational disciplines around the agent system.</h2>
+        <div class="system-map">
+          <div class="lane">
+            <div class="card"><h3>Production controls</h3><p>Access, audit logging, monitoring, release management, model/tool risk review.</p></div>
+            <div class="card"><h3>Run operations</h3><p>Support ownership, incident playbooks, SLA reporting, exception queues.</p></div>
+          </div>
+          <div class="connector">operating layer</div>
+          <div class="lane">
+            <div class="card"><h3>Reusable assets</h3><p>Agent specs, prompt libraries, eval suites, data connectors, risk patterns.</p></div>
+            <div class="card"><h3>Portfolio waves</h3><p>Quick Win first, then Invest & Prove and Sponsor & Align as trust and validation maturity increase.</p></div>
+          </div>
+        </div>
+        <div class="card dark">
+          <h3>Scale condition</h3>
+          <p>Only scale when the lighthouse workflow has measurable production value, a stable support model, and reusable delivery assets that reduce the cost and risk of the next workflow.</p>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="practitioner" data-label="Field guide" data-slide-index="25">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Practitioner runbook</p>
+        <div class="split">
+          <div class="hero-copy">
+            <h1>Agentic workflow delivery field guide.</h1>
+            <p class="subtitle">A facilitation-ready deck for consultants running the playbook: what to ask, what to score, what to build, and when to stop.</p>
+          </div>
+          <div class="card dark">
+            <h3>How to use this deck</h3>
+            <ul>
+              <li>Run one phase at a time.</li>
+              <li>Do not skip gates to satisfy timeline pressure.</li>
+              <li>Record evidence as you go.</li>
+              <li>Translate every decision into a deliverable artifact.</li>
+            </ul>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="practitioner" data-label="Engagement map" data-slide-index="26">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Delivery route</p>
+        <h2>The field guide runs as four workblocks with explicit artifacts.</h2>
+        <div class="grid-4">
+          <div class="card day tone-red"><div><strong>Week 0</strong><h3>Size</h3><p>Screen candidates, classify risk, rank the portfolio.</p></div><p>Artifact: priority brief.</p></div>
+          <div class="card day tone-blue"><div><strong>Days 1-10</strong><h3>Design</h3><p>Map workflow, select agent patterns, define acceptance criteria.</p></div><p>Artifact: architecture pack.</p></div>
+          <div class="card day tone-amber"><div><strong>Weeks 3-6</strong><h3>Implement</h3><p>Build thin slice, run evals, shadow real work.</p></div><p>Artifact: MVP evidence report.</p></div>
+          <div class="card day tone-green"><div><strong>Months 2-4</strong><h3>Scale</h3><p>Deploy production controls and plan next waves.</p></div><p>Artifact: operating model.</p></div>
+        </div>
+        <div class="callout">
+          <h3>Facilitator rule</h3>
+          <p>If the team cannot name the evidence behind a decision, the decision is not ready. Pause and collect the missing fact before moving forward.</p>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="practitioner" data-label="Week 0" data-slide-index="27">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Run the sizing workshop</p>
+        <h2>Day 1 eliminates structurally unready workflows before scoring begins.</h2>
+        <div class="split">
+          <div class="card">
+            <h3>30-minute interview script</h3>
+            <div class="runbook">
+              <div class="runbook-item"><span class="time">0-5 min</span><p>Ask the owner to walk from trigger to final output.</p><p>Listen for undocumented paths.</p></div>
+              <div class="runbook-item"><span class="time">5-20 min</span><p>Probe the six binary readiness criteria.</p><p>Ask for evidence, not opinions.</p></div>
+              <div class="runbook-item"><span class="time">20-25 min</span><p>Ask what is changing in the next six months.</p><p>Check process stability.</p></div>
+              <div class="runbook-item"><span class="time">25-30 min</span><p>Confirm sponsor authority and decision speed.</p><p>Name the owner.</p></div>
+            </div>
+          </div>
+          <div class="card dark">
+            <h3>Pass rule</h3>
+            <p>Require 5 of 6 Yes answers. One exception is allowed only with a mitigation plan, owner, and impact on timeline.</p>
+            <div class="checklist">
+              <div class="check"><span class="box"></span><p>Process can be documented or described in under 2 hours.</p></div>
+              <div class="check"><span class="box"></span><p>Input data is digitally accessible.</p></div>
+              <div class="check"><span class="box"></span><p>Process runs more than 50 times per month or has justified high-value exception.</p></div>
+              <div class="check"><span class="box"></span><p>Willing process owner is identified.</p></div>
+              <div class="check"><span class="box"></span><p>Good output can be defined or shown.</p></div>
+              <div class="check"><span class="box"></span><p>Process is stable for six months.</p></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="practitioner" data-label="Scoring worksheet" data-slide-index="28">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Week 0 worksheet</p>
+        <h2>Use this compact worksheet to classify and prioritize survivors.</h2>
+        <table class="worksheet">
+          <thead>
+            <tr>
+              <th>Workflow</th>
+              <th>Binary screen</th>
+              <th>ODS</th>
+              <th>ORS</th>
+              <th>Quadrant</th>
+              <th>Priority score</th>
+              <th>Decision</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td></td><td>/6</td><td></td><td></td><td></td><td></td><td>Pass / Park</td></tr>
+            <tr><td></td><td>/6</td><td></td><td></td><td></td><td></td><td>Pass / Park</td></tr>
+            <tr><td></td><td>/6</td><td></td><td></td><td></td><td></td><td>Pass / Park</td></tr>
+            <tr><td></td><td>/6</td><td></td><td></td><td></td><td></td><td>Pass / Park</td></tr>
+            <tr><td></td><td>/6</td><td></td><td></td><td></td><td></td><td>Pass / Park</td></tr>
+          </tbody>
+        </table>
+        <div class="grid-3">
+          <div class="card"><h3>ODS threshold</h3><p>High if score is at least 1.2. Tests whether output correctness can be objectively verified.</p></div>
+          <div class="card"><h3>ORS threshold</h3><p>High if score is at least 1.2. Tests sponsorship, receptivity, integration complexity, and change history.</p></div>
+          <div class="card"><h3>Priority threshold</h3><p>Proceed to Design when PriorityScore is at least 3.0 and sponsor accepts the action path.</p></div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="practitioner" data-label="Design sprint" data-slide-index="29">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Run the design sprint</p>
+        <h2>Use the 10-day sprint to convert the selected workflow into a buildable architecture.</h2>
+        <div class="grid-3">
+          <div class="card day tone-red"><div><strong>Days 1-3</strong><h3>Discover</h3><p>Map trigger, inputs, steps, decisions, exceptions, outputs, and current controls.</p></div><p>Sync 1: complexity decision.</p></div>
+          <div class="card day tone-blue"><div><strong>Days 4-7</strong><h3>Design</h3><p>Select agent archetypes, interaction modes, tools, data, and handoff contracts.</p></div><p>Sync 2: architecture v1.</p></div>
+          <div class="card day tone-green"><div><strong>Days 8-10</strong><h3>Validate</h3><p>Walk through scenarios, acceptance tests, risks, and MVP scope.</p></div><p>Sync 3: ready for MVP gate.</p></div>
+        </div>
+        <div class="callout">
+          <h3>Complexity gate</h3>
+          <p>Ask first: can the workflow be handled by one agent with tools? Use multi-agent design only when distinct capabilities, ownership boundaries, or validation controls require it.</p>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="practitioner" data-label="Design worksheet" data-slide-index="30">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Architecture worksheet</p>
+        <h2>Fill one row per major workflow step or decision point.</h2>
+        <table class="worksheet">
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>Current owner</th>
+              <th>Agent archetype</th>
+              <th>Human mode</th>
+              <th>Tool / data need</th>
+              <th>Acceptance criterion</th>
+              <th>Risk / escalation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td></td><td></td><td>Orch / Exec / Analyst / Retriever / Eval</td><td>Auto / Co / Guardian</td><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td>Orch / Exec / Analyst / Retriever / Eval</td><td>Auto / Co / Guardian</td><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td>Orch / Exec / Analyst / Retriever / Eval</td><td>Auto / Co / Guardian</td><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td>Orch / Exec / Analyst / Retriever / Eval</td><td>Auto / Co / Guardian</td><td></td><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <div class="grid-3">
+          <div class="card"><h3>Autopilot</h3><p>Low-risk, reversible, high-volume, measurable correctness.</p></div>
+          <div class="card"><h3>Co-Pilot</h3><p>Medium-risk, judgment-dependent, human refines agent output.</p></div>
+          <div class="card"><h3>Guardian</h3><p>High-risk, irreversible, regulated, or subjective. Human decides.</p></div>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="practitioner" data-label="MVP runbook" data-slide-index="31">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Run MVP validation</p>
+        <h2>The MVP phase proves repeatability through testable evidence.</h2>
+        <div class="split">
+          <div class="card">
+            <h3>Build sequence</h3>
+            <div class="checklist">
+              <div class="check"><span class="box"></span><p>Implement one end-to-end thin slice.</p></div>
+              <div class="check"><span class="box"></span><p>Connect required tools, data sources, and permissions.</p></div>
+              <div class="check"><span class="box"></span><p>Add evaluator checks and decision logging.</p></div>
+              <div class="check"><span class="box"></span><p>Run golden examples and exception cases.</p></div>
+              <div class="check"><span class="box"></span><p>Run in shadow mode with real users.</p></div>
+            </div>
+          </div>
+          <div class="card dark">
+            <h3>Evidence to collect</h3>
+            <ul>
+              <li>Output quality by case type.</li>
+              <li>Cycle time versus current process.</li>
+              <li>Exception frequency and escalation quality.</li>
+              <li>Integration failures and recovery behavior.</li>
+              <li>User acceptance signals and trust blockers.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout">
+          <h3>Stop condition</h3>
+          <p>If quality cannot be measured, do not proceed to production. Return to Design and add evaluators, better examples, or a Guardian interaction pattern.</p>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="practitioner" data-label="Production readiness" data-slide-index="32">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Production gate checklist</p>
+        <h2>Use this gate before sponsor go-live approval.</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Technical readiness</h3>
+            <div class="checklist">
+              <div class="check"><span class="box"></span><p>Integrations work under realistic conditions.</p></div>
+              <div class="check"><span class="box"></span><p>Retries, fallbacks, and dependency failures are defined.</p></div>
+              <div class="check"><span class="box"></span><p>Access controls and audit logs are validated.</p></div>
+              <div class="check"><span class="box"></span><p>Monitoring and support ownership are assigned.</p></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Operating readiness</h3>
+            <div class="checklist">
+              <div class="check"><span class="box"></span><p>Process owners know when to accept, override, or escalate.</p></div>
+              <div class="check"><span class="box"></span><p>Shadow users show adoption intent.</p></div>
+              <div class="check"><span class="box"></span><p>Business case signals justify run cost and controls.</p></div>
+              <div class="check"><span class="box"></span><p>Sponsor approves production scope and rollout path.</p></div>
+            </div>
+          </div>
+        </div>
+        <table class="worksheet">
+          <thead><tr><th>Gate outcome</th><th>Action</th><th>Owner</th></tr></thead>
+          <tbody>
+            <tr><td>Go</td><td>Launch controlled production scope.</td><td>Sponsor + delivery lead</td></tr>
+            <tr><td>Conditional go</td><td>Launch after named blockers close.</td><td>Blocker owner</td></tr>
+            <tr><td>No-go</td><td>Return to MVP or Design with revised criteria.</td><td>Engagement lead</td></tr>
+          </tbody>
+        </table>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="practitioner" data-label="Scale runbook" data-slide-index="33">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Scale-out playbook</p>
+        <h2>After the lighthouse workflow, scale by portfolio wave.</h2>
+        <div class="grid-4">
+          <div class="card day tone-green"><div><strong>Wave 1</strong><h3>Quick Wins</h3><p>High ODS and high ORS. Prove value in months 1-3.</p></div></div>
+          <div class="card day tone-amber"><div><strong>Wave 2a</strong><h3>Invest & Prove</h3><p>Low ODS and high ORS. Build human evaluation infrastructure.</p></div></div>
+          <div class="card day tone-blue"><div><strong>Wave 2b</strong><h3>Sponsor & Align</h3><p>High ODS and low ORS. Warm the organization before deployment.</p></div></div>
+          <div class="card day tone-red"><div><strong>Wave 3</strong><h3>Defer & Mature</h3><p>Low ODS and low ORS. Reassess after maturity gaps close.</p></div></div>
+        </div>
+        <div class="card dark">
+          <h3>Reusable asset capture</h3>
+          <p>After each workflow, extract reusable agent specs, prompts, evals, connector patterns, risk decisions, training notes, and support learnings. This is what turns projects into a scalable methodology.</p>
+        </div>
+      </div></div>
+</section>
+<section class="playbook-slide" data-chapter="practitioner" data-label="Closeout" data-slide-index="34">
+  <div class="slide-frame"><div class="slide-content">
+        <p class="eyebrow">Engagement closeout</p>
+        <h2>Close every engagement with a capability transfer, not only a production launch.</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Client handoff</h3>
+            <ul>
+              <li>Runbook and support owners.</li>
+              <li>Escalation paths and SLAs.</li>
+              <li>Known limitations and roadmap.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Delivery team handoff</h3>
+            <ul>
+              <li>Reusable assets added to library.</li>
+              <li>Gate decisions archived.</li>
+              <li>Lessons learned documented.</li>
+            </ul>
+          </div>
+          <div class="card dark">
+            <h3>Next-wave decision</h3>
+            <p>Use the portfolio created in Week 0 to select the next workflow, with updated evidence from the lighthouse deployment.</p>
+          </div>
+        </div>
+        <div class="callout">
+          <h3>Definition of done</h3>
+          <p>The workflow is live, monitored, owned, explainable, and valuable, and the organization has a clear path to repeat the method on the next workflow.</p>
+        </div>
+      </div></div>
+</section>
+          </div>
+        </div>
+      </main>
+
+      <footer id="footer" class="shrink-0 px-4 md:px-6 py-3 border-t border-slate-200 bg-white">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center gap-3">
+          <div class="w-full sm:flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-300" style="width:0%"></div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button type="button" id="prevBtn" class="px-4 py-2 text-sm font-medium rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">Previous</button>
+            <span id="slideCount" class="text-sm text-slate-500 tabular-nums min-w-[4rem] text-center">1 / 35</span>
+            <button type="button" id="nextBtn" class="px-4 py-2 text-sm font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed">Next</button>
+            <button type="button" onclick="window.print()" class="px-3 py-2 text-sm rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600" title="Print all slides">Print</button>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="mobileNav" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-slate-900/40" id="mobileNavBackdrop"></div>
+    <aside class="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-xl flex flex-col">
+      <div class="p-4 flex justify-between items-center border-b">
+        <span class="font-semibold">Contents</span>
+        <button type="button" id="closeMobileNav" class="p-2 rounded-lg hover:bg-slate-100">✕</button>
+      </div>
+      <nav class="flex-1 overflow-y-auto p-2" id="mobileSlideNav"></nav>
+    </aside>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.playbook-slide'));
+    const progressBar = document.getElementById('progressBar');
+    const slideCount = document.getElementById('slideCount');
+    const slideTitle = document.getElementById('slideTitle');
+    const chapterBadge = document.getElementById('chapterBadge');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const navItems = Array.from(document.querySelectorAll('.nav-item'));
+    let current = 0;
+
+    const chapterLabels = { hub: 'Overview', executive: 'Executive', blueprint: 'Blueprint', practitioner: 'Practitioner' };
+
+    const chapterStarts = {};
+    slides.forEach((s, i) => {
+      const ch = s.dataset.chapter;
+      if (!(ch in chapterStarts)) chapterStarts[ch] = i;
+    });
+
+    function showSlide(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((s, i) => s.classList.toggle('active', i === current));
+      const slide = slides[current];
+      const ch = slide.dataset.chapter;
+      const label = slide.dataset.label || '';
+      chapterBadge.textContent = chapterLabels[ch] || ch;
+      slideTitle.textContent = label || 'Playbook';
+      slideCount.textContent = `${current + 1} / ${slides.length}`;
+      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+      navItems.forEach((btn, i) => btn.classList.toggle('active', i === current));
+      history.replaceState(null, '', `#slide-${current + 1}`);
+      document.getElementById('slideViewport').scrollTop = 0;
+    }
+
+    function gotoChapter(chapterId) {
+      if (chapterId in chapterStarts) showSlide(chapterStarts[chapterId]);
+    }
+
+    prevBtn.addEventListener('click', () => showSlide(current - 1));
+    nextBtn.addEventListener('click', () => showSlide(current + 1));
+    navItems.forEach(btn => btn.addEventListener('click', () => showSlide(Number(btn.dataset.nav))));
+    document.querySelectorAll('[data-goto-chapter]').forEach(el => {
+      el.addEventListener('click', () => gotoChapter(el.dataset.gotoChapter));
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.target.matches('input, textarea')) return;
+      if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); showSlide(current + 1); }
+      if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); showSlide(current - 1); }
+      if (e.key === 'Home') showSlide(0);
+      if (e.key === 'End') showSlide(slides.length - 1);
+    });
+
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    const tocBtn = document.getElementById('tocBtn');
+    document.getElementById('mobileSlideNav').innerHTML = document.getElementById('slideNav').innerHTML;
+    document.getElementById('mobileSlideNav').querySelectorAll('.nav-item').forEach((btn, i) => {
+      btn.addEventListener('click', () => { showSlide(i); mobileNav.classList.add('hidden'); });
+    });
+    function openMobileNav() { mobileNav.classList.remove('hidden'); }
+    menuBtn?.addEventListener('click', openMobileNav);
+    tocBtn?.addEventListener('click', openMobileNav);
+    document.getElementById('mobileNavBackdrop').addEventListener('click', () => mobileNav.classList.add('hidden'));
+    document.getElementById('closeMobileNav').addEventListener('click', () => mobileNav.classList.add('hidden'));
+
+    const hashMatch = window.location.hash.match(/slide-(\d+)/);
+    showSlide(hashMatch ? Number(hashMatch[1]) - 1 : 0);
+  </script>
+</body>
+</html>

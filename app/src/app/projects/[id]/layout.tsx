@@ -1,11 +1,15 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getProject } from "@/content/sample-data";
+import { getProject, sampleProjects } from "@/content/sample-data";
 import { ProjectTabs } from "./_components/project-tabs";
 
 interface ProjectLayoutProps {
   children: React.ReactNode;
   params: Promise<{ id: string }>;
+}
+
+export function generateStaticParams() {
+  return sampleProjects.map((p) => ({ id: p.id }));
 }
 
 export default async function ProjectLayout({ children, params }: ProjectLayoutProps) {

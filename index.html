@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agentic Workflow Playbook</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --fg: #0a0a0a;
+        --fg-muted: #555;
+        --bg: #fafafa;
+        --card-bg: #fff;
+        --border: #e5e5e5;
+        --accent: #4f46e5;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fg: #fafafa;
+          --fg-muted: #a1a1aa;
+          --bg: #0a0a0a;
+          --card-bg: #111;
+          --border: #27272a;
+          --accent: #818cf8;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      main { max-width: 760px; margin: 0 auto; padding: 64px 24px; }
+      h1 { font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+      p.lede { color: var(--fg-muted); margin: 0 0 32px; }
+      ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+      a.card {
+        display: block;
+        padding: 16px 20px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--card-bg);
+        color: var(--fg);
+        text-decoration: none;
+        transition: border-color .15s, transform .15s;
+      }
+      a.card:hover { border-color: var(--accent); transform: translateY(-1px); }
+      a.card .title { font-weight: 600; }
+      a.card .desc { color: var(--fg-muted); font-size: 14px; margin-top: 4px; }
+      footer { margin-top: 48px; color: var(--fg-muted); font-size: 13px; }
+      a { color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Agentic Workflow Playbook</h1>
+      <p class="lede">Static previews and the interactive Next.js app.</p>
+      <ul>
+        <li>
+          <a class="card" href="./agentic-workflow-executive-playbook.html">
+            <div class="title">Executive Playbook</div>
+            <div class="desc">Strategy-level overview for senior stakeholders.</div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="./agentic-workflow-operating-blueprint.html">
+            <div class="title">Operating Blueprint</div>
+            <div class="desc">Operational model and governance.</div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="./agentic-workflow-practitioner-field-guide.html">
+            <div class="title">Practitioner Field Guide</div>
+            <div class="desc">Hands-on guidance for builders.</div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="./app/">
+            <div class="title">Interactive App →</div>
+            <div class="desc">Next.js prototype: impact sizing, design, scoring.</div>
+          </a>
+        </li>
+      </ul>
+      <footer>Source: <a href="https://github.com/ZhengHayden/AgenticPlaybook">github.com/ZhengHayden/AgenticPlaybook</a></footer>
+    </main>
+  </body>
+</html>
