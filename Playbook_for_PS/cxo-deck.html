@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CXO Deck — Redirect</title>
+  <script src="./js/auth.js"></script>
+  <script>
+    if (PSAuth.requireAccess("cxo")) {
+      location.replace("./agentic-playbook-interactive.html?view=cxo");
+    }
+  </script>
+</head>
+<body><p>Loading CXO deck…</p></body>
+</html>

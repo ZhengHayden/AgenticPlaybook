@@ -3,13 +3,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content="0; url=./agentic-playbook-interactive.html" />
-    <title>Agentic Workflow Playbook — PS</title>
-    <link rel="canonical" href="./agentic-playbook-interactive.html" />
+    <title>GC AGI Hub</title>
+    <script src="./js/auth.js"></script>
+    <script>
+      if (PSAuth.getSession()) {
+        location.replace("./dashboard.html");
+      } else {
+        location.replace("./login.html");
+      }
+    </script>
   </head>
   <body>
-    <p>
-      <a href="./agentic-playbook-interactive.html">Open the interactive Agentic Workflow Playbook →</a>
-    </p>
+    <p><a href="./login.html">Sign in</a></p>
   </body>
 </html>

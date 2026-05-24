@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library — GC AGI Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['"DM Sans"', 'system-ui', 'sans-serif'] } } } };
+  </script>
+</head>
+<body class="min-h-full bg-slate-50 text-slate-900 antialiased">
+  <header class="sticky top-0 z-20 border-b border-amber-200/80 bg-amber-50/95 backdrop-blur-md">
+    <div class="max-w-5xl mx-auto px-4 md:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <a href="./dashboard.html" class="text-slate-400 hover:text-amber-800" title="Back to hub">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </a>
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-amber-800">GC AGI Hub · Confidential</p>
+          <h1 class="text-sm font-semibold text-slate-900">Playbook &amp; Library</h1>
+        </div>
+      </div>
+      <div id="userBadge"></div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 md:px-6 py-8 space-y-10">
+    <section class="rounded-2xl border border-amber-200 bg-amber-50/60 p-6">
+      <div class="flex flex-wrap items-start gap-4">
+        <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-200 text-amber-900 text-xl">⚠</span>
+        <div>
+          <h2 class="text-lg font-semibold text-amber-950">Internal use only</h2>
+          <p class="mt-1 text-sm text-amber-900/80 max-w-2xl leading-relaxed">
+            This library contains delivery methodology, worksheets, and accelerators that are strictly confidential.
+            Do not share outside the engagement team. Asset packs below are being prepared for launch.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 1: Methodology (partially live) -->
+    <section>
+      <div class="flex items-end justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500">01 · Methodology</h2>
+          <p class="text-lg font-semibold text-slate-900 mt-1">Core playbooks &amp; decks</p>
+        </div>
+        <span class="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 text-emerald-800">Partially available</span>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <a href="./agentic-playbook-interactive.html" class="block p-5 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 hover:shadow-md transition-all group">
+          <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Live</p>
+          <h3 class="mt-1 font-semibold text-slate-900 group-hover:text-indigo-700">Agentic Workflow Delivery Playbook</h3>
+          <p class="mt-2 text-sm text-slate-500">McKinsey-style four-phase deck — Impact Sizing through Production (29 slides).</p>
+        </a>
+        <div class="p-5 rounded-xl border border-dashed border-slate-300 bg-slate-50/80 relative overflow-hidden">
+          <span class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">Coming soon</span>
+          <h3 class="font-semibold text-slate-700">Phase gate checklist pack</h3>
+          <p class="mt-2 text-sm text-slate-500">Printable gate criteria for Size, Design, MVP, and Production — Q2 launch.</p>
+        </div>
+        <div class="p-5 rounded-xl border border-dashed border-slate-300 bg-slate-50/80 relative overflow-hidden">
+          <span class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">Coming soon</span>
+          <h3 class="font-semibold text-slate-700">Engagement SOW language library</h3>
+          <p class="mt-2 text-sm text-slate-500">Boilerplate scope, assumptions, and exclusions by phase.</p>
+        </div>
+        <div class="p-5 rounded-xl border border-dashed border-slate-300 bg-slate-50/80 relative overflow-hidden">
+          <span class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">Coming soon</span>
+          <h3 class="font-semibold text-slate-700">Steering committee cadence kit</h3>
+          <p class="mt-2 text-sm text-slate-500">Agenda templates, status formats, and escalation paths.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Worksheets -->
+    <section>
+      <div class="flex items-end justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500">02 · Worksheets &amp; tools</h2>
+          <p class="text-lg font-semibold text-slate-900 mt-1">Facilitation artifacts</p>
+        </div>
+        <span class="text-xs font-medium px-2 py-1 rounded-full bg-slate-200 text-slate-600">Launching soon</span>
+      </div>
+      <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
+          <span class="text-[10px] font-bold uppercase text-slate-400">Week 0</span>
+          <span class="font-medium text-slate-800">Binary readiness screen</span>
+          <span class="text-xs text-slate-500 mt-auto">Excel · editable roster</span>
+          <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
+        </li>
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
+          <span class="text-[10px] font-bold uppercase text-slate-400">Week 0</span>
+          <span class="font-medium text-slate-800">ODS × ORS scoring matrix</span>
+          <span class="text-xs text-slate-500 mt-auto">2×2 funnel + priority score</span>
+          <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
+        </li>
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
+          <span class="text-[10px] font-bold uppercase text-slate-400">Design</span>
+          <span class="font-medium text-slate-800">Architecture worksheet</span>
+          <span class="text-xs text-slate-500 mt-auto">Per-step agent / HITL mapping</span>
+          <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
+        </li>
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
+          <span class="text-[10px] font-bold uppercase text-slate-400">Design</span>
+          <span class="font-medium text-slate-800">10-day sprint runbook</span>
+          <span class="text-xs text-slate-500 mt-auto">Dual-track sync agendas</span>
+          <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
+        </li>
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
+          <span class="text-[10px] font-bold uppercase text-slate-400">MVP</span>
+          <span class="font-medium text-slate-800">Golden set &amp; eval template</span>
+          <span class="text-xs text-slate-500 mt-auto">Quality thresholds + case bank</span>
+          <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
+        </li>
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
+          <span class="text-[10px] font-bold uppercase text-slate-400">Production</span>
+          <span class="font-medium text-slate-800">Go-live gate checklist</span>
+          <span class="text-xs text-slate-500 mt-auto">Technical + operating readiness</span>
+          <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Section 3: Accelerators -->
+    <section>
+      <div class="flex items-end justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500">03 · Accelerators</h2>
+          <p class="text-lg font-semibold text-slate-900 mt-1">Reusable technical patterns</p>
+        </div>
+        <span class="text-xs font-medium px-2 py-1 rounded-full bg-slate-200 text-slate-600">Launching soon</span>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100">
+        <div class="p-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="font-medium text-slate-900">Agent archetype pattern cards</h3>
+            <p class="text-sm text-slate-500 mt-0.5">Orchestrator, Executor, Analyst, Retriever, Evaluator — decision trees</p>
+          </div>
+          <span class="text-xs font-semibold text-slate-400">Q2</span>
+        </div>
+        <div class="p-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="font-medium text-slate-900">HITL interaction mode library</h3>
+            <p class="text-sm text-slate-500 mt-0.5">Autopilot / Co-Pilot / Guardian UX patterns and triggers</p>
+          </div>
+          <span class="text-xs font-semibold text-slate-400">Q2</span>
+        </div>
+        <div class="p-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="font-medium text-slate-900">Integration connector catalog</h3>
+            <p class="text-sm text-slate-500 mt-0.5">Reference implementations for common enterprise systems</p>
+          </div>
+          <span class="text-xs font-semibold text-slate-400">Q3</span>
+        </div>
+        <div class="p-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="font-medium text-slate-900">Eval &amp; observability starter kit</h3>
+            <p class="text-sm text-slate-500 mt-0.5">Logging schemas, eval harness, shadow-mode playbook</p>
+          </div>
+          <span class="text-xs font-semibold text-slate-400">Q3</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Reference -->
+    <section>
+      <div class="flex items-end justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500">04 · Reference &amp; source</h2>
+          <p class="text-lg font-semibold text-slate-900 mt-1">Requirements &amp; research base</p>
+        </div>
+        <span class="text-xs font-medium px-2 py-1 rounded-full bg-slate-200 text-slate-600">Launching soon</span>
+      </div>
+      <div class="p-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-center">
+        <p class="text-sm text-slate-600 max-w-lg mx-auto">
+          Linked repository of <code class="text-xs bg-white px-1.5 py-0.5 rounded border">/00_Playbook/Req</code> materials,
+          benchmark decks, and lessons-learned index will appear here when the library launches.
+        </p>
+        <p class="mt-4 text-xs text-slate-400">Notify: engagement methodology lead when assets are uploaded.</p>
+      </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section class="pb-10">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Launch roadmap</h2>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex-1 p-4 rounded-xl bg-white border border-slate-200">
+          <p class="text-xs font-bold text-emerald-700">Now</p>
+          <p class="mt-1 text-sm font-medium">Interactive playbook (3 tracks)</p>
+        </div>
+        <div class="flex-1 p-4 rounded-xl bg-white border border-slate-200 opacity-80">
+          <p class="text-xs font-bold text-slate-500">Q2 2026</p>
+          <p class="mt-1 text-sm font-medium">Worksheets + gate packs</p>
+        </div>
+        <div class="flex-1 p-4 rounded-xl bg-white border border-slate-200 opacity-60">
+          <p class="text-xs font-bold text-slate-400">Q3 2026</p>
+          <p class="mt-1 text-sm font-medium">Accelerators + connector catalog</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./js/auth.js"></script>
+  <script>
+    PSAuth.requireAccess("playbook");
+    PSAuth.renderUserBadge("userBadge");
+  </script>
+</body>
+</html>

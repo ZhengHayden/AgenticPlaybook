@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GC AGI Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['"DM Sans"', 'system-ui', 'sans-serif'] } } } };
+  </script>
+</head>
+<body class="min-h-full bg-slate-50 text-slate-900 antialiased">
+  <header class="border-b border-slate-200 bg-white">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-600">GC AGI Hub</p>
+        <h1 class="text-lg font-semibold text-slate-900">Workspace</h1>
+      </div>
+      <div id="userBadge"></div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-10">
+    <p id="deniedBanner" class="hidden mb-6 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-900"></p>
+
+    <p class="text-slate-600 max-w-2xl">Select a workspace. Available tiles depend on your access level.</p>
+
+    <div class="mt-10 grid md:grid-cols-3 gap-6" id="tileGrid">
+      <!-- CXO Deck -->
+      <article class="tile group relative flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all hover:shadow-lg hover:border-indigo-300" data-area="cxo">
+        <div class="h-2 bg-gradient-to-r from-indigo-500 to-violet-500"></div>
+        <div class="p-6 flex flex-col flex-1">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-600">Client facing</span>
+          <h2 class="mt-2 text-xl font-semibold text-slate-900 group-hover:text-indigo-700">CXO Deck</h2>
+          <p class="mt-3 text-sm text-slate-500 flex-1">Client-facing narrative — cover, four-phase model, and phase-gate summary (McKinsey-style deck).</p>
+          <a href="./cxo-deck.html" data-link="cxo" class="mt-6 inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors">
+            Open deck <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </article>
+
+      <!-- Portfolio -->
+      <article class="tile group relative flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all" data-area="portfolio">
+        <div class="h-2 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+        <div class="p-6 flex flex-col flex-1">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-700">Internal</span>
+          <h2 class="mt-2 text-xl font-semibold text-slate-900">Portfolio tracking</h2>
+          <p class="mt-3 text-sm text-slate-500 flex-1">Client development war room — archetypes by transformation theme, owners, progress, and plans.</p>
+          <a href="./candidate-archetype-tracker.html" data-link="portfolio" class="mt-6 inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors">
+            Open tracker <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <div data-lock="portfolio" class="hidden absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+          <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          <p class="mt-3 text-sm font-semibold text-slate-700">War room access required</p>
+          <p class="mt-1 text-xs text-slate-500">Sign in as <strong>warroom</strong> or <strong>architect</strong></p>
+        </div>
+      </article>
+
+      <!-- Playbook -->
+      <article class="tile group relative flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all" data-area="playbook">
+        <div class="h-2 bg-gradient-to-r from-amber-500 to-orange-600"></div>
+        <div class="p-6 flex flex-col flex-1">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-amber-700">Confidential · Internal</span>
+          <h2 class="mt-2 text-xl font-semibold text-slate-900">Playbook &amp; library</h2>
+          <p class="mt-3 text-sm text-slate-500 flex-1">Delivery methodology, operating assets, templates, and accelerators — strictly confidential.</p>
+          <a href="./playbook-library.html" data-link="playbook" class="mt-6 inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-amber-600 text-white text-sm font-semibold hover:bg-amber-700 transition-colors">
+            Enter library <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <div data-lock="playbook" class="hidden absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+          <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          <p class="mt-3 text-sm font-semibold text-slate-700">Architect access required</p>
+          <p class="mt-1 text-xs text-slate-500">Highest confidentiality tier</p>
+        </div>
+      </article>
+    </div>
+
+    <p class="mt-12 text-xs text-slate-400 text-center">Prototype access control · Replace with enterprise SSO before production use.</p>
+  </main>
+
+  <script src="./js/auth.js"></script>
+  <script>
+    const session = PSAuth.requireLogin();
+    if (!session) throw new Error("redirect");
+
+    PSAuth.renderUserBadge("userBadge");
+
+    ["cxo", "portfolio", "playbook"].forEach((area) => {
+      const allowed = PSAuth.hasAccess(area);
+      const tile = document.querySelector(`[data-area="${area}"]`);
+      const lock = tile?.querySelector(`[data-lock="${area}"]`);
+      const link = tile?.querySelector(`[data-link="${area}"]`);
+      if (!allowed) {
+        lock?.classList.remove("hidden");
+        link?.classList.add("pointer-events-none", "opacity-40");
+        link?.addEventListener("click", (e) => e.preventDefault());
+      }
+    });
+
+    const denied = new URLSearchParams(location.search).get("denied");
+    if (denied && PSAuth.AREAS[denied]) {
+      const banner = document.getElementById("deniedBanner");
+      banner.textContent = `You do not have access to ${PSAuth.AREAS[denied].label}. Contact your engagement lead for elevated permissions.`;
+      banner.classList.remove("hidden");
+      history.replaceState(null, "", "./dashboard.html");
+    }
+  </script>
+</body>
+</html>
