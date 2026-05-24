@@ -37,3 +37,7 @@ next-env.d.ts
 # Misc
 *.pem
 ~$*
+
+# staticrypt encrypted output (local builds only — CI builds in _site)
+encrypted/
+_site/

@@ -58,6 +58,37 @@ jobs:
           cp -R app/out/. _site/app/
           touch _site/.nojekyll
 
+      - name: Validate staticrypt secret
+        env:
+          STATICRYPT_PASSWORD: ${{ secrets.STATICRYPT_PASSWORD }}
+        run: |
+          if [ -z "$STATICRYPT_PASSWORD" ]; then
+            echo "::error::STATICRYPT_PASSWORD secret is not set. Add it in repo Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - name: Encrypt site with staticrypt
+        env:
+          STATICRYPT_PASSWORD: ${{ secrets.STATICRYPT_PASSWORD }}
+        run: |
+          # Reuse the committed salt so re-encrypts don't invalidate localStorage
+          cp .staticrypt.json _site/.staticrypt.json
+          cd _site
+          npx -y staticrypt . \
+            --recursive \
+            --remember 0 \
+            --short \
+            -d encrypted
+          # staticrypt nests output under encrypted/<basename-of-cwd>/ → encrypted/_site/...
+          # Copy encrypted HTML back over the originals (preserves JS/CSS/JSON as plaintext)
+          find encrypted/_site -type f -name "*.html" -print0 | while IFS= read -r -d '' f; do
+            rel="${f#encrypted/_site/}"
+            mkdir -p "$(dirname "$rel")"
+            cp "$f" "$rel"
+          done
+          rm -rf encrypted .staticrypt.json
+          touch .nojekyll
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
