@@ -5,9 +5,9 @@
       "title": "Advanced Use Case Driven",
       "characteristics": "Sponsors pursue cutting-edge agentic workflows on specific, high-complexity use cases (e.g. multi-step knowledge work, cross-system orchestration). Strong technical or innovation sponsorship; appetite for co-innovation and iterative validation. Success is measured by workflow outcomes on the chosen use case, not by enterprise roadmap completeness first.",
       "clients": [
-        { "name": "VOION", "owner": "Richard", "progress": "", "plan": "Active", "status": "", "notes": "" },
-        { "name": "CNPC", "owner": "Eric", "progress": "", "plan": "Active", "status": "", "notes": "" },
-        { "name": "SFS", "owner": "Jack", "progress": "", "plan": "Active", "status": "", "notes": "" }
+        { "name": "VOION", "owner": "Richard", "progress": "", "plan": "", "status": "Active", "notes": "" },
+        { "name": "CNPC", "owner": "Eric", "progress": "", "plan": "", "status": "Active", "notes": "" },
+        { "name": "SFS", "owner": "Jack", "progress": "", "plan": "", "status": "Active", "notes": "" }
       ]
     },
     {
@@ -23,7 +23,7 @@
       "title": "Labor Productivity Improvement Driven",
       "characteristics": "Primary driver is measurable labor efficiency: cycle time, throughput, FTE redeployment, or cost-per-transaction. Favors high-volume, more deterministic workflows and clear ROI framing. Operations or finance sponsorship is typical; Quick Win–style entry paths are common.",
       "clients": [
-        { "name": "NEXT", "owner": "Hayden", "progress": "", "plan": "Active", "status": "", "notes": "" }
+        { "name": "NEXT", "owner": "Hayden", "progress": "", "plan": "", "status": "Active", "notes": "" }
       ]
     },
     {
@@ -31,8 +31,8 @@
       "title": "WEF Lighthouse Driven",
       "characteristics": "Motivated by World Economic Forum / manufacturing lighthouse–style excellence: showcase sites, peer benchmarking, and physical–digital convergence. Narratives often tie to supply chain resilience, quality, sustainability, or smart operations. Visibility and referenceability matter alongside hard ROI.",
       "clients": [
-        { "name": "SEMCORP", "owner": "", "progress": "", "plan": "Active", "status": "", "notes": "" },
-        { "name": "Huaxing TCL", "owner": "Hayden", "progress": "", "plan": "Active", "status": "", "notes": "" }
+        { "name": "SEMCORP", "owner": "", "progress": "", "plan": "", "status": "Active", "notes": "" },
+        { "name": "Huaxing TCL", "owner": "Hayden", "progress": "", "plan": "", "status": "Active", "notes": "" }
       ]
     },
     {
