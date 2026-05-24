@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agentic Workflow Transformation Playbook</title>
+  <style>
+    :root {
+      --ink: #161616;
+      --muted: #64625e;
+      --paper: #f6f1e8;
+      --panel: #fffcf5;
+      --line: #d8cdbb;
+      --charcoal: #23201c;
+      --accent: #b8542b;
+      --accent-soft: #ead0bf;
+      --olive: #4f5b3f;
+      --blue: #314b68;
+      --gold: #ad7d2d;
+      --green: #4f6b50;
+      --red: #a1493f;
+      --shadow: 0 22px 60px rgba(35, 32, 28, 0.16);
+      --radius: 24px;
+      font-family: "Aptos", "Segoe UI", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        linear-gradient(90deg, rgba(35, 32, 28, 0.04) 1px, transparent 1px) 0 0 / 38px 38px,
+        linear-gradient(rgba(35, 32, 28, 0.035) 1px, transparent 1px) 0 0 / 38px 38px,
+        var(--paper);
+      color: var(--ink);
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    .deck-shell {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: 1fr auto;
+    }
+
+    .slide {
+      display: none;
+      width: min(1440px, calc(100vw - 64px));
+      height: min(810px, calc(100vh - 116px));
+      margin: 32px auto 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    .slide-inner {
+      height: 100%;
+      padding: 54px 64px 42px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px solid rgba(35, 32, 28, 0.09);
+      border-radius: 18px;
+      pointer-events: none;
+    }
+
+    .slide::after {
+      content: attr(data-section);
+      position: absolute;
+      right: 38px;
+      top: 30px;
+      color: rgba(35, 32, 28, 0.32);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(52px, 6vw, 92px);
+      line-height: 0.94;
+      letter-spacing: -0.055em;
+      font-weight: 500;
+      color: var(--charcoal);
+    }
+
+    h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(40px, 4.4vw, 66px);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+      font-weight: 500;
+      max-width: 960px;
+    }
+
+    h3 {
+      font-size: 20px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    p,
+    li {
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-size: 25px;
+      line-height: 1.34;
+      color: #4c4944;
+      max-width: 900px;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 13px;
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+    }
+
+    .rule {
+      height: 1px;
+      background: var(--line);
+      width: 100%;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 42px;
+      align-items: stretch;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .split.wide-right {
+      grid-template-columns: 0.78fr 1.22fr;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.48);
+      padding: 22px;
+    }
+
+    .card.compact {
+      padding: 16px;
+    }
+
+    .card.dark {
+      background: var(--charcoal);
+      border-color: var(--charcoal);
+      color: var(--panel);
+    }
+
+    .card.dark p,
+    .card.dark li {
+      color: rgba(255, 252, 245, 0.76);
+    }
+
+    .hero-copy,
+    .title-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-copy {
+      justify-content: center;
+      gap: 28px;
+    }
+
+    .title-panel {
+      justify-content: space-between;
+    }
+
+    .on-dark-eye {
+      color: var(--accent-soft);
+    }
+
+    .dark-rule {
+      margin: 18px 0;
+      background: rgba(255, 252, 245, 0.18);
+    }
+
+    .dark-rule.loose {
+      margin: 24px 0;
+    }
+
+    .card.dark .value {
+      display: block;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 52px;
+      line-height: 0.92;
+      letter-spacing: -0.045em;
+      color: var(--panel);
+    }
+
+    .card.dark .label {
+      display: block;
+      margin-top: 10px;
+      font-size: 15px;
+      line-height: 1.35;
+      color: rgba(255, 252, 245, 0.72);
+      font-weight: 700;
+    }
+
+    .card.dark .source-note {
+      color: rgba(255, 252, 245, 0.54);
+    }
+
+    .metric {
+      border-top: 4px solid var(--accent);
+      padding-top: 18px;
+    }
+
+    .metric .value {
+      display: block;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 52px;
+      line-height: 0.92;
+      letter-spacing: -0.045em;
+      color: var(--charcoal);
+    }
+
+    .metric .label {
+      display: block;
+      margin-top: 10px;
+      font-size: 15px;
+      line-height: 1.35;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .tone-accent {
+      --phase-color: var(--accent);
+    }
+
+    .tone-blue {
+      --phase-color: var(--blue);
+    }
+
+    .tone-gold {
+      --phase-color: var(--gold);
+    }
+
+    .tone-green {
+      --phase-color: var(--green);
+    }
+
+    .metric-gold {
+      border-top-color: var(--gold);
+    }
+
+    .metric-olive {
+      border-top-color: var(--olive);
+    }
+
+    .phase-ribbon {
+      display: grid;
+      grid-template-columns: 0.75fr 1.05fr 1fr 1.1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .phase {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      min-height: 210px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.44);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phase::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 8px;
+      height: 100%;
+      background: var(--phase-color, var(--accent));
+    }
+
+    .phase strong {
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--phase-color, var(--accent));
+    }
+
+    .phase h3 {
+      margin-top: 10px;
+      font-size: 24px;
+    }
+
+    .phase p {
+      font-size: 15px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .track {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .track-label {
+      font-weight: 800;
+      color: var(--charcoal);
+      font-size: 15px;
+    }
+
+    .bar {
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.55);
+      position: relative;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: var(--w);
+      margin-left: var(--ml, 0);
+      background: var(--c);
+      border-radius: 999px;
+    }
+
+    .bar-build {
+      --w: 28%;
+      --c: var(--accent);
+    }
+
+    .bar-sync-1 {
+      --w: 8%;
+      --ml: 28%;
+      --c: var(--charcoal);
+    }
+
+    .bar-design {
+      --w: 38%;
+      --ml: 36%;
+      --c: var(--blue);
+    }
+
+    .bar-sync-2 {
+      --w: 8%;
+      --ml: 68%;
+      --c: var(--charcoal);
+    }
+
+    .bar-validate {
+      --w: 24%;
+      --ml: 76%;
+      --c: var(--green);
+    }
+
+    .bar-quick-win {
+      --w: 18%;
+      --c: var(--green);
+    }
+
+    .bar-invest-prove {
+      --w: 24%;
+      --ml: 16%;
+      --c: var(--gold);
+    }
+
+    .bar-sponsor-align {
+      --w: 34%;
+      --ml: 28%;
+      --c: var(--blue);
+    }
+
+    .bar-defer-mature {
+      --w: 38%;
+      --ml: 58%;
+      --c: var(--red);
+    }
+
+    .funnel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 12px;
+      height: 100%;
+      min-height: 430px;
+    }
+
+    .quadrant {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.52);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .quadrant h3 {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+    }
+
+    .q-gold {
+      border-top: 5px solid var(--gold);
+    }
+
+    .q-green {
+      border-top: 5px solid var(--green);
+    }
+
+    .q-red {
+      border-top: 5px solid var(--red);
+    }
+
+    .q-blue {
+      border-top: 5px solid var(--blue);
+    }
+
+    .tag {
+      display: inline-flex;
+      width: fit-content;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .step-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      gap: 14px;
+      align-items: start;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+    }
+
+    .step:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .num {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--charcoal);
+      color: var(--panel);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+
+    .matrix-table th,
+    .matrix-table td {
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      padding: 12px 10px;
+      vertical-align: top;
+    }
+
+    .matrix-table th {
+      color: var(--charcoal);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .matrix-table td {
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .architecture-map {
+      display: grid;
+      grid-template-columns: 1fr 0.9fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .map-column {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.46);
+    }
+
+    .map-column h3 {
+      margin-bottom: 14px;
+    }
+
+    .pill-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 12px;
+      color: var(--muted);
+      background: var(--panel);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .gate {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 18px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .gate strong {
+      color: var(--charcoal);
+      font-size: 19px;
+    }
+
+    .gate ul {
+      display: grid;
+      gap: 6px;
+    }
+
+    .footer {
+      width: min(1440px, calc(100vw - 64px));
+      margin: 12px auto 24px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 18px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .controls {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-hint {
+      text-align: right;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--charcoal);
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .progress {
+      height: 6px;
+      background: rgba(35, 32, 28, 0.1);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 180ms ease;
+    }
+
+    .source-note {
+      color: rgba(35, 32, 28, 0.44);
+      font-size: 12px;
+      line-height: 1.35;
+      margin-top: auto;
+    }
+
+    @media (max-width: 1050px) {
+      body {
+        overflow: auto;
+      }
+
+      .deck-shell {
+        height: auto;
+      }
+
+      .slide {
+        width: calc(100vw - 24px);
+        height: auto;
+        min-height: 720px;
+        margin-top: 12px;
+      }
+
+      .slide-inner {
+        padding: 38px 30px;
+      }
+
+      .split,
+      .split.wide-right,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .phase-ribbon,
+      .architecture-map {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
+        width: calc(100vw - 24px);
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        overflow: visible;
+      }
+
+      .deck-shell {
+        display: block;
+        height: auto;
+      }
+
+      .slide,
+      .slide.active {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        page-break-after: always;
+      }
+
+      .footer {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck-shell" aria-live="polite">
+    <section class="slide active" data-section="Executive playbook">
+      <div class="slide-inner">
+        <span class="kicker">Agentic workflow transformation</span>
+        <div class="split">
+          <div class="hero-copy">
+            <h1>From candidate workflow to scaled agentic operation.</h1>
+            <p class="subtitle">A phase-gated playbook for sizing, designing, implementing, and scaling enterprise agentic workflows with repeatable quality criteria.</p>
+          </div>
+          <div class="card dark title-panel">
+            <div>
+              <p class="eyebrow on-dark-eye">Engagement model</p>
+              <div class="rule dark-rule"></div>
+              <div class="grid-2">
+                <div>
+                  <span class="value">0</span>
+                  <span class="label">Week impact sizing</span>
+                </div>
+                <div>
+                  <span class="value">2</span>
+                  <span class="label">Week architecture sprint</span>
+                </div>
+                <div>
+                  <span class="value">2-4</span>
+                  <span class="label">Week MVP validation</span>
+                </div>
+                <div>
+                  <span class="value">1-2</span>
+                  <span class="label">Month production scale-out</span>
+                </div>
+              </div>
+            </div>
+            <p class="source-note">Source basis: materials under /00_Playbook/Req.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Why now">
+      <div class="slide-inner">
+        <p class="eyebrow">The problem</p>
+        <h2>Agentic workflow demand is rising faster than delivery methods are maturing.</h2>
+        <div class="grid-3">
+          <div class="metric card">
+            <span class="value">01</span>
+            <span class="label">Market demand</span>
+            <p>Enterprises are actively requesting agentic workflow implementations, creating immediate need for a repeatable delivery approach.</p>
+          </div>
+          <div class="metric card metric-gold">
+            <span class="value">02</span>
+            <span class="label">Quality variance</span>
+            <p>Without a codified methodology, delivery quality depends on individual consultant expertise and inconsistent judgment calls.</p>
+          </div>
+          <div class="metric card metric-olive">
+            <span class="value">03</span>
+            <span class="label">Differentiation</span>
+            <p>A rigorous methodology gives clients clear phase gates, transparent evidence, and confidence that implementation risk is being managed.</p>
+          </div>
+        </div>
+        <p class="source-note">Design intent: move from activity descriptions to an executable playbook with tools, gates, and artifacts.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Operating model">
+      <div class="slide-inner">
+        <p class="eyebrow">The delivery spine</p>
+        <h2>Four phases convert ambiguity into a production workflow, one evidence gate at a time.</h2>
+        <div class="phase-ribbon">
+          <div class="phase tone-accent">
+            <div>
+              <strong>Week 0</strong>
+              <h3>Size</h3>
+              <p>Identify candidate workflows, screen readiness, classify risk, and select the first wave.</p>
+            </div>
+            <p><b>Exit:</b> prioritized portfolio.</p>
+          </div>
+          <div class="phase tone-blue">
+            <div>
+              <strong>2 weeks</strong>
+              <h3>Design</h3>
+              <p>Translate one workflow into agent roles, interaction modes, orchestration, and testable acceptance criteria.</p>
+            </div>
+            <p><b>Exit:</b> MVP-ready architecture.</p>
+          </div>
+          <div class="phase tone-gold">
+            <div>
+              <strong>2-4 weeks</strong>
+              <h3>Implement</h3>
+              <p>Build the minimum viable workflow, connect tools and data, and validate outputs against explicit evidence.</p>
+            </div>
+            <p><b>Exit:</b> validated pilot.</p>
+          </div>
+          <div class="phase tone-green">
+            <div>
+              <strong>1-2 months</strong>
+              <h3>Scale</h3>
+              <p>Deploy with controls, adoption routines, measurement, and a roadmap for the next process waves.</p>
+            </div>
+            <p><b>Exit:</b> operating capability.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Phase 0">
+      <div class="slide-inner">
+        <p class="eyebrow">Step 1 - Size the opportunity</p>
+        <h2>Start with a progressive assessment, not a blank-sheet business case.</h2>
+        <div class="split wide-right">
+          <div class="card dark">
+            <h3>Week 0 objective</h3>
+            <p>Find workflows worth designing and avoid investing in candidates that will fail later because output quality is unverifiable or the organization is not ready.</p>
+            <div class="rule dark-rule loose"></div>
+            <p><b>Recommended model:</b> Adaptive layered assessment, balancing rigor with Week 0 speed.</p>
+          </div>
+          <div class="step-list">
+            <div class="step">
+              <span class="num">1</span>
+              <div>
+                <h3>Binary readiness screen</h3>
+                <p>Require 5 of 6: process documentability, digital data access, execution volume, willing owner, definable output quality, and process stability.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">2</span>
+              <div>
+                <h3>2x2 risk funnel</h3>
+                <p>Classify survivors by Output Determinism Score and Organizational Readiness Score to set the right entry path.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">3</span>
+              <div>
+                <h3>Detailed scoring</h3>
+                <p>Rank Q1 and Q2 candidates using value magnitude, decision density, implementation velocity, and risk-adjusted return.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">4</span>
+              <div>
+                <h3>Portfolio assembly</h3>
+                <p>Select the lighthouse workflow and place later candidates into a 12-18 month transformation roadmap.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Sizing funnel">
+      <div class="slide-inner">
+        <p class="eyebrow">Step 1 tool</p>
+        <h2>The 2x2 funnel tells the team how, or whether, to proceed.</h2>
+        <div class="funnel">
+          <div class="quadrant q-gold">
+            <div>
+              <h3>Invest & Prove <span class="tag">Month 3-6</span></h3>
+              <p>Low output determinism, high readiness.</p>
+            </div>
+            <p>Proceed only if a human-in-the-loop validation pattern can substitute for deterministic correctness criteria.</p>
+          </div>
+          <div class="quadrant q-green">
+            <div>
+              <h3>Quick Win <span class="tag">Month 1-3</span></h3>
+              <p>High output determinism, high readiness.</p>
+            </div>
+            <p>Proceed directly to Design. Use as the first-wave lighthouse workflow and confidence-builder.</p>
+          </div>
+          <div class="quadrant q-red">
+            <div>
+              <h3>Defer & Mature <span class="tag">Month 9-18</span></h3>
+              <p>Low output determinism, low readiness.</p>
+            </div>
+            <p>Remove from current scope. Document maturity gaps and trigger conditions for later reassessment.</p>
+          </div>
+          <div class="quadrant q-blue">
+            <div>
+              <h3>Sponsor & Align <span class="tag">Month 4-9</span></h3>
+              <p>High output determinism, low readiness.</p>
+            </div>
+            <p>Proceed with explicit adoption risk mitigation, trust-building, and integration pre-work.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Sizing gate">
+      <div class="slide-inner">
+        <p class="eyebrow">Gate 1 - Ready for Design</p>
+        <h2>Do not enter Design until the candidate is valuable, testable, and sponsor-owned.</h2>
+        <div class="grid-2">
+          <div class="gate">
+            <strong>Readiness gate</strong>
+            <ul>
+              <li>5 of 6 binary readiness criteria are Yes.</li>
+              <li>Any exception has a named mitigation owner.</li>
+              <li>Process owner can make decisions within 48 hours.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Priority gate</strong>
+            <ul>
+              <li>PriorityScore is at least 3.0.</li>
+              <li>Quadrant action path is explicit.</li>
+              <li>Top candidate is ranked against alternatives.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Validation gate</strong>
+            <ul>
+              <li>Output quality can be defined or shown through examples.</li>
+              <li>Ground truth, rules, or HITL validation pattern is identified.</li>
+              <li>Known failure modes are captured.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Deliverable</strong>
+            <ul>
+              <li>Prioritized workflow portfolio.</li>
+              <li>Risk classification and conditions.</li>
+              <li>Design brief for the selected workflow.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Phase 1">
+      <div class="slide-inner">
+        <p class="eyebrow">Step 2 - Design the workflow</p>
+        <h2>Design is a structured translation from process knowledge to agent architecture.</h2>
+        <div class="architecture-map">
+          <div class="map-column">
+            <h3>Agent archetypes</h3>
+            <div class="pill-stack">
+              <span class="pill">Orchestrator - decomposes and routes</span>
+              <span class="pill">Executor - performs actions via tools</span>
+              <span class="pill">Analyst - reasons and recommends</span>
+              <span class="pill">Retriever - supplies context</span>
+              <span class="pill">Evaluator - checks quality and compliance</span>
+            </div>
+          </div>
+          <div class="map-column">
+            <h3>Human interaction</h3>
+            <div class="pill-stack">
+              <span class="pill">Autopilot - execute and log</span>
+              <span class="pill">Co-Pilot - propose and refine</span>
+              <span class="pill">Guardian - prepare and escalate</span>
+            </div>
+          </div>
+          <div class="map-column">
+            <h3>Coordination design</h3>
+            <div class="pill-stack">
+              <span class="pill">Single agent with tools</span>
+              <span class="pill">Sequential handoff</span>
+              <span class="pill">Parallel specialists</span>
+              <span class="pill">Hierarchical orchestration</span>
+              <span class="pill">Evaluator feedback loop</span>
+              <span class="pill">Human escalation path</span>
+            </div>
+          </div>
+        </div>
+        <p class="source-note">Design principle: start at the lowest viable complexity, then add multi-agent structure only when workflow evidence requires it.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Design sprint">
+      <div class="slide-inner">
+        <p class="eyebrow">Step 2 operating rhythm</p>
+        <h2>A 10-day architecture sprint keeps business discovery and technical design synchronized.</h2>
+        <div class="split">
+          <div class="card dark">
+            <h3>Two tracks, three syncs</h3>
+            <p>The functional consultant owns workflow reality, stakeholder alignment, risk, and acceptance criteria. The agentic architect owns architecture patterns, agent specifications, orchestration, and testability. Syncs prevent drift.</p>
+          </div>
+          <div class="timeline">
+            <div class="track">
+              <span class="track-label">Days 1-3</span>
+              <div class="bar"><span class="bar-build"></span></div>
+            </div>
+            <div class="track">
+              <span class="track-label">Sync 1</span>
+              <div class="bar"><span class="bar-sync-1"></span></div>
+            </div>
+            <div class="track">
+              <span class="track-label">Days 4-7</span>
+              <div class="bar"><span class="bar-design"></span></div>
+            </div>
+            <div class="track">
+              <span class="track-label">Sync 2</span>
+              <div class="bar"><span class="bar-sync-2"></span></div>
+            </div>
+            <div class="track">
+              <span class="track-label">Days 8-10</span>
+              <div class="bar"><span class="bar-validate"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="card compact">
+            <h3>Sync 1</h3>
+            <p>Discovery findings, risk picture, architecture hypothesis, and complexity decision.</p>
+          </div>
+          <div class="card compact">
+            <h3>Sync 2</h3>
+            <p>Acceptance criteria, architecture v1, gap analysis, and MVP scope boundaries.</p>
+          </div>
+          <div class="card compact">
+            <h3>Sync 3 / Gate</h3>
+            <p>Architecture walkthrough, decision log, and go/no-go for MVP build.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Design gate">
+      <div class="slide-inner">
+        <p class="eyebrow">Gate 2 - Ready for MVP</p>
+        <h2>The design package must be specific enough for engineers to build without re-discovery.</h2>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Artifact</th>
+              <th>What it must contain</th>
+              <th>Quality standard</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Workflow architecture</td>
+              <td>Future-state process, agent boundaries, tool touchpoints, and human checkpoints.</td>
+              <td>Every step has an owner: agent, human, system, or evaluator.</td>
+            </tr>
+            <tr>
+              <td>Agent specifications</td>
+              <td>Role, inputs, outputs, tools, memory needs, permissions, and failure handling.</td>
+              <td>Each agent maps to exactly one primary archetype.</td>
+            </tr>
+            <tr>
+              <td>Interaction design</td>
+              <td>Autopilot, Co-Pilot, or Guardian mode for each major decision point.</td>
+              <td>Mode is justified by risk, reversibility, and validation confidence.</td>
+            </tr>
+            <tr>
+              <td>Acceptance criteria</td>
+              <td>Given/When/Then cases, golden examples, and measurable quality thresholds.</td>
+              <td>MVP correctness can be tested without subjective debate.</td>
+            </tr>
+            <tr>
+              <td>Handoff package</td>
+              <td>Decision log, MVP scope, risk register, and integration assumptions.</td>
+              <td>Engineering can estimate and begin implementation immediately.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Phase 2">
+      <div class="slide-inner">
+        <p class="eyebrow">Step 3 - Implement and validate</p>
+        <h2>The MVP proves output quality and operating fit before production investment.</h2>
+        <div class="grid-4">
+          <div class="phase tone-accent">
+            <div>
+              <strong>Build</strong>
+              <h3>Thin vertical slice</h3>
+              <p>Implement the minimum end-to-end workflow path, including tools, data inputs, and decision logging.</p>
+            </div>
+          </div>
+          <div class="phase tone-blue">
+            <div>
+              <strong>Evaluate</strong>
+              <h3>Golden set testing</h3>
+              <p>Run historical examples or labeled cases through the workflow and compare to explicit quality standards.</p>
+            </div>
+          </div>
+          <div class="phase tone-gold">
+            <div>
+              <strong>Operate</strong>
+              <h3>Shadow mode</h3>
+              <p>Run the agent beside current operations to observe cycle time, exception rates, and human trust.</p>
+            </div>
+          </div>
+          <div class="phase tone-green">
+            <div>
+              <strong>Decide</strong>
+              <h3>Production case</h3>
+              <p>Confirm that accuracy, adoption signals, and integration reliability justify scaling beyond pilot.</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>MVP evidence standard</h3>
+          <p>Do not ask whether the demo looks impressive. Ask whether the workflow repeatedly produces acceptable outputs, handles known exceptions, exposes failures, and gives humans the right intervention points.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Implementation gate">
+      <div class="slide-inner">
+        <p class="eyebrow">Gate 3 - Ready for Production</p>
+        <h2>Production entry requires evidence across quality, integration, control, and adoption.</h2>
+        <div class="grid-2">
+          <div class="gate">
+            <strong>Output quality</strong>
+            <ul>
+              <li>Accuracy and completeness meet agreed thresholds.</li>
+              <li>Known exception classes are covered or escalated.</li>
+              <li>Evaluator checks are logged and reviewable.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Integration reliability</strong>
+            <ul>
+              <li>APIs, files, or system handoffs work in realistic conditions.</li>
+              <li>Retries, fallbacks, and dependency failures are defined.</li>
+              <li>Security and permission assumptions are validated.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Human operating model</strong>
+            <ul>
+              <li>Process owners know when to trust, intervene, or override.</li>
+              <li>Escalation paths are clear and staffed.</li>
+              <li>Shadow users show adoption intent, not passive compliance.</li>
+            </ul>
+          </div>
+          <div class="gate">
+            <strong>Business case</strong>
+            <ul>
+              <li>Cycle time, quality, or cost metrics are moving.</li>
+              <li>Production benefits exceed required run cost and risk controls.</li>
+              <li>Sponsor approves go-live scope.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Phase 3">
+      <div class="slide-inner">
+        <p class="eyebrow">Step 4 - Scale out</p>
+        <h2>Scaling is not cloning the pilot. It is building a managed portfolio of agentic workflows.</h2>
+        <div class="split wide-right">
+          <div class="card dark">
+            <h3>Scale-out objective</h3>
+            <p>Move from a validated prototype to a production operating capability that can absorb more workflows, more users, and more risk without losing control.</p>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <h3>Productionize the lighthouse</h3>
+              <p>Deploy the first workflow with monitoring, support ownership, access controls, audit logging, and release management.</p>
+            </div>
+            <div class="card">
+              <h3>Codify delivery assets</h3>
+              <p>Turn prompts, agent specs, evals, playbooks, and issue logs into reusable accelerators for the next wave.</p>
+            </div>
+            <div class="card">
+              <h3>Stand up governance</h3>
+              <p>Define approval rights, model/tool risk review, exception escalation, and change control for agent behavior.</p>
+            </div>
+            <div class="card">
+              <h3>Expand by quadrant</h3>
+              <p>Use Quick Wins first, then Sponsor & Align and Invest & Prove candidates once trust and validation infrastructure mature.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Scale roadmap">
+      <div class="slide-inner">
+        <p class="eyebrow">Scale-out roadmap</p>
+        <h2>A 12-18 month portfolio view prevents every workflow from competing for the same first-wave slot.</h2>
+        <div class="timeline">
+          <div class="track">
+            <span class="track-label">Quick Win</span>
+            <div class="bar"><span class="bar-quick-win"></span></div>
+          </div>
+          <div class="track">
+            <span class="track-label">Invest & Prove</span>
+            <div class="bar"><span class="bar-invest-prove"></span></div>
+          </div>
+          <div class="track">
+            <span class="track-label">Sponsor & Align</span>
+            <div class="bar"><span class="bar-sponsor-align"></span></div>
+          </div>
+          <div class="track">
+            <span class="track-label">Defer & Mature</span>
+            <div class="bar"><span class="bar-defer-mature"></span></div>
+          </div>
+        </div>
+        <div class="grid-4">
+          <div class="card compact">
+            <h3>Months 1-3</h3>
+            <p>Prove value with 1-2 high-confidence workflows in production.</p>
+          </div>
+          <div class="card compact">
+            <h3>Months 3-6</h3>
+            <p>Validate human evaluation infrastructure for judgment-heavy work.</p>
+          </div>
+          <div class="card compact">
+            <h3>Months 4-9</h3>
+            <p>Expand with trust-building, integration cleanup, and sponsor alignment.</p>
+          </div>
+          <div class="card compact">
+            <h3>Months 9-18</h3>
+            <p>Reassess deferred candidates after readiness and validation gaps close.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Roles">
+      <div class="slide-inner">
+        <p class="eyebrow">Lean delivery team</p>
+        <h2>Two people can run the method when ownership is explicit.</h2>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Functional consultant</h3>
+            <ul>
+              <li>Extracts process knowledge and business context.</li>
+              <li>Runs interviews and readiness assessment.</li>
+              <li>Defines acceptance criteria and adoption risks.</li>
+              <li>Owns client narrative and phase-gate evidence.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Agentic architect</h3>
+            <ul>
+              <li>Selects agent archetypes and interaction modes.</li>
+              <li>Designs orchestration, tools, memory, and guardrails.</li>
+              <li>Converts the workflow into MVP-ready specs.</li>
+              <li>Owns technical feasibility and validation design.</li>
+            </ul>
+          </div>
+          <div class="card dark">
+            <h3>Agentic engineer</h3>
+            <ul>
+              <li>Builds the MVP and production workflow.</li>
+              <li>Implements integrations, evals, logs, and controls.</li>
+              <li>Hardens reliability and deployment operations.</li>
+              <li>Feeds reusable assets back into the playbook.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Deliverables">
+      <div class="slide-inner">
+        <p class="eyebrow">What the client sees</p>
+        <h2>Each phase produces an artifact that makes the next decision easier.</h2>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Phase</th>
+              <th>Primary deliverable</th>
+              <th>Decision it enables</th>
+              <th>Quality bar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Size</td>
+              <td>Prioritized workflow portfolio</td>
+              <td>Which workflow should enter Design?</td>
+              <td>Ranked, risk-classified, sponsor-owned.</td>
+            </tr>
+            <tr>
+              <td>Design</td>
+              <td>Agent architecture package</td>
+              <td>What exactly should the MVP build?</td>
+              <td>Agent roles, interactions, tools, evals, and risks are explicit.</td>
+            </tr>
+            <tr>
+              <td>Implement</td>
+              <td>MVP validation report</td>
+              <td>Should this workflow go to production?</td>
+              <td>Evidence-based quality, reliability, adoption, and ROI signals.</td>
+            </tr>
+            <tr>
+              <td>Scale</td>
+              <td>Production and portfolio roadmap</td>
+              <td>How do we expand without losing control?</td>
+              <td>Operating model, governance, monitoring, and next-wave plan.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide" data-section="End state">
+      <div class="slide-inner">
+        <p class="eyebrow">Definition of success</p>
+        <h2>The methodology works when a new team can deliver with confidence, not heroics.</h2>
+        <div class="split">
+          <div class="card dark">
+            <h3>Success standard</h3>
+            <p>A consulting team with no prior agentic delivery experience can pick up the playbook, execute the phases, make go/no-go decisions with evidence, and explain progress to the client at any point.</p>
+          </div>
+          <div class="step-list">
+            <div class="step">
+              <span class="num">1</span>
+              <div>
+                <h3>Repeatable phase gates</h3>
+                <p>Every transition is governed by binary or threshold criteria, not optimism.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">2</span>
+              <div>
+                <h3>Reusable templates</h3>
+                <p>Each deliverable has sections, expected evidence, and a clear quality standard.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">3</span>
+              <div>
+                <h3>Cross-domain applicability</h3>
+                <p>The same method works across finance, supply chain, HR, customer service, and other enterprise process domains.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="num">4</span>
+              <div>
+                <h3>Portfolio discipline</h3>
+                <p>Scale-out follows readiness and evidence, not a queue of stakeholder wishes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+    <div class="controls">
+      <button type="button" id="prevBtn" aria-label="Previous slide">Prev</button>
+      <span id="slideCount">1 / 15</span>
+      <button type="button" id="nextBtn" aria-label="Next slide">Next</button>
+      <button type="button" onclick="window.print()" aria-label="Print deck">Print</button>
+    </div>
+    <div class="nav-hint">Use arrow keys or space to navigate</div>
+  </footer>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const progressBar = document.getElementById("progressBar");
+    const slideCount = document.getElementById("slideCount");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    let current = 0;
+
+    function showSlide(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === current));
+      slideCount.textContent = `${current + 1} / ${slides.length}`;
+      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+      const hash = `slide-${current + 1}`;
+      if (window.location.hash !== `#${hash}`) {
+        history.replaceState(null, "", `#${hash}`);
+      }
+    }
+
+    prevBtn.addEventListener("click", () => showSlide(current - 1));
+    nextBtn.addEventListener("click", () => showSlide(current + 1));
+
+    document.addEventListener("keydown", (event) => {
+      if (["ArrowRight", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        showSlide(current + 1);
+      }
+      if (["ArrowLeft", "PageUp", "Backspace"].includes(event.key)) {
+        event.preventDefault();
+        showSlide(current - 1);
+      }
+      if (event.key === "Home") {
+        showSlide(0);
+      }
+      if (event.key === "End") {
+        showSlide(slides.length - 1);
+      }
+    });
+
+    const hashMatch = window.location.hash.match(/slide-(\d+)/);
+    showSlide(hashMatch ? Number(hashMatch[1]) - 1 : 0);
+  </script>
+</body>
+</html>

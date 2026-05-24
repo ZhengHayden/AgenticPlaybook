@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agentic Workflow Operating Blueprint</title>
+  <style>
+    :root {
+      --bg: #0f1211;
+      --panel: #f3efe4;
+      --ink: #151715;
+      --muted: #67655f;
+      --line: #cbc2ae;
+      --dark-line: #343a36;
+      --blue: #345d7a;
+      --teal: #3b7566;
+      --amber: #a36f2b;
+      --clay: #a24c35;
+      --cream: #fffaf0;
+      font-family: "Aptos", "Segoe UI", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    .slide {
+      display: none;
+      width: min(1440px, calc(100vw - 56px));
+      height: min(810px, calc(100vh - 104px));
+      margin: 28px auto 0;
+      background: var(--panel);
+      border: 1px solid var(--dark-line);
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    .slide::before {
+      content: attr(data-label);
+      position: absolute;
+      top: 26px;
+      right: 36px;
+      color: rgba(21, 23, 21, 0.35);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .inner {
+      height: 100%;
+      padding: 50px 58px 38px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(54px, 6vw, 88px);
+      line-height: 0.94;
+      letter-spacing: -0.065em;
+      max-width: 940px;
+    }
+
+    h2 {
+      font-size: clamp(38px, 4.2vw, 62px);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      max-width: 980px;
+    }
+
+    h3 {
+      font-size: 20px;
+      line-height: 1.14;
+      letter-spacing: -0.025em;
+    }
+
+    p,
+    li {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.42;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 19px;
+    }
+
+    .eyebrow {
+      color: var(--clay);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .subtitle {
+      font-size: 24px;
+      line-height: 1.32;
+      max-width: 880px;
+      color: #3f403c;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 34px;
+      flex: 1;
+      min-height: 0;
+      align-items: stretch;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4,
+    .grid-5 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .grid-5 {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    .card {
+      background: rgba(255, 250, 240, 0.62);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .card.dark {
+      background: #151715;
+      border-color: #151715;
+      color: var(--cream);
+    }
+
+    .card.dark p,
+    .card.dark li {
+      color: rgba(255, 250, 240, 0.72);
+    }
+
+    .hero-copy,
+    .title-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-copy {
+      justify-content: center;
+      gap: 28px;
+    }
+
+    .title-panel {
+      justify-content: space-between;
+    }
+
+    .node {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 14px;
+      background: var(--cream);
+      font-weight: 800;
+      text-align: center;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .arrow-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      align-items: center;
+    }
+
+    .phase-block {
+      min-height: 190px;
+      border-left: 8px solid var(--tone);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .phase-block strong {
+      display: block;
+      color: var(--tone);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .tone-blue {
+      --tone: var(--blue);
+    }
+
+    .tone-teal {
+      --tone: var(--teal);
+    }
+
+    .tone-amber {
+      --tone: var(--amber);
+    }
+
+    .tone-clay {
+      --tone: var(--clay);
+    }
+
+    .system-map {
+      display: grid;
+      grid-template-columns: 0.9fr 1.2fr 0.9fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .lane {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .connector {
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 900;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+    }
+
+    .matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .matrix th,
+    .matrix td {
+      border-bottom: 1px solid var(--line);
+      padding: 11px 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .matrix th {
+      color: var(--ink);
+      font-size: 11px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .matrix td {
+      color: var(--muted);
+      line-height: 1.34;
+    }
+
+    .decision-tree {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .branch {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px;
+      background: var(--cream);
+    }
+
+    .branch h3 {
+      margin-bottom: 12px;
+    }
+
+    .metric {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-top: 5px solid var(--tone);
+    }
+
+    .metric strong {
+      font-size: 44px;
+      line-height: 0.95;
+      letter-spacing: -0.055em;
+    }
+
+    .footer {
+      width: min(1440px, calc(100vw - 56px));
+      margin: 12px auto 22px;
+      color: #c8c3b8;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 14px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .progress {
+      height: 6px;
+      background: #2a2f2c;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--teal);
+    }
+
+    button {
+      border: 1px solid #3b423d;
+      background: #171b19;
+      color: #f2eadc;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    @media (max-width: 1050px) {
+      body {
+        overflow: auto;
+      }
+
+      .slide {
+        width: calc(100vw - 24px);
+        height: auto;
+        min-height: 760px;
+        margin-top: 12px;
+      }
+
+      .inner {
+        padding: 36px 28px;
+      }
+
+      .split,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .grid-5,
+      .system-map,
+      .decision-tree,
+      .arrow-row {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
+        width: calc(100vw - 24px);
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .right {
+        text-align: center;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        overflow: visible;
+      }
+
+      .slide,
+      .slide.active {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        page-break-after: always;
+      }
+
+      .footer {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="slide active" data-label="Operating blueprint">
+      <div class="inner">
+        <p class="eyebrow">Agentic delivery architecture</p>
+        <div class="split">
+          <div class="hero-copy">
+            <h1>Operating blueprint for agentic workflow delivery.</h1>
+            <p class="subtitle">A systems-oriented deck for architects and delivery leads: assess the workflow, map the agent system, validate the build, and govern scale-out.</p>
+          </div>
+          <div class="card dark title-panel">
+            <h3>Blueprint promise</h3>
+            <p>Every workflow is treated as a designed operating system: inputs, agents, tools, human checkpoints, evaluators, telemetry, and governance are all explicit before scale.</p>
+            <div class="grid-2">
+              <div class="metric tone-blue"><strong>4</strong><p>Delivery phases</p></div>
+              <div class="metric tone-teal"><strong>5</strong><p>Agent archetypes</p></div>
+              <div class="metric tone-amber"><strong>3</strong><p>Human modes</p></div>
+              <div class="metric tone-clay"><strong>6</strong><p>Readiness gates</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Blueprint stack">
+      <div class="inner">
+        <p class="eyebrow">End-to-end system</p>
+        <h2>The playbook decomposes delivery into four connected architecture layers.</h2>
+        <div class="arrow-row">
+          <div class="card phase-block tone-blue"><div><strong>Layer 1</strong><h3>Opportunity system</h3><p>Candidate inventory, readiness screen, ODS x ORS funnel, priority score.</p></div><p>Output: portfolio.</p></div>
+          <div class="card phase-block tone-teal"><div><strong>Layer 2</strong><h3>Agent system</h3><p>Agent archetypes, interaction modes, A2A patterns, HITL controls.</p></div><p>Output: architecture.</p></div>
+          <div class="card phase-block tone-amber"><div><strong>Layer 3</strong><h3>Validation system</h3><p>Golden datasets, evals, shadow mode, exception testing, decision logs.</p></div><p>Output: evidence.</p></div>
+          <div class="card phase-block tone-clay"><div><strong>Layer 4</strong><h3>Scale system</h3><p>Production operations, monitoring, governance, adoption, portfolio waves.</p></div><p>Output: capability.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Sizing architecture">
+      <div class="inner">
+        <p class="eyebrow">Size the workflow</p>
+        <h2>Use layered triage to separate attractive workflows from viable workflows.</h2>
+        <div class="system-map">
+          <div class="lane">
+            <div class="node">Candidate inventory</div>
+            <div class="node">Process owner interviews</div>
+            <div class="node">Evidence capture</div>
+          </div>
+          <div class="connector">progressive filters</div>
+          <div class="lane">
+            <div class="card"><h3>Binary readiness</h3><p>5 of 6 required: documentable, digital data, volume, owner, quality definition, stability.</p></div>
+            <div class="card"><h3>ODS x ORS funnel</h3><p>Classify Quick Win, Sponsor & Align, Invest & Prove, or Defer & Mature.</p></div>
+            <div class="card"><h3>Depth scoring</h3><p>Value Magnitude, Decision Density Index, risk-adjusted return, final priority.</p></div>
+          </div>
+        </div>
+        <table class="matrix">
+          <thead><tr><th>Gate</th><th>Question</th><th>Proceed condition</th></tr></thead>
+          <tbody>
+            <tr><td>Readiness</td><td>Can this workflow fit the engagement constraints?</td><td>At least 5 of 6 binary criteria pass.</td></tr>
+            <tr><td>Funnel</td><td>What delivery path does the risk profile imply?</td><td>Quadrant action path is explicit and sponsor accepted.</td></tr>
+            <tr><td>Priority</td><td>Is this better than the next best candidate?</td><td>PriorityScore is at least 3.0 with documented assumptions.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Complexity gate">
+      <div class="inner">
+        <p class="eyebrow">Design decision tree</p>
+        <h2>Start with the lowest viable complexity and escalate only when the workflow demands it.</h2>
+        <div class="decision-tree">
+          <div class="branch">
+            <h3>Q1. Can one agent plus tools complete the workflow?</h3>
+            <p>If yes, use a single-agent design. Add evaluator and HITL controls only where risk or correctness requires them.</p>
+            <div class="node">Single agent with tools</div>
+          </div>
+          <div class="branch">
+            <h3>Q2. Do steps require distinct capabilities or owners?</h3>
+            <p>If yes, separate into agent roles using the five archetypes and document handoff contracts.</p>
+            <div class="node">Multi-agent architecture</div>
+          </div>
+          <div class="branch">
+            <h3>Q3. Can output correctness be automatically checked?</h3>
+            <p>If yes, use evaluator loops and automated acceptance tests. If no, design Guardian or Co-Pilot review.</p>
+            <div class="node">Evaluator or HITL validation</div>
+          </div>
+          <div class="branch">
+            <h3>Q4. Is deployment adoption-ready?</h3>
+            <p>If no, scope trust-building, shadow mode, role redesign, and sponsor alignment into production planning.</p>
+            <div class="node">Trust-led scale profile</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Agent taxonomy">
+      <div class="inner">
+        <p class="eyebrow">Agent system components</p>
+        <h2>The five archetypes make architecture decisions teachable and auditable.</h2>
+        <div class="grid-5">
+          <div class="card phase-block tone-blue"><div><strong>01</strong><h3>Orchestrator</h3><p>Decomposes work, routes tasks, maintains state.</p></div></div>
+          <div class="card phase-block tone-teal"><div><strong>02</strong><h3>Executor</h3><p>Performs defined operations through tools or APIs.</p></div></div>
+          <div class="card phase-block tone-amber"><div><strong>03</strong><h3>Analyst</h3><p>Synthesizes inputs and makes recommendations.</p></div></div>
+          <div class="card phase-block tone-clay"><div><strong>04</strong><h3>Retriever</h3><p>Finds and supplies context from knowledge sources.</p></div></div>
+          <div class="card phase-block tone-blue"><div><strong>05</strong><h3>Evaluator</h3><p>Checks quality, safety, compliance, and completeness.</p></div></div>
+        </div>
+        <table class="matrix">
+          <thead><tr><th>Architecture rule</th><th>Why it matters</th></tr></thead>
+          <tbody>
+            <tr><td>Every agent has one primary archetype.</td><td>Prevents vague agents that retrieve, reason, execute, and evaluate without clear accountability.</td></tr>
+            <tr><td>Every agent has typed inputs and outputs.</td><td>Creates handoff contracts that engineers can implement and validators can test.</td></tr>
+            <tr><td>Every high-risk output has an evaluator or human checkpoint.</td><td>Turns trust into an explicit control design instead of a launch assumption.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Human interaction">
+      <div class="inner">
+        <p class="eyebrow">Human-agent contracts</p>
+        <h2>Interaction mode is selected by risk, reversibility, and validation confidence.</h2>
+        <div class="grid-3">
+          <div class="card phase-block tone-teal"><div><strong>Autopilot</strong><h3>Execute and log</h3><p>Low-risk, reversible, high-volume tasks where correctness is measurable.</p></div><p>Example: structured invoice matching.</p></div>
+          <div class="card phase-block tone-amber"><div><strong>Co-Pilot</strong><h3>Propose and refine</h3><p>Medium-risk work where the agent drafts or recommends and humans tune the result.</p></div><p>Example: customer response drafting.</p></div>
+          <div class="card phase-block tone-clay"><div><strong>Guardian</strong><h3>Prepare and escalate</h3><p>High-risk, irreversible, regulated, or subjective decisions where humans decide.</p></div><p>Example: compliance judgment.</p></div>
+        </div>
+        <div class="card dark">
+          <h3>Blueprint principle</h3>
+          <p>Do not treat human review as a generic fallback. Specify the trigger, reviewer role, expected decision, SLA, and what the agent does after the decision.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="MVP validation">
+      <div class="inner">
+        <p class="eyebrow">Build and prove</p>
+        <h2>The MVP is an evidence factory, not a demo factory.</h2>
+        <div class="grid-4">
+          <div class="card"><h3>Thin slice</h3><p>Build one complete path from trigger to output, including logging and escalation.</p></div>
+          <div class="card"><h3>Golden set</h3><p>Use historical approved outputs, explicit rules, or human evaluation panels.</p></div>
+          <div class="card"><h3>Exception bank</h3><p>Test common failure modes, boundary cases, integration outages, and ambiguous inputs.</p></div>
+          <div class="card"><h3>Decision log</h3><p>Capture why the agent acted, what evidence it used, and where humans intervened.</p></div>
+        </div>
+        <table class="matrix">
+          <thead><tr><th>Signal</th><th>Pass evidence</th><th>Failure response</th></tr></thead>
+          <tbody>
+            <tr><td>Output quality</td><td>Meets threshold on golden set and live shadow cases.</td><td>Refine prompts, tools, evals, or interaction mode.</td></tr>
+            <tr><td>System reliability</td><td>Integrations survive realistic load and dependency failure.</td><td>Add retries, queues, fallbacks, or scope reduction.</td></tr>
+            <tr><td>Human trust</td><td>Users understand when to accept, edit, reject, or escalate.</td><td>Extend shadow mode and redesign checkpoint UX.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Scale architecture">
+      <div class="inner">
+        <p class="eyebrow">Production and portfolio</p>
+        <h2>Scale-out adds operational disciplines around the agent system.</h2>
+        <div class="system-map">
+          <div class="lane">
+            <div class="card"><h3>Production controls</h3><p>Access, audit logging, monitoring, release management, model/tool risk review.</p></div>
+            <div class="card"><h3>Run operations</h3><p>Support ownership, incident playbooks, SLA reporting, exception queues.</p></div>
+          </div>
+          <div class="connector">operating layer</div>
+          <div class="lane">
+            <div class="card"><h3>Reusable assets</h3><p>Agent specs, prompt libraries, eval suites, data connectors, risk patterns.</p></div>
+            <div class="card"><h3>Portfolio waves</h3><p>Quick Win first, then Invest & Prove and Sponsor & Align as trust and validation maturity increase.</p></div>
+          </div>
+        </div>
+        <div class="card dark">
+          <h3>Scale condition</h3>
+          <p>Only scale when the lighthouse workflow has measurable production value, a stable support model, and reusable delivery assets that reduce the cost and risk of the next workflow.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="progress"><span id="progressBar"></span></div>
+    <div class="controls">
+      <button type="button" id="prevBtn">Prev</button>
+      <span id="slideCount"></span>
+      <button type="button" id="nextBtn">Next</button>
+      <button type="button" onclick="window.print()">Print</button>
+    </div>
+    <div class="right">Operating Blueprint</div>
+  </footer>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const progressBar = document.getElementById("progressBar");
+    const slideCount = document.getElementById("slideCount");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    let current = 0;
+
+    function showSlide(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === current));
+      slideCount.textContent = `${current + 1} / ${slides.length}`;
+      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+      history.replaceState(null, "", `#slide-${current + 1}`);
+    }
+
+    prevBtn.addEventListener("click", () => showSlide(current - 1));
+    nextBtn.addEventListener("click", () => showSlide(current + 1));
+    document.addEventListener("keydown", (event) => {
+      if (["ArrowRight", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        showSlide(current + 1);
+      }
+      if (["ArrowLeft", "PageUp", "Backspace"].includes(event.key)) {
+        event.preventDefault();
+        showSlide(current - 1);
+      }
+    });
+
+    const hashMatch = window.location.hash.match(/slide-(\d+)/);
+    showSlide(hashMatch ? Number(hashMatch[1]) - 1 : 0);
+  </script>
+</body>
+</html>
