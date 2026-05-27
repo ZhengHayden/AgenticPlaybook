@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="h-full scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,18 @@
   <script>
     tailwind.config = { theme: { extend: { fontFamily: { sans: ['"DM Sans"', 'system-ui', 'sans-serif'] } } } };
   </script>
+  <style>
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(99,102,241,0.25), rgba(16,185,129,0.25), rgba(245,158,11,0.25), rgba(139,92,246,0.25), transparent);
+      margin: 0;
+    }
+    .nav-link.active { color: #4338ca; background: #eef2ff; }
+    main section[id] { scroll-margin-top: 130px; }
+  </style>
 </head>
-<body class="min-h-full bg-slate-50 text-slate-900 antialiased">
-  <header class="sticky top-0 z-20 border-b border-amber-200/80 bg-amber-50/95 backdrop-blur-md">
+<body class="min-h-full bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900 antialiased">
+  <header class="sticky top-0 z-30 border-b border-amber-200/80 bg-amber-50/95 backdrop-blur-md">
     <div class="max-w-5xl mx-auto px-4 md:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3 min-w-0">
         <a href="./dashboard.html" class="text-slate-400 hover:text-amber-800" title="Back to hub">
@@ -26,10 +35,45 @@
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-4 md:px-6 py-8 space-y-10">
-    <section class="rounded-2xl border border-amber-200 bg-amber-50/60 p-6">
+  <!-- Section nav -->
+  <nav class="sticky top-[57px] z-20 border-b border-slate-200 bg-white/90 backdrop-blur-md">
+    <div class="max-w-5xl mx-auto px-4 md:px-6">
+      <ul class="flex flex-nowrap overflow-x-auto gap-1 py-2 text-xs font-semibold text-slate-600">
+        <li><a data-nav href="#codified" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          01 Codified Assets
+        </a></li>
+        <li><a data-nav href="#methodology" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          02 Methodology
+        </a></li>
+        <li><a data-nav href="#worksheets" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          03 Worksheets
+        </a></li>
+        <li><a data-nav href="#accelerators" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-violet-50 hover:text-violet-700 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          04 Accelerators
+        </a></li>
+        <li><a data-nav href="#reference" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-sky-50 hover:text-sky-700 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          05 Reference
+        </a></li>
+        <li class="ml-auto"><a href="#roadmap" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Roadmap
+        </a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto px-4 md:px-6 py-8 space-y-12">
+    <!-- Confidentiality banner -->
+    <section class="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100/40 p-6 shadow-sm">
       <div class="flex flex-wrap items-start gap-4">
-        <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-200 text-amber-900 text-xl">⚠</span>
+        <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-200 text-amber-900">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </span>
         <div>
           <h2 class="text-lg font-semibold text-amber-950">Internal use only</h2>
           <p class="mt-1 text-sm text-amber-900/80 max-w-2xl leading-relaxed">
@@ -40,18 +84,296 @@
       </div>
     </section>
 
-    <!-- Section 1: Methodology (partially live) -->
-    <section>
-      <div class="flex items-end justify-between gap-4 mb-4">
-        <div>
-          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500">01 · Methodology</h2>
-          <p class="text-lg font-semibold text-slate-900 mt-1">Core playbooks &amp; decks</p>
+    <hr class="section-divider" />
+
+    <!-- Section 1: Codified Assets — workflow library -->
+    <section id="codified">
+      <div class="flex items-start justify-between gap-4 mb-5">
+        <div class="flex items-start gap-4">
+          <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700 shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          </span>
+          <div>
+            <h2 class="text-xs font-bold uppercase tracking-widest text-indigo-700">01 · Codified Assets</h2>
+            <p class="text-lg font-semibold text-slate-900 mt-1">Agentic workflow library</p>
+            <p class="text-sm text-slate-500 mt-2 max-w-3xl leading-relaxed">
+              Reference implementations of agentic workflows — codified architectures, sample prompts, golden eval sets, and HITL patterns — indexed by industry and by function so teams can lift-and-adapt instead of building from scratch.
+            </p>
+          </div>
         </div>
-        <span class="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 text-emerald-800">Partially available</span>
+        <span class="text-xs font-medium px-2 py-1 rounded-full bg-indigo-100 text-indigo-800 shrink-0">Curating</span>
+      </div>
+
+      <!-- By industry sector -->
+      <div class="mb-8">
+        <h3 class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          By industry sector
+        </h3>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">TMT</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Technology, Media &amp; Telecom</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">GEM</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Global Energy &amp; Materials</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">AI</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Advanced Industries (Auto, A&amp;D, Industrials)</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">CMT</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Consumer, Retail &amp; Travel</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11m16-11v11M8 14v3m4-3v3m4-3v3"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">FIG</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Financial Institutions</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-pink-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">HLS</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Healthcare &amp; Life Sciences</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">PSS</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Public &amp; Social Sector</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">Cross-sector</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Reusable across industries</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- By function -->
+      <div>
+        <h3 class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+          By function
+        </h3>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">R&amp;D</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Product &amp; technology development</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">Supply Chain</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Planning, logistics, fulfillment</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">Manufacturing</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Plant ops, quality, maintenance</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">Procurement</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Sourcing, supplier, contracts</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-pink-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">Sales &amp; Marketing</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Demand gen, account ops, content</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">HR &amp; People</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Talent, learning, workforce planning</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">Finance</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">FP&amp;A, controllership, treasury</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">Strategy &amp; Corp Dev</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Market scans, M&amp;A, portfolio</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">Risk &amp; Compliance</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Controls, audit, regulatory review</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cyan-50 text-cyan-600">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">Customer Ops</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Service, support, contact center</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+              <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-slate-900">IT &amp; Engineering</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Seeding</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Software delivery, ITSM, security</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- Section 2: Methodology (partially live) -->
+    <section id="methodology">
+      <div class="flex items-start justify-between gap-4 mb-5">
+        <div class="flex items-start gap-4">
+          <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          </span>
+          <div>
+            <h2 class="text-xs font-bold uppercase tracking-widest text-emerald-700">02 · Methodology</h2>
+            <p class="text-lg font-semibold text-slate-900 mt-1">Core playbooks &amp; decks</p>
+          </div>
+        </div>
+        <span class="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 shrink-0">Partially available</span>
       </div>
       <div class="grid sm:grid-cols-2 gap-4">
         <a href="./agentic-playbook-interactive.html" class="block p-5 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 hover:shadow-md transition-all group">
-          <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Live</p>
+          <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider flex items-center gap-1">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span> Live
+          </p>
           <h3 class="mt-1 font-semibold text-slate-900 group-hover:text-indigo-700">Agentic Workflow Delivery Playbook</h3>
           <p class="mt-2 text-sm text-slate-500">McKinsey-style four-phase deck — Impact Sizing through Production (29 slides).</p>
         </a>
@@ -73,48 +395,55 @@
       </div>
     </section>
 
-    <!-- Section 2: Worksheets -->
-    <section>
-      <div class="flex items-end justify-between gap-4 mb-4">
-        <div>
-          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500">02 · Worksheets &amp; tools</h2>
-          <p class="text-lg font-semibold text-slate-900 mt-1">Facilitation artifacts</p>
+    <hr class="section-divider" />
+
+    <!-- Section 3: Worksheets -->
+    <section id="worksheets">
+      <div class="flex items-start justify-between gap-4 mb-5">
+        <div class="flex items-start gap-4">
+          <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-700 shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          </span>
+          <div>
+            <h2 class="text-xs font-bold uppercase tracking-widest text-amber-700">03 · Worksheets &amp; tools</h2>
+            <p class="text-lg font-semibold text-slate-900 mt-1">Facilitation artifacts</p>
+          </div>
         </div>
-        <span class="text-xs font-medium px-2 py-1 rounded-full bg-slate-200 text-slate-600">Launching soon</span>
+        <span class="text-xs font-medium px-2 py-1 rounded-full bg-amber-100 text-amber-800 shrink-0">Launching soon</span>
       </div>
       <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
-          <span class="text-[10px] font-bold uppercase text-slate-400">Week 0</span>
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2 hover:border-amber-300 hover:shadow-sm transition-all">
+          <span class="text-[10px] font-bold uppercase text-amber-600">Week 0</span>
           <span class="font-medium text-slate-800">Binary readiness screen</span>
           <span class="text-xs text-slate-500 mt-auto">Excel · editable roster</span>
           <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
         </li>
-        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
-          <span class="text-[10px] font-bold uppercase text-slate-400">Week 0</span>
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2 hover:border-amber-300 hover:shadow-sm transition-all">
+          <span class="text-[10px] font-bold uppercase text-amber-600">Week 0</span>
           <span class="font-medium text-slate-800">ODS × ORS scoring matrix</span>
           <span class="text-xs text-slate-500 mt-auto">2×2 funnel + priority score</span>
           <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
         </li>
-        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
-          <span class="text-[10px] font-bold uppercase text-slate-400">Design</span>
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2 hover:border-amber-300 hover:shadow-sm transition-all">
+          <span class="text-[10px] font-bold uppercase text-indigo-600">Design</span>
           <span class="font-medium text-slate-800">Architecture worksheet</span>
           <span class="text-xs text-slate-500 mt-auto">Per-step agent / HITL mapping</span>
           <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
         </li>
-        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
-          <span class="text-[10px] font-bold uppercase text-slate-400">Design</span>
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2 hover:border-amber-300 hover:shadow-sm transition-all">
+          <span class="text-[10px] font-bold uppercase text-indigo-600">Design</span>
           <span class="font-medium text-slate-800">10-day sprint runbook</span>
           <span class="text-xs text-slate-500 mt-auto">Dual-track sync agendas</span>
           <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
         </li>
-        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
-          <span class="text-[10px] font-bold uppercase text-slate-400">MVP</span>
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2 hover:border-amber-300 hover:shadow-sm transition-all">
+          <span class="text-[10px] font-bold uppercase text-violet-600">MVP</span>
           <span class="font-medium text-slate-800">Golden set &amp; eval template</span>
           <span class="text-xs text-slate-500 mt-auto">Quality thresholds + case bank</span>
           <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
         </li>
-        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2">
-          <span class="text-[10px] font-bold uppercase text-slate-400">Production</span>
+        <li class="p-4 rounded-xl border border-slate-200 bg-white flex flex-col gap-2 hover:border-amber-300 hover:shadow-sm transition-all">
+          <span class="text-[10px] font-bold uppercase text-emerald-600">Production</span>
           <span class="font-medium text-slate-800">Go-live gate checklist</span>
           <span class="text-xs text-slate-500 mt-auto">Technical + operating readiness</span>
           <span class="inline-block w-fit text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Planned</span>
@@ -122,57 +451,94 @@
       </ul>
     </section>
 
-    <!-- Section 3: Accelerators -->
-    <section>
-      <div class="flex items-end justify-between gap-4 mb-4">
-        <div>
-          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500">03 · Accelerators</h2>
-          <p class="text-lg font-semibold text-slate-900 mt-1">Reusable technical patterns</p>
+    <hr class="section-divider" />
+
+    <!-- Section 4: Accelerators -->
+    <section id="accelerators">
+      <div class="flex items-start justify-between gap-4 mb-5">
+        <div class="flex items-start gap-4">
+          <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 text-violet-700 shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </span>
+          <div>
+            <h2 class="text-xs font-bold uppercase tracking-widest text-violet-700">04 · Accelerators</h2>
+            <p class="text-lg font-semibold text-slate-900 mt-1">Reusable technical patterns</p>
+          </div>
         </div>
-        <span class="text-xs font-medium px-2 py-1 rounded-full bg-slate-200 text-slate-600">Launching soon</span>
+        <span class="text-xs font-medium px-2 py-1 rounded-full bg-violet-100 text-violet-800 shrink-0">Launching soon</span>
       </div>
-      <div class="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100">
-        <div class="p-5 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h3 class="font-medium text-slate-900">Agent archetype pattern cards</h3>
-            <p class="text-sm text-slate-500 mt-0.5">Orchestrator, Executor, Analyst, Retriever, Evaluator — decision trees</p>
+      <div class="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 shadow-sm">
+        <div class="p-5 flex flex-wrap items-center justify-between gap-3 hover:bg-violet-50/30 transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            </span>
+            <div>
+              <h3 class="font-medium text-slate-900">Agent archetype pattern cards</h3>
+              <p class="text-sm text-slate-500 mt-0.5">Orchestrator, Executor, Analyst, Retriever, Evaluator — decision trees</p>
+            </div>
           </div>
-          <span class="text-xs font-semibold text-slate-400">Q2</span>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded bg-violet-100 text-violet-700">Q2</span>
         </div>
-        <div class="p-5 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h3 class="font-medium text-slate-900">HITL interaction mode library</h3>
-            <p class="text-sm text-slate-500 mt-0.5">Autopilot / Co-Pilot / Guardian UX patterns and triggers</p>
+        <div class="p-5 flex flex-wrap items-center justify-between gap-3 hover:bg-violet-50/30 transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </span>
+            <div>
+              <h3 class="font-medium text-slate-900">HITL interaction mode library</h3>
+              <p class="text-sm text-slate-500 mt-0.5">Autopilot / Co-Pilot / Guardian UX patterns and triggers</p>
+            </div>
           </div>
-          <span class="text-xs font-semibold text-slate-400">Q2</span>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded bg-violet-100 text-violet-700">Q2</span>
         </div>
-        <div class="p-5 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h3 class="font-medium text-slate-900">Integration connector catalog</h3>
-            <p class="text-sm text-slate-500 mt-0.5">Reference implementations for common enterprise systems</p>
+        <div class="p-5 flex flex-wrap items-center justify-between gap-3 hover:bg-violet-50/30 transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            </span>
+            <div>
+              <h3 class="font-medium text-slate-900">Integration connector catalog</h3>
+              <p class="text-sm text-slate-500 mt-0.5">Reference implementations for common enterprise systems</p>
+            </div>
           </div>
-          <span class="text-xs font-semibold text-slate-400">Q3</span>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Q3</span>
         </div>
-        <div class="p-5 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h3 class="font-medium text-slate-900">Eval &amp; observability starter kit</h3>
-            <p class="text-sm text-slate-500 mt-0.5">Logging schemas, eval harness, shadow-mode playbook</p>
+        <div class="p-5 flex flex-wrap items-center justify-between gap-3 hover:bg-violet-50/30 transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            </span>
+            <div>
+              <h3 class="font-medium text-slate-900">Eval &amp; observability starter kit</h3>
+              <p class="text-sm text-slate-500 mt-0.5">Logging schemas, eval harness, shadow-mode playbook</p>
+            </div>
           </div>
-          <span class="text-xs font-semibold text-slate-400">Q3</span>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-500">Q3</span>
         </div>
       </div>
     </section>
 
-    <!-- Section 4: Reference -->
-    <section>
-      <div class="flex items-end justify-between gap-4 mb-4">
-        <div>
-          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500">04 · Reference &amp; source</h2>
-          <p class="text-lg font-semibold text-slate-900 mt-1">Requirements &amp; research base</p>
+    <hr class="section-divider" />
+
+    <!-- Section 5: Reference -->
+    <section id="reference">
+      <div class="flex items-start justify-between gap-4 mb-5">
+        <div class="flex items-start gap-4">
+          <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 text-sky-700 shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </span>
+          <div>
+            <h2 class="text-xs font-bold uppercase tracking-widest text-sky-700">05 · Reference &amp; source</h2>
+            <p class="text-lg font-semibold text-slate-900 mt-1">Requirements &amp; research base</p>
+          </div>
         </div>
-        <span class="text-xs font-medium px-2 py-1 rounded-full bg-slate-200 text-slate-600">Launching soon</span>
+        <span class="text-xs font-medium px-2 py-1 rounded-full bg-sky-100 text-sky-800 shrink-0">Launching soon</span>
       </div>
-      <div class="p-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-center">
+      <div class="p-8 rounded-2xl border border-dashed border-slate-300 bg-gradient-to-br from-sky-50/40 to-slate-50 text-center">
+        <span class="flex h-12 w-12 mx-auto mb-3 items-center justify-center rounded-xl bg-sky-100 text-sky-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+        </span>
         <p class="text-sm text-slate-600 max-w-lg mx-auto">
           Linked repository of <code class="text-xs bg-white px-1.5 py-0.5 rounded border">/00_Playbook/Req</code> materials,
           benchmark decks, and lessons-learned index will appear here when the library launches.
@@ -181,20 +547,32 @@
       </div>
     </section>
 
+    <hr class="section-divider" />
+
     <!-- Roadmap -->
-    <section class="pb-10">
-      <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Launch roadmap</h2>
+    <section id="roadmap" class="pb-10">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white">
+          <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </span>
+        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500">Launch roadmap</h2>
+      </div>
       <div class="flex flex-col sm:flex-row gap-4">
-        <div class="flex-1 p-4 rounded-xl bg-white border border-slate-200">
-          <p class="text-xs font-bold text-emerald-700">Now</p>
+        <div class="flex-1 p-4 rounded-xl bg-white border border-emerald-200 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600"></div>
+          <p class="text-xs font-bold text-emerald-700 flex items-center gap-1.5 mt-1">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Now
+          </p>
           <p class="mt-1 text-sm font-medium">Interactive playbook (3 tracks)</p>
         </div>
-        <div class="flex-1 p-4 rounded-xl bg-white border border-slate-200 opacity-80">
-          <p class="text-xs font-bold text-slate-500">Q2 2026</p>
+        <div class="flex-1 p-4 rounded-xl bg-white border border-slate-200 relative overflow-hidden opacity-90">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-300 to-amber-500"></div>
+          <p class="text-xs font-bold text-amber-700 mt-1">Q2 2026</p>
           <p class="mt-1 text-sm font-medium">Worksheets + gate packs</p>
         </div>
-        <div class="flex-1 p-4 rounded-xl bg-white border border-slate-200 opacity-60">
-          <p class="text-xs font-bold text-slate-400">Q3 2026</p>
+        <div class="flex-1 p-4 rounded-xl bg-white border border-slate-200 relative overflow-hidden opacity-75">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-300 to-violet-500"></div>
+          <p class="text-xs font-bold text-violet-700 mt-1">Q3 2026</p>
           <p class="mt-1 text-sm font-medium">Accelerators + connector catalog</p>
         </div>
       </div>
@@ -205,6 +583,19 @@
   <script>
     PSAuth.requireAccess("playbook");
     PSAuth.renderUserBadge("userBadge");
+
+    // Section nav active-state on scroll
+    (function () {
+      const links = Array.from(document.querySelectorAll('a[data-nav]'));
+      const sections = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+      if (!sections.length) return;
+      const setActive = (id) => links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      const io = new IntersectionObserver((entries) => {
+        const visible = entries.filter(e => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) setActive(visible[0].target.id);
+      }, { rootMargin: '-140px 0px -55% 0px', threshold: [0, 0.2, 0.5, 1] });
+      sections.forEach(s => io.observe(s));
+    })();
   </script>
 </body>
 </html>
