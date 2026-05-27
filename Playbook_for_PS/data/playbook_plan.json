@@ -31,7 +31,7 @@
       "groupLabel": "Procurement Agents",
       "subRows": [
         {
-          "subLabel": " Commodity ",
+          "subLabel": " Commodity forecast agent",
           "short": false,
           "weeks": [
             "Commodity Agent\n- Process mapping\n- Data source crawling (Zhuochuang, Longzhong)\n- Prototype",
@@ -58,30 +58,30 @@
     },
     {
       "group": "sales",
-      "groupLabel": "Sales / Tipline Agents",
+      "groupLabel": "Sales Agent",
       "subRows": [
         {
-          "subLabel": "— Play Book / Quotation",
+          "subLabel": "— Acount plan review agent",
           "short": false,
           "weeks": [
-            "Play Book: Workflow mapping, CRM data sourcing, feature & eval criteria. Hello World",
-            "Play Book: Full build, ground truth testing, user testing, deploy",
-            "Quotation: Pricing rules mapping, agent design, data setup. Hello World",
-            "Quotation: Full build, shadow run on live cases. UAT, deploy",
-            "Generate agent patterns, extract reusable components, package for reuse",
-            "Asset documentation, deployment template, handover package"
+            "Acount plan review agent\n- Process mapping\n- Prototype",
+            "Acount plan review agent\n• Deploy to client internal network\n• 1–2 key users UAT \n• Prompt optimization\n• Draft roll-out training materials",
+            "Acount plan review agent\n• User training & testing\n• Client data integration & config",
+            "Copilot Agent\n- Test and validation",
+            "Copilot Agent\n- Test and validation",
+            "Copilot Agent\n- Test and validation"
           ]
         },
         {
           "subLabel": "— Pre-Account Play Book",
           "short": true,
           "weeks": [
-            "Hello World ✓",
-            "Hello World ✓",
-            "Assisted ✓",
-            "Assisted ✓",
-            "Assisted ✓",
-            "Assisted ✓"
+            "",
+            "",
+            "Copilot Agent\n- Prototype\n",
+            "Copilot Agent\n- Test and validation",
+            "Copilot Agent\n- User training and pilot",
+            "Copilot Agent\n- User training and pilot"
           ]
         }
       ]
@@ -94,11 +94,11 @@
           "subLabel": "",
           "short": false,
           "weeks": [
-            "Client data assessment, financial data mapping, gap analysis, data pipeline setup",
-            "Data cleansing & integration, connect client P&L and KPI sources. Hello World on client data",
-            "Agent configuration for client context, dashboard customization, shadow run on live data",
-            "UAT with finance team, deploy. Ongoing data quality monitoring",
-            "Generate configuration, define client onboarding template, package developed",
+            "Mock up design",
+            "MFG Design and Prototype",
+            "MFG NC Agent design",
+            "M&S Agent Design",
+            "PUR agent design",
             "Asset documentation, integration guide, handover package"
           ]
         }
