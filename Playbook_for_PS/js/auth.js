@@ -31,6 +31,7 @@
   const AREAS = {
     cxo: { minRole: "client", label: "CXO Deck" },
     portfolio: { minRole: "warroom", label: "Portfolio Tracking" },
+    plan_editor: { minRole: "warroom", label: "Playbook Plan Editor" },
     playbook: { minRole: "architect", label: "Playbook & Library" },
   };
 

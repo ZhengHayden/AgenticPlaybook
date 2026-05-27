@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Playbook Plan Editor — 6-Week Agentic Program</title>
+<script src="./js/auth.js"></script>
+<script>
+  if (!PSAuth.requireAccess("plan_editor")) {
+    // requireAccess already redirected; stop further rendering.
+    throw new Error("redirect");
+  }
+</script>
+<style>
+  :root {
+    --c-procurement: #d6e6f2;
+    --c-procurement-soft: #eaf2f8;
+    --c-sales: #f7d8df;
+    --c-sales-soft: #fbe8ec;
+    --c-nerve: #e0d6ee;
+    --c-nerve-soft: #efe9f6;
+    --c-lop: #ffd9b3;
+    --c-lop-soft: #ffe9d1;
+    --c-team: #e8e8e8;
+    --c-team-soft: #f3f3f3;
+    --c-border: #c5c9d1;
+    --c-text: #1f2a37;
+    --c-muted: #6b7280;
+    --c-accent: #2563eb;
+    --c-bg: #f7f8fa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 24px;
+    background: var(--c-bg);
+    color: var(--c-text);
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1 {
+    font-size: 20px;
+    margin: 0;
+  }
+  header .meta {
+    font-size: 13px;
+    color: var(--c-muted);
+  }
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .toolbar button {
+    padding: 8px 14px;
+    border: 1px solid var(--c-border);
+    background: white;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .toolbar button:hover { background: #f0f4ff; border-color: var(--c-accent); }
+  .toolbar button.primary {
+    background: var(--c-accent);
+    color: white;
+    border-color: var(--c-accent);
+  }
+  .toolbar button.primary:hover { background: #1d4ed8; }
+  .status {
+    font-size: 12px;
+    color: var(--c-muted);
+    margin-left: 8px;
+    align-self: center;
+  }
+  .status.saved { color: #059669; }
+
+  details.reference {
+    background: white;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    padding: 8px 12px;
+  }
+  details.reference summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 4px 0;
+  }
+  details.reference img {
+    max-width: 100%;
+    margin-top: 12px;
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+  }
+
+  .grid-wrap {
+    background: white;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    overflow: auto;
+  }
+  table.plan {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 1200px;
+  }
+  table.plan th, table.plan td {
+    border: 1px solid var(--c-border);
+    padding: 0;
+    vertical-align: top;
+    font-size: 12.5px;
+  }
+  table.plan thead th {
+    background: #1f2a37;
+    color: white;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  table.plan thead th .milestone {
+    display: block;
+    font-size: 11px;
+    color: #93c5fd;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  table.plan thead th.workstream-col { width: 180px; min-width: 180px; }
+  table.plan thead th.week-col { min-width: 180px; }
+
+  td.workstream-label {
+    padding: 10px 12px;
+    font-weight: 600;
+    font-size: 13px;
+    width: 180px;
+  }
+  td.sub-label {
+    padding: 8px 12px;
+    font-size: 11.5px;
+    color: var(--c-muted);
+    font-style: italic;
+  }
+
+  .ws-procurement .workstream-label,
+  .ws-procurement td.cell { background: var(--c-procurement-soft); }
+  .ws-procurement .workstream-label { background: var(--c-procurement); }
+
+  .ws-sales .workstream-label,
+  .ws-sales td.cell { background: var(--c-sales-soft); }
+  .ws-sales .workstream-label { background: var(--c-sales); }
+
+  .ws-nerve .workstream-label,
+  .ws-nerve td.cell { background: var(--c-nerve-soft); }
+  .ws-nerve .workstream-label { background: var(--c-nerve); }
+
+  .ws-lop .workstream-label,
+  .ws-lop td.cell { background: var(--c-lop-soft); }
+  .ws-lop .workstream-label { background: var(--c-lop); }
+
+  .ws-team .workstream-label,
+  .ws-team td.cell { background: var(--c-team-soft); }
+  .ws-team .workstream-label { background: var(--c-team); }
+
+  td.cell { padding: 0; }
+  textarea.weekly {
+    width: 100%;
+    min-height: 96px;
+    border: none;
+    background: transparent;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: var(--c-text);
+    resize: vertical;
+    line-height: 1.45;
+    outline: none;
+  }
+  textarea.weekly:focus {
+    background: white;
+    box-shadow: inset 0 0 0 2px var(--c-accent);
+  }
+  textarea.weekly.short { min-height: 48px; }
+
+  footer {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--c-muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Playbook Plan Editor</h1>
+    <div class="meta">A 6-week program delivers 5 client-tailored agents, a reusable playbook, and an asset-ed agent package</div>
+  </div>
+  <div class="toolbar">
+    <a href="./dashboard.html" style="padding:8px 14px;border:1px solid var(--c-border);background:white;border-radius:6px;font-size:13px;color:var(--c-text);text-decoration:none;">← Dashboard</a>
+    <button id="btn-save" class="primary">Save</button>
+    <button id="btn-reset">Reset to defaults</button>
+    <button id="btn-export">Export JSON</button>
+    <button id="btn-import">Import JSON</button>
+    <button id="btn-print">Print</button>
+    <input type="file" id="file-input" accept="application/json" style="display:none" />
+    <span id="status" class="status">Loaded</span>
+    <span id="userBadge" style="margin-left:8px;font-size:12px;color:var(--c-muted);"></span>
+  </div>
+</header>
+
+<details class="reference">
+  <summary>Reference: original plan image</summary>
+  <img src="Playbook_plan.png" alt="Original Playbook plan" />
+</details>
+
+<div class="grid-wrap">
+  <table class="plan" id="plan-table">
+    <thead>
+      <tr>
+        <th class="workstream-col">Workstream</th>
+        <th class="week-col">Week 1<span class="milestone">◆ Kick-off</span></th>
+        <th class="week-col">Week 2<span class="milestone">◆ Sprint 1 delivery</span></th>
+        <th class="week-col">Week 3<span class="milestone">◆ Price Forecast</span></th>
+        <th class="week-col">Week 4<span class="milestone">◆ Sprint 2 delivery</span></th>
+        <th class="week-col">Week 5<span class="milestone">&nbsp;</span></th>
+        <th class="week-col">Week 6<span class="milestone">◆ Final readout</span></th>
+      </tr>
+    </thead>
+    <tbody id="plan-body"></tbody>
+  </table>
+</div>
+
+<footer>Edits auto-save to your browser. Use Export JSON to share or back up.</footer>
+
+<script>
+  const STORAGE_KEY = "playbook_plan_v1";
+
+  const ROWS = [
+    {
+      group: "procurement",
+      groupLabel: "Procurement Agents",
+      subRows: [
+        {
+          subLabel: "— Commodity / Price Forecast",
+          weeks: [
+            "Commodity: Process mapping, feature definition, data source IO. Hello World ✓",
+            "Commodity: Full build, ground truth testing, user validation, deploy",
+            "Price Forecast: Process mapping, model architecture, data setup. Hello World ✓",
+            "Price Forecast: Full build, backtest of historicals, shadow run. UAT, deploy",
+            "Generate agent patterns, extract reusable components, package for reuse",
+            "Asset documentation, deployment template, handover package",
+          ],
+        },
+        {
+          subLabel: "— Commodity Trend Agent",
+          short: true,
+          weeks: [
+            "Hello World ✓",
+            "Hello World ✓",
+            "Assisted ✓",
+            "Assisted ✓",
+            "Assisted ✓",
+            "Assisted ✓",
+          ],
+        },
+      ],
+    },
+    {
+      group: "sales",
+      groupLabel: "Sales / Tipline Agents",
+      subRows: [
+        {
+          subLabel: "— Play Book / Quotation",
+          weeks: [
+            "Play Book: Workflow mapping, CRM data sourcing, feature & eval criteria. Hello World",
+            "Play Book: Full build, ground truth testing, user testing, deploy",
+            "Quotation: Pricing rules mapping, agent design, data setup. Hello World",
+            "Quotation: Full build, shadow run on live cases. UAT, deploy",
+            "Generate agent patterns, extract reusable components, package for reuse",
+            "Asset documentation, deployment template, handover package",
+          ],
+        },
+        {
+          subLabel: "— Pre-Account Play Book",
+          short: true,
+          weeks: [
+            "Hello World ✓",
+            "Hello World ✓",
+            "Assisted ✓",
+            "Assisted ✓",
+            "Assisted ✓",
+            "Assisted ✓",
+          ],
+        },
+      ],
+    },
+    {
+      group: "nerve",
+      groupLabel: "Nerve Center Agent",
+      subRows: [
+        {
+          subLabel: "",
+          weeks: [
+            "Client data assessment, financial data mapping, gap analysis, data pipeline setup",
+            "Data cleansing & integration, connect client P&L and KPI sources. Hello World on client data",
+            "Agent configuration for client context, dashboard customization, shadow run on live data",
+            "UAT with finance team, deploy. Ongoing data quality monitoring",
+            "Generate configuration, define client onboarding template, package developed",
+            "Asset documentation, integration guide, handover package",
+          ],
+        },
+      ],
+    },
+    {
+      group: "lop",
+      groupLabel: "LOP Agent (Proposal Generator)",
+      subRows: [
+        {
+          subLabel: "— LOP Agent",
+          weeks: [
+            "",
+            "",
+            "Define proposal structure, client data ingestion pipeline, demo generation logic. Hello World",
+            "Full build, auto-demo from client data, exception generation engine, ground truth testing",
+            "Iteration on output quality, partner review, UAT with BD team",
+            "Production deploy, package documentation, handover",
+          ],
+        },
+        {
+          subLabel: "— Delivery Playbook",
+          short: true,
+          weeks: ["", "", "Structure", "Draft", "Refine", "Final"],
+        },
+      ],
+    },
+    {
+      group: "team",
+      groupLabel: "Team Setup",
+      subRows: [
+        {
+          subLabel: "",
+          short: true,
+          weeks: [
+            "1 SM + 1 Team",
+            "1 SM + 1 Team",
+            "1 SM + 1 Team",
+            "1 SM + 1 Team",
+            "1 SM + 1 Team",
+            "1 SM + 1 Team",
+          ],
+        },
+      ],
+    },
+  ];
+
+  function buildTable(data) {
+    const tbody = document.getElementById("plan-body");
+    tbody.innerHTML = "";
+    data.forEach((row, rIdx) => {
+      row.subRows.forEach((sub, sIdx) => {
+        const tr = document.createElement("tr");
+        tr.className = `ws-${row.group}`;
+
+        if (sIdx === 0) {
+          const labelCell = document.createElement("td");
+          labelCell.className = "workstream-label";
+          labelCell.rowSpan = row.subRows.length;
+          labelCell.innerHTML = `<div>${row.groupLabel}</div>` +
+            (sub.subLabel ? `<div class="sub-label" style="padding:6px 0 0 0">${sub.subLabel}</div>` : "");
+          tr.appendChild(labelCell);
+        } else if (sub.subLabel) {
+          // For subsequent sub-rows, prepend a sub-label inside the first week cell area
+          // Simpler approach: render sub-label as a header row above the cells inside group
+          // Instead we'll merge it into the row by using a small cell — but we already rowSpan the workstream.
+          // Place sub-label in a small leading area: we will inject into first cell.
+        }
+
+        sub.weeks.forEach((text, wIdx) => {
+          const td = document.createElement("td");
+          td.className = "cell";
+          const ta = document.createElement("textarea");
+          ta.className = "weekly" + (sub.short ? " short" : "");
+          ta.value = text;
+          ta.dataset.row = rIdx;
+          ta.dataset.sub = sIdx;
+          ta.dataset.week = wIdx;
+          ta.addEventListener("input", onEdit);
+          if (wIdx === 0 && sIdx > 0 && sub.subLabel) {
+            // Prefix with subLabel visually via placeholder hint
+            const wrapper = document.createElement("div");
+            const hint = document.createElement("div");
+            hint.className = "sub-label";
+            hint.textContent = sub.subLabel;
+            wrapper.appendChild(hint);
+            wrapper.appendChild(ta);
+            td.appendChild(wrapper);
+          } else {
+            td.appendChild(ta);
+          }
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      });
+    });
+  }
+
+  function snapshot() {
+    const out = ROWS.map((r) => ({
+      group: r.group,
+      groupLabel: r.groupLabel,
+      subRows: r.subRows.map((s) => ({
+        subLabel: s.subLabel,
+        short: !!s.short,
+        weeks: [...s.weeks],
+      })),
+    }));
+    document.querySelectorAll("textarea.weekly").forEach((ta) => {
+      const r = +ta.dataset.row, s = +ta.dataset.sub, w = +ta.dataset.week;
+      out[r].subRows[s].weeks[w] = ta.value;
+    });
+    return out;
+  }
+
+  function onEdit() {
+    setStatus("Editing…");
+    clearTimeout(onEdit._t);
+    onEdit._t = setTimeout(autoSave, 600);
+  }
+
+  function autoSave() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot()));
+      setStatus("Saved", true);
+    } catch (e) {
+      setStatus("Save failed: " + e.message);
+    }
+  }
+
+  function setStatus(msg, ok) {
+    const el = document.getElementById("status");
+    el.textContent = msg;
+    el.className = "status" + (ok ? " saved" : "");
+  }
+
+  function loadFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      data.forEach((row, rIdx) => {
+        row.subRows.forEach((sub, sIdx) => {
+          sub.weeks.forEach((text, wIdx) => {
+            if (ROWS[rIdx] && ROWS[rIdx].subRows[sIdx]) {
+              ROWS[rIdx].subRows[sIdx].weeks[wIdx] = text;
+            }
+          });
+        });
+      });
+      setStatus("Loaded from browser", true);
+    } catch (e) {
+      console.warn("Load failed:", e);
+    }
+  }
+
+  function resetDefaults() {
+    if (!confirm("Reset all weekly updates to the original defaults?")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+
+  function exportJson() {
+    const blob = new Blob([JSON.stringify(snapshot(), null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "playbook_plan.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importJson() {
+    document.getElementById("file-input").click();
+  }
+
+  document.getElementById("file-input").addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        data.forEach((row, rIdx) => {
+          row.subRows.forEach((sub, sIdx) => {
+            sub.weeks.forEach((text, wIdx) => {
+              if (ROWS[rIdx] && ROWS[rIdx].subRows[sIdx]) {
+                ROWS[rIdx].subRows[sIdx].weeks[wIdx] = text;
+              }
+            });
+          });
+        });
+        buildTable(ROWS);
+        autoSave();
+        setStatus("Imported", true);
+      } catch (err) {
+        alert("Invalid JSON: " + err.message);
+      }
+    };
+    reader.readAsText(f);
+  });
+
+  document.getElementById("btn-save").addEventListener("click", autoSave);
+  document.getElementById("btn-reset").addEventListener("click", resetDefaults);
+  document.getElementById("btn-export").addEventListener("click", exportJson);
+  document.getElementById("btn-import").addEventListener("click", importJson);
+  document.getElementById("btn-print").addEventListener("click", () => window.print());
+
+  loadFromStorage();
+  buildTable(ROWS);
+  PSAuth.renderUserBadge("userBadge");
+</script>
+</body>
+</html>

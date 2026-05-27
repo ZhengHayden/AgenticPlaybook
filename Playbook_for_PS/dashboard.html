@@ -26,7 +26,7 @@
 
     <p class="text-slate-600 max-w-2xl">Select a workspace. Available tiles depend on your access level.</p>
 
-    <div class="mt-10 grid md:grid-cols-3 gap-6" id="tileGrid">
+    <div class="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-6" id="tileGrid">
       <!-- CXO Deck -->
       <article class="tile group relative flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all hover:shadow-lg hover:border-indigo-300" data-area="cxo">
         <div class="h-2 bg-gradient-to-r from-indigo-500 to-violet-500"></div>
@@ -52,6 +52,24 @@
           </a>
         </div>
         <div data-lock="portfolio" class="hidden absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+          <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          <p class="mt-3 text-sm font-semibold text-slate-700">War room access required</p>
+          <p class="mt-1 text-xs text-slate-500">Sign in as <strong>warroom</strong> or <strong>architect</strong></p>
+        </div>
+      </article>
+
+      <!-- Plan Editor -->
+      <article class="tile group relative flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all" data-area="plan_editor">
+        <div class="h-2 bg-gradient-to-r from-sky-500 to-blue-600"></div>
+        <div class="p-6 flex flex-col flex-1">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-sky-700">Internal · Editable</span>
+          <h2 class="mt-2 text-xl font-semibold text-slate-900">Plan editor</h2>
+          <p class="mt-3 text-sm text-slate-500 flex-1">6-week agentic program plan — review and edit weekly milestones across all workstreams. Edits persist locally and can be exported.</p>
+          <a href="./Playbook_plan_editor.html" data-link="plan_editor" class="mt-6 inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-sky-600 text-white text-sm font-semibold hover:bg-sky-700 transition-colors">
+            Open editor <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <div data-lock="plan_editor" class="hidden absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
           <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
           <p class="mt-3 text-sm font-semibold text-slate-700">War room access required</p>
           <p class="mt-1 text-xs text-slate-500">Sign in as <strong>warroom</strong> or <strong>architect</strong></p>
@@ -87,7 +105,7 @@
 
     PSAuth.renderUserBadge("userBadge");
 
-    ["cxo", "portfolio", "playbook"].forEach((area) => {
+    ["cxo", "portfolio", "plan_editor", "playbook"].forEach((area) => {
       const allowed = PSAuth.hasAccess(area);
       const tile = document.querySelector(`[data-area="${area}"]`);
       const lock = tile?.querySelector(`[data-lock="${area}"]`);
