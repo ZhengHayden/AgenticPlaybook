@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Action Tracker — Playbook Hub</title>
+<script src="./js/auth.js"></script>
+<script>
+  if (!PSAuth.requireAccess("action_tracker")) {
+    throw new Error("redirect");
+  }
+</script>
+<style>
+  :root {
+    --c-border: #c5c9d1;
+    --c-text: #1f2a37;
+    --c-muted: #6b7280;
+    --c-accent: #2563eb;
+    --c-bg: #f7f8fa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 24px;
+    background: var(--c-bg);
+    color: var(--c-text);
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1 { font-size: 20px; margin: 0; }
+  header .meta { font-size: 13px; color: var(--c-muted); }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+  .toolbar button, .toolbar a.btn {
+    padding: 8px 14px;
+    border: 1px solid var(--c-border);
+    background: white;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--c-text);
+    text-decoration: none;
+    transition: background .15s, border-color .15s;
+  }
+  .toolbar button:hover, .toolbar a.btn:hover { background: #f0f4ff; border-color: var(--c-accent); }
+  .toolbar button.primary {
+    background: var(--c-accent);
+    color: white;
+    border-color: var(--c-accent);
+  }
+  .toolbar button.primary:hover { background: #1d4ed8; }
+  .status { font-size: 12px; color: var(--c-muted); margin-left: 8px; align-self: center; }
+  .status.saved { color: #059669; }
+
+  .grid-wrap {
+    background: white;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    overflow: auto;
+  }
+  table.actions {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 960px;
+  }
+  table.actions th, table.actions td {
+    border: 1px solid var(--c-border);
+    padding: 0;
+    vertical-align: top;
+    font-size: 12.5px;
+  }
+  table.actions thead th {
+    background: #1f2a37;
+    color: white;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  table.actions thead th.topic-col   { width: 18%; }
+  table.actions thead th.action-col  { width: 38%; }
+  table.actions thead th.owner-col   { width: 14%; }
+  table.actions thead th.date-col    { width: 12%; }
+  table.actions thead th.status-col  { width: 14%; }
+  table.actions thead th.del-col     { width: 4%; }
+
+  td.cell-input { padding: 0; }
+  td.cell-input input,
+  td.cell-input textarea,
+  td.cell-input select {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: var(--c-text);
+    outline: none;
+    resize: vertical;
+  }
+  td.cell-input textarea { min-height: 48px; line-height: 1.45; }
+  td.cell-input input:focus,
+  td.cell-input textarea:focus,
+  td.cell-input select:focus {
+    background: white;
+    box-shadow: inset 0 0 0 2px var(--c-accent);
+  }
+  td.cell-input select { appearance: auto; padding-right: 22px; }
+
+  /* status pill styling in row, color-coded via attribute */
+  tr[data-status="open"]        { background: #fefce8; }
+  tr[data-status="in_progress"] { background: #eff6ff; }
+  tr[data-status="blocked"]     { background: #fef2f2; }
+  tr[data-status="done"]        { background: #f0fdf4; }
+  tr[data-status="cancelled"]   { background: #f3f4f6; color: var(--c-muted); }
+
+  td.del-cell { text-align: center; }
+  button.del-row {
+    background: transparent;
+    border: none;
+    color: var(--c-muted);
+    cursor: pointer;
+    padding: 8px;
+    font-size: 14px;
+  }
+  button.del-row:hover { color: #dc2626; }
+
+  footer {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--c-muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Action Tracker</h1>
+    <div class="meta">Weekly aligned actions across the program — open items, owners, status.</div>
+  </div>
+  <div class="toolbar">
+    <a href="./dashboard.html" class="btn">← Dashboard</a>
+    <button id="btn-add">+ Add row</button>
+    <button id="btn-save" class="primary">Save</button>
+    <button id="btn-reset">Reload from repo</button>
+    <button id="btn-export">Export JSON</button>
+    <button id="btn-import">Import JSON</button>
+    <button id="btn-print">Print</button>
+    <input type="file" id="file-input" accept="application/json" style="display:none" />
+    <span id="status" class="status">Loading…</span>
+    <span id="userBadge" style="margin-left:8px;font-size:12px;color:var(--c-muted);"></span>
+  </div>
+</header>
+
+<div class="grid-wrap">
+  <table class="actions" id="actions-table">
+    <thead>
+      <tr>
+        <th class="topic-col">Topic</th>
+        <th class="action-col">Action</th>
+        <th class="owner-col">Owner</th>
+        <th class="date-col">Creation Date</th>
+        <th class="status-col">Status</th>
+        <th class="del-col"></th>
+      </tr>
+    </thead>
+    <tbody id="actions-body"></tbody>
+  </table>
+</div>
+
+<footer>Edits auto-save as a local draft in your browser. Click <strong>Save</strong> to push them to the shared repo — this opens the GitHub edit tab with the JSON copied; paste &amp; commit to make it visible to everyone.</footer>
+
+<script>
+  const STORAGE_KEY = "action_tracker_v1";
+  const REPO_OWNER = "ZhengHayden";
+  const REPO_NAME = "AgenticPlaybook";
+  const DATA_PATH = "Playbook_for_PS/data/action_tracker.json";
+  const RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_PATH}`;
+  const EDIT_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/edit/main/${DATA_PATH}`;
+
+  const STATUS_OPTIONS = [
+    { value: "open",        label: "Open" },
+    { value: "in_progress", label: "In progress" },
+    { value: "blocked",     label: "Blocked" },
+    { value: "done",        label: "Done" },
+    { value: "cancelled",   label: "Cancelled" },
+  ];
+
+  let actions = [];
+  let lastSavedJSON = "";
+
+  function newId() {
+    return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  }
+
+  function todayISO() {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+
+  function emptyAction() {
+    return { id: newId(), topic: "", action: "", owner: "", created: todayISO(), status: "open" };
+  }
+
+  function setStatus(msg, ok) {
+    const el = document.getElementById("status");
+    el.textContent = msg;
+    el.className = "status" + (ok ? " saved" : "");
+  }
+
+  function currentJSON() {
+    return JSON.stringify({ actions }, null, 2);
+  }
+
+  function refreshSaveBadge() {
+    if (currentJSON() === lastSavedJSON) {
+      setStatus("Up to date with shared repo", true);
+    } else {
+      setStatus("Unsaved changes — click Save to push to repo");
+    }
+  }
+
+  function onEdit() {
+    refreshSaveBadge();
+    clearTimeout(onEdit._t);
+    onEdit._t = setTimeout(saveDraft, 600);
+  }
+
+  function saveDraft() {
+    try {
+      localStorage.setItem(STORAGE_KEY, currentJSON());
+    } catch (e) {
+      console.warn("Local draft save failed:", e);
+    }
+  }
+
+  function buildRow(a, idx) {
+    const tr = document.createElement("tr");
+    tr.dataset.id = a.id;
+    tr.dataset.status = a.status || "open";
+
+    function addInput(field, opts = {}) {
+      const td = document.createElement("td");
+      td.className = "cell-input";
+      const el = opts.multiline
+        ? document.createElement("textarea")
+        : opts.select
+          ? document.createElement("select")
+          : document.createElement("input");
+      if (!opts.select) {
+        if (opts.multiline) {
+          el.value = a[field] || "";
+        } else {
+          el.type = opts.type || "text";
+          el.value = a[field] || "";
+        }
+      }
+      if (opts.select) {
+        STATUS_OPTIONS.forEach((opt) => {
+          const o = document.createElement("option");
+          o.value = opt.value;
+          o.textContent = opt.label;
+          if ((a[field] || "open") === opt.value) o.selected = true;
+          el.appendChild(o);
+        });
+      }
+      if (opts.placeholder) el.placeholder = opts.placeholder;
+      el.dataset.field = field;
+      el.dataset.idx = idx;
+      el.addEventListener("input", (e) => {
+        const i = +e.target.dataset.idx;
+        if (!actions[i]) return;
+        actions[i][field] = e.target.value;
+        if (field === "status") tr.dataset.status = e.target.value;
+        onEdit();
+      });
+      el.addEventListener("change", (e) => {
+        if (field === "status") {
+          const i = +e.target.dataset.idx;
+          if (actions[i]) {
+            actions[i].status = e.target.value;
+            tr.dataset.status = e.target.value;
+            onEdit();
+          }
+        }
+      });
+      td.appendChild(el);
+      tr.appendChild(td);
+    }
+
+    addInput("topic",  { placeholder: "Workstream / theme" });
+    addInput("action", { multiline: true, placeholder: "What needs to happen?" });
+    addInput("owner",  { placeholder: "Name" });
+    addInput("created", { type: "date" });
+    addInput("status", { select: true });
+
+    const delTd = document.createElement("td");
+    delTd.className = "del-cell";
+    const btn = document.createElement("button");
+    btn.className = "del-row";
+    btn.title = "Delete row";
+    btn.textContent = "✕";
+    btn.addEventListener("click", () => {
+      if (!confirm("Delete this action?")) return;
+      const i = actions.findIndex((x) => x.id === a.id);
+      if (i >= 0) actions.splice(i, 1);
+      buildTable();
+      onEdit();
+    });
+    delTd.appendChild(btn);
+    tr.appendChild(delTd);
+
+    return tr;
+  }
+
+  function buildTable() {
+    const tbody = document.getElementById("actions-body");
+    tbody.innerHTML = "";
+    actions.forEach((a, idx) => tbody.appendChild(buildRow(a, idx)));
+  }
+
+  function hydrate(parsed) {
+    if (!parsed) return false;
+    const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed.actions) ? parsed.actions : null;
+    if (!list) return false;
+    actions = list.map((a) => ({
+      id: a.id || newId(),
+      topic: a.topic || "",
+      action: a.action || "",
+      owner: a.owner || "",
+      created: a.created || todayISO(),
+      status: a.status || "open",
+    }));
+    return true;
+  }
+
+  async function loadFromRepo() {
+    try {
+      const res = await fetch(`${RAW_URL}?t=${Date.now()}`, { cache: "no-store" });
+      if (!res.ok) return false;
+      const parsed = await res.json();
+      return hydrate(parsed);
+    } catch (e) {
+      console.warn("Repo load failed", e);
+      return false;
+    }
+  }
+
+  function applyDraftFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      return hydrate(JSON.parse(raw));
+    } catch (e) {
+      console.warn("Draft load failed:", e);
+      return false;
+    }
+  }
+
+  async function saveToRepo() {
+    const json = currentJSON();
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(json);
+      copied = true;
+    } catch (e) {
+      console.warn("Clipboard write failed; falling back to download", e);
+      const blob = new Blob([json], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "action_tracker.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+    window.open(EDIT_URL, "_blank", "noopener");
+    setStatus(copied
+      ? "JSON copied → paste in GitHub tab, then commit"
+      : "action_tracker.json downloaded → upload in GitHub tab, then commit");
+    lastSavedJSON = json;
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+  }
+
+  function addRow() {
+    actions.push(emptyAction());
+    buildTable();
+    onEdit();
+  }
+
+  function resetFromRepo() {
+    if (!confirm("Discard your local draft and reload from the shared repo?")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+
+  function exportJson() {
+    const blob = new Blob([currentJSON()], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "action_tracker.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importJson() { document.getElementById("file-input").click(); }
+
+  document.getElementById("file-input").addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!hydrate(data)) throw new Error("Unexpected structure");
+        buildTable();
+        saveDraft();
+        refreshSaveBadge();
+        setStatus("Imported — click Save to push to repo");
+      } catch (err) {
+        alert("Invalid JSON: " + err.message);
+      }
+    };
+    reader.readAsText(f);
+  });
+
+  document.getElementById("btn-add").addEventListener("click", addRow);
+  document.getElementById("btn-save").addEventListener("click", saveToRepo);
+  document.getElementById("btn-reset").addEventListener("click", resetFromRepo);
+  document.getElementById("btn-export").addEventListener("click", exportJson);
+  document.getElementById("btn-import").addEventListener("click", importJson);
+  document.getElementById("btn-print").addEventListener("click", () => window.print());
+
+  (async function init() {
+    setStatus("Loading from shared repo…");
+    await loadFromRepo();
+    lastSavedJSON = currentJSON();
+    applyDraftFromStorage();
+    buildTable();
+    refreshSaveBadge();
+    PSAuth.renderUserBadge("userBadge");
+  })();
+</script>
+</body>
+</html>

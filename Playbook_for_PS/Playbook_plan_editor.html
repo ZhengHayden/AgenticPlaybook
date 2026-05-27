@@ -193,6 +193,58 @@
   }
   textarea.weekly.short { min-height: 48px; }
 
+  /* Editable header inputs (dark background) */
+  input.th-edit {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: white;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    outline: none;
+  }
+  input.th-edit.milestone-input {
+    color: #93c5fd;
+    font-weight: 500;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  input.th-edit:focus {
+    background: rgba(255,255,255,0.12);
+    box-shadow: inset 0 0 0 1px rgba(147,197,253,0.6);
+  }
+  input.th-edit::placeholder { color: rgba(255,255,255,0.35); }
+
+  /* Editable workstream / sub-label inputs (light background) */
+  input.label-edit {
+    width: 100%;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    color: var(--c-text);
+    padding: 2px 4px;
+    border-radius: 3px;
+    outline: none;
+  }
+  input.label-edit.group-label {
+    font-weight: 600;
+    font-size: 13px;
+  }
+  input.label-edit.sub-label-edit {
+    font-size: 11.5px;
+    font-style: italic;
+    color: var(--c-muted);
+    margin-top: 6px;
+  }
+  input.label-edit:focus {
+    background: white;
+    box-shadow: inset 0 0 0 2px var(--c-accent);
+  }
+  input.label-edit::placeholder { color: rgba(31,42,55,0.35); font-style: italic; }
+
   footer {
     margin-top: 16px;
     font-size: 12px;
@@ -228,14 +280,8 @@
 <div class="grid-wrap">
   <table class="plan" id="plan-table">
     <thead>
-      <tr>
+      <tr id="plan-thead-row">
         <th class="workstream-col">Workstream</th>
-        <th class="week-col">Week 1<span class="milestone">◆ Kick-off</span></th>
-        <th class="week-col">Week 2<span class="milestone">◆ Sprint 1 delivery</span></th>
-        <th class="week-col">Week 3<span class="milestone">◆ Price Forecast</span></th>
-        <th class="week-col">Week 4<span class="milestone">◆ Sprint 2 delivery</span></th>
-        <th class="week-col">Week 5<span class="milestone">&nbsp;</span></th>
-        <th class="week-col">Week 6<span class="milestone">◆ Final readout</span></th>
       </tr>
     </thead>
     <tbody id="plan-body"></tbody>
@@ -253,6 +299,16 @@
   const EDIT_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/edit/main/${DATA_PATH}`;
 
   let lastSavedJSON = "";
+
+  const DEFAULT_WEEKS = [
+    { label: "Week 1", milestone: "◆ Kick-off" },
+    { label: "Week 2", milestone: "◆ Sprint 1 delivery" },
+    { label: "Week 3", milestone: "◆ Price Forecast" },
+    { label: "Week 4", milestone: "◆ Sprint 2 delivery" },
+    { label: "Week 5", milestone: "" },
+    { label: "Week 6", milestone: "◆ Final readout" },
+  ];
+  let WEEKS = structuredClone(DEFAULT_WEEKS);
 
   const ROWS = [
     {
@@ -372,6 +428,35 @@
     },
   ];
 
+  function buildHead() {
+    const headRow = document.getElementById("plan-thead-row");
+    // Keep only the first cell ("Workstream"); rebuild week columns
+    while (headRow.children.length > 1) headRow.removeChild(headRow.lastChild);
+    WEEKS.forEach((w, wIdx) => {
+      const th = document.createElement("th");
+      th.className = "week-col";
+      const labelInput = document.createElement("input");
+      labelInput.type = "text";
+      labelInput.className = "th-edit week-label-input";
+      labelInput.value = w.label || "";
+      labelInput.placeholder = `Week ${wIdx + 1}`;
+      labelInput.dataset.week = wIdx;
+      labelInput.addEventListener("input", onEdit);
+      th.appendChild(labelInput);
+
+      const msInput = document.createElement("input");
+      msInput.type = "text";
+      msInput.className = "th-edit milestone-input";
+      msInput.value = w.milestone || "";
+      msInput.placeholder = "milestone (optional)";
+      msInput.dataset.week = wIdx;
+      msInput.addEventListener("input", onEdit);
+      th.appendChild(msInput);
+
+      headRow.appendChild(th);
+    });
+  }
+
   function buildTable(data) {
     const tbody = document.getElementById("plan-body");
     tbody.innerHTML = "";
@@ -384,19 +469,47 @@
           const labelCell = document.createElement("td");
           labelCell.className = "workstream-label";
           labelCell.rowSpan = row.subRows.length;
-          labelCell.innerHTML = `<div>${row.groupLabel}</div>` +
-            (sub.subLabel ? `<div class="sub-label" style="padding:6px 0 0 0">${sub.subLabel}</div>` : "");
+
+          const groupInput = document.createElement("input");
+          groupInput.type = "text";
+          groupInput.className = "label-edit group-label";
+          groupInput.value = row.groupLabel || "";
+          groupInput.placeholder = "Workstream name";
+          groupInput.dataset.row = rIdx;
+          groupInput.addEventListener("input", onEdit);
+          labelCell.appendChild(groupInput);
+
+          if (sub.subLabel !== undefined) {
+            const subInput = document.createElement("input");
+            subInput.type = "text";
+            subInput.className = "label-edit sub-label-edit";
+            subInput.value = sub.subLabel || "";
+            subInput.placeholder = "— sub-row label (optional)";
+            subInput.dataset.row = rIdx;
+            subInput.dataset.sub = sIdx;
+            subInput.addEventListener("input", onEdit);
+            labelCell.appendChild(subInput);
+          }
           tr.appendChild(labelCell);
-        } else if (sub.subLabel) {
-          // For subsequent sub-rows, prepend a sub-label inside the first week cell area
-          // Simpler approach: render sub-label as a header row above the cells inside group
-          // Instead we'll merge it into the row by using a small cell — but we already rowSpan the workstream.
-          // Place sub-label in a small leading area: we will inject into first cell.
         }
 
         sub.weeks.forEach((text, wIdx) => {
           const td = document.createElement("td");
           td.className = "cell";
+          // For sub-rows past the first, surface their editable sub-label above the first week cell.
+          if (wIdx === 0 && sIdx > 0) {
+            const subInput = document.createElement("input");
+            subInput.type = "text";
+            subInput.className = "label-edit sub-label-edit";
+            subInput.style.padding = "8px 12px";
+            subInput.style.margin = "0";
+            subInput.value = sub.subLabel || "";
+            subInput.placeholder = "— sub-row label (optional)";
+            subInput.dataset.row = rIdx;
+            subInput.dataset.sub = sIdx;
+            subInput.addEventListener("input", onEdit);
+            td.appendChild(subInput);
+          }
           const ta = document.createElement("textarea");
           ta.className = "weekly" + (sub.short ? " short" : "");
           ta.value = text;
@@ -404,18 +517,7 @@
           ta.dataset.sub = sIdx;
           ta.dataset.week = wIdx;
           ta.addEventListener("input", onEdit);
-          if (wIdx === 0 && sIdx > 0 && sub.subLabel) {
-            // Prefix with subLabel visually via placeholder hint
-            const wrapper = document.createElement("div");
-            const hint = document.createElement("div");
-            hint.className = "sub-label";
-            hint.textContent = sub.subLabel;
-            wrapper.appendChild(hint);
-            wrapper.appendChild(ta);
-            td.appendChild(wrapper);
-          } else {
-            td.appendChild(ta);
-          }
+          td.appendChild(ta);
           tr.appendChild(td);
         });
 
@@ -425,7 +527,17 @@
   }
 
   function snapshot() {
-    const out = ROWS.map((r) => ({
+    const weeks = WEEKS.map((w) => ({ label: w.label, milestone: w.milestone }));
+    document.querySelectorAll("input.week-label-input").forEach((el) => {
+      const w = +el.dataset.week;
+      if (weeks[w]) weeks[w].label = el.value;
+    });
+    document.querySelectorAll("input.milestone-input").forEach((el) => {
+      const w = +el.dataset.week;
+      if (weeks[w]) weeks[w].milestone = el.value;
+    });
+
+    const rows = ROWS.map((r) => ({
       group: r.group,
       groupLabel: r.groupLabel,
       subRows: r.subRows.map((s) => ({
@@ -434,11 +546,52 @@
         weeks: [...s.weeks],
       })),
     }));
+    document.querySelectorAll("input.group-label").forEach((el) => {
+      const r = +el.dataset.row;
+      if (rows[r]) rows[r].groupLabel = el.value;
+    });
+    document.querySelectorAll("input.sub-label-edit").forEach((el) => {
+      const r = +el.dataset.row, s = +el.dataset.sub;
+      if (rows[r] && rows[r].subRows[s]) rows[r].subRows[s].subLabel = el.value;
+    });
     document.querySelectorAll("textarea.weekly").forEach((ta) => {
       const r = +ta.dataset.row, s = +ta.dataset.sub, w = +ta.dataset.week;
-      out[r].subRows[s].weeks[w] = ta.value;
+      if (rows[r] && rows[r].subRows[s]) rows[r].subRows[s].weeks[w] = ta.value;
     });
-    return out;
+    return { weeks, rows };
+  }
+
+  function hydrateFromData(parsed) {
+    if (!parsed) return false;
+    let rowsArr;
+    if (Array.isArray(parsed)) {
+      // Legacy schema: top-level array of row groups
+      rowsArr = parsed;
+    } else if (parsed && typeof parsed === "object") {
+      if (Array.isArray(parsed.weeks)) {
+        parsed.weeks.forEach((w, wIdx) => {
+          if (WEEKS[wIdx]) {
+            if (typeof w?.label === "string") WEEKS[wIdx].label = w.label;
+            if (typeof w?.milestone === "string") WEEKS[wIdx].milestone = w.milestone;
+          }
+        });
+      }
+      rowsArr = Array.isArray(parsed.rows) ? parsed.rows : null;
+    }
+    if (Array.isArray(rowsArr)) {
+      rowsArr.forEach((row, rIdx) => {
+        if (!ROWS[rIdx]) return;
+        if (typeof row?.groupLabel === "string") ROWS[rIdx].groupLabel = row.groupLabel;
+        row.subRows?.forEach((sub, sIdx) => {
+          if (!ROWS[rIdx].subRows[sIdx]) return;
+          if (typeof sub?.subLabel === "string") ROWS[rIdx].subRows[sIdx].subLabel = sub.subLabel;
+          sub.weeks?.forEach((text, wIdx) => {
+            ROWS[rIdx].subRows[sIdx].weeks[wIdx] = text;
+          });
+        });
+      });
+    }
+    return true;
   }
 
   function currentJSON() {
@@ -478,17 +631,7 @@
       const res = await fetch(`${RAW_URL}?t=${Date.now()}`, { cache: "no-store" });
       if (!res.ok) return false;
       const parsed = await res.json();
-      if (!Array.isArray(parsed)) return false;
-      parsed.forEach((row, rIdx) => {
-        row.subRows?.forEach((sub, sIdx) => {
-          sub.weeks?.forEach((text, wIdx) => {
-            if (ROWS[rIdx] && ROWS[rIdx].subRows[sIdx]) {
-              ROWS[rIdx].subRows[sIdx].weeks[wIdx] = text;
-            }
-          });
-        });
-      });
-      return true;
+      return hydrateFromData(parsed);
     } catch (e) {
       console.warn("Repo data load failed", e);
       return false;
@@ -499,17 +642,7 @@
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return false;
-      const data = JSON.parse(raw);
-      data.forEach((row, rIdx) => {
-        row.subRows?.forEach((sub, sIdx) => {
-          sub.weeks?.forEach((text, wIdx) => {
-            if (ROWS[rIdx] && ROWS[rIdx].subRows[sIdx]) {
-              ROWS[rIdx].subRows[sIdx].weeks[wIdx] = text;
-            }
-          });
-        });
-      });
-      return true;
+      return hydrateFromData(JSON.parse(raw));
     } catch (e) {
       console.warn("Draft load failed:", e);
       return false;
@@ -566,15 +699,8 @@
     reader.onload = (ev) => {
       try {
         const data = JSON.parse(ev.target.result);
-        data.forEach((row, rIdx) => {
-          row.subRows.forEach((sub, sIdx) => {
-            sub.weeks.forEach((text, wIdx) => {
-              if (ROWS[rIdx] && ROWS[rIdx].subRows[sIdx]) {
-                ROWS[rIdx].subRows[sIdx].weeks[wIdx] = text;
-              }
-            });
-          });
-        });
+        hydrateFromData(data);
+        buildHead();
         buildTable(ROWS);
         saveDraft();
         refreshSaveBadge();
@@ -595,8 +721,22 @@
   (async function init() {
     setStatus("Loading from shared repo…");
     await loadFromRepo();
-    lastSavedJSON = currentJSON();
+    // Capture repo state (from in-memory WEEKS/ROWS before draft overlay) so
+    // refreshSaveBadge can tell "in sync with repo" from "has local edits".
+    lastSavedJSON = JSON.stringify({
+      weeks: WEEKS.map((w) => ({ label: w.label, milestone: w.milestone })),
+      rows: ROWS.map((r) => ({
+        group: r.group,
+        groupLabel: r.groupLabel,
+        subRows: r.subRows.map((s) => ({
+          subLabel: s.subLabel,
+          short: !!s.short,
+          weeks: [...s.weeks],
+        })),
+      })),
+    }, null, 2);
     applyDraftFromStorage();
+    buildHead();
     buildTable(ROWS);
     refreshSaveBadge();
     PSAuth.renderUserBadge("userBadge");

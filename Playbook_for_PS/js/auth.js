@@ -32,6 +32,7 @@
     cxo: { minRole: "client", label: "CXO Deck" },
     portfolio: { minRole: "warroom", label: "Portfolio Tracking" },
     plan_editor: { minRole: "warroom", label: "Playbook Plan Editor" },
+    action_tracker: { minRole: "warroom", label: "Action Tracker" },
     playbook: { minRole: "architect", label: "Playbook & Library" },
   };
 
