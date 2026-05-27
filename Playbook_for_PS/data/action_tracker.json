@@ -1,1 +1,40 @@
-[]
+{
+  "actions": [
+    {
+      "id": "seed-procurement-1",
+      "week": "Week 1",
+      "topic": "Procurement / Commodity",
+      "action": "Confirm commodity price feed sources and lock data-access path with IT.",
+      "owner": "Hayden",
+      "priority": "High",
+      "created": "2026-05-27",
+      "due": "2026-06-03",
+      "status": "in_progress",
+      "notes": "Waiting on IT approval for vendor API. Fallback: scrape until access granted."
+    },
+    {
+      "id": "seed-sales-1",
+      "week": "Week 2",
+      "topic": "Sales / Play Book",
+      "action": "Map CRM fields used by the Play Book agent and write the ingestion contract.",
+      "owner": "Richard",
+      "priority": "Medium",
+      "created": "2026-05-27",
+      "due": "2026-06-10",
+      "status": "open",
+      "notes": "Dependency on Sales Ops handing over the updated field dictionary."
+    },
+    {
+      "id": "seed-nerve-1",
+      "week": "Week 3",
+      "topic": "Nerve Center",
+      "action": "Run shadow agent against live P&L for one client and capture variance report.",
+      "owner": "Eric",
+      "priority": "High",
+      "created": "2026-05-27",
+      "due": "2026-06-17",
+      "status": "blocked",
+      "notes": "Blocked on finance team review window — push to Wk 4 if not unblocked by Mon."
+    }
+  ]
+}

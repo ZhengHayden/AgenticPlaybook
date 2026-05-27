@@ -67,7 +67,7 @@
   table.actions {
     border-collapse: collapse;
     width: 100%;
-    min-width: 960px;
+    min-width: 1400px;
   }
   table.actions th, table.actions td {
     border: 1px solid var(--c-border);
@@ -86,12 +86,15 @@
     top: 0;
     z-index: 2;
   }
-  table.actions thead th.topic-col   { width: 18%; }
-  table.actions thead th.action-col  { width: 38%; }
-  table.actions thead th.owner-col   { width: 14%; }
-  table.actions thead th.date-col    { width: 12%; }
-  table.actions thead th.status-col  { width: 14%; }
-  table.actions thead th.del-col     { width: 4%; }
+  table.actions thead th.week-col     { width: 80px;  min-width: 80px; }
+  table.actions thead th.topic-col    { width: 12%; }
+  table.actions thead th.action-col   { width: 24%; }
+  table.actions thead th.owner-col    { width: 10%; }
+  table.actions thead th.priority-col { width: 90px;  min-width: 90px; }
+  table.actions thead th.date-col     { width: 120px; min-width: 120px; }
+  table.actions thead th.status-col   { width: 120px; min-width: 120px; }
+  table.actions thead th.notes-col    { width: 16%; }
+  table.actions thead th.del-col      { width: 36px;  min-width: 36px; }
 
   td.cell-input { padding: 0; }
   td.cell-input input,
@@ -122,6 +125,11 @@
   tr[data-status="blocked"]     { background: #fef2f2; }
   tr[data-status="done"]        { background: #f0fdf4; }
   tr[data-status="cancelled"]   { background: #f3f4f6; color: var(--c-muted); }
+
+  /* priority tint on its own cell only */
+  td.priority-cell select[data-value="High"]   { color: #b91c1c; font-weight: 600; }
+  td.priority-cell select[data-value="Medium"] { color: #b45309; font-weight: 500; }
+  td.priority-cell select[data-value="Low"]    { color: var(--c-muted); }
 
   td.del-cell { text-align: center; }
   button.del-row {
@@ -166,12 +174,16 @@
   <table class="actions" id="actions-table">
     <thead>
       <tr>
+        <th class="week-col">Week</th>
         <th class="topic-col">Topic</th>
         <th class="action-col">Action</th>
         <th class="owner-col">Owner</th>
-        <th class="date-col">Creation Date</th>
+        <th class="priority-col">Priority</th>
+        <th class="date-col">Created</th>
+        <th class="date-col">Due</th>
         <th class="status-col">Status</th>
-        <th class="del-col"></th>
+        <th class="notes-col">Notes</th>
+        <th class="del-col" aria-label="Delete row"></th>
       </tr>
     </thead>
     <tbody id="actions-body"></tbody>
@@ -196,6 +208,22 @@
     { value: "cancelled",   label: "Cancelled" },
   ];
 
+  const PRIORITY_OPTIONS = [
+    { value: "High",   label: "High" },
+    { value: "Medium", label: "Medium" },
+    { value: "Low",    label: "Low" },
+  ];
+
+  const WEEK_OPTIONS = [
+    { value: "",       label: "—"      },
+    { value: "Week 1", label: "Week 1" },
+    { value: "Week 2", label: "Week 2" },
+    { value: "Week 3", label: "Week 3" },
+    { value: "Week 4", label: "Week 4" },
+    { value: "Week 5", label: "Week 5" },
+    { value: "Week 6", label: "Week 6" },
+  ];
+
   let actions = [];
   let lastSavedJSON = "";
 
@@ -210,7 +238,18 @@
   }
 
   function emptyAction() {
-    return { id: newId(), topic: "", action: "", owner: "", created: todayISO(), status: "open" };
+    return {
+      id: newId(),
+      week: "",
+      topic: "",
+      action: "",
+      owner: "",
+      priority: "Medium",
+      created: todayISO(),
+      due: "",
+      status: "open",
+      notes: "",
+    };
   }
 
   function setStatus(msg, ok) {
@@ -220,7 +259,7 @@
   }
 
   function currentJSON() {
-    return JSON.stringify(actions, null, 2);
+    return JSON.stringify({ actions }, null, 2);
   }
 
   function refreshSaveBadge() {
@@ -252,62 +291,57 @@
 
     function addInput(field, opts = {}) {
       const td = document.createElement("td");
-      td.className = "cell-input";
-      const el = opts.multiline
-        ? document.createElement("textarea")
-        : opts.select
-          ? document.createElement("select")
-          : document.createElement("input");
-      if (!opts.select) {
-        if (opts.multiline) {
-          el.value = a[field] || "";
-        } else {
-          el.type = opts.type || "text";
-          el.value = a[field] || "";
-        }
-      }
-      if (opts.select) {
-        STATUS_OPTIONS.forEach((opt) => {
+      td.className = "cell-input" + (opts.tdClass ? " " + opts.tdClass : "");
+      let el;
+      if (opts.options) {
+        el = document.createElement("select");
+        opts.options.forEach((opt) => {
           const o = document.createElement("option");
           o.value = opt.value;
           o.textContent = opt.label;
-          if ((a[field] || "open") === opt.value) o.selected = true;
+          if ((a[field] ?? "") === opt.value) o.selected = true;
           el.appendChild(o);
         });
+        el.dataset.value = a[field] || "";
+      } else if (opts.multiline) {
+        el = document.createElement("textarea");
+        el.value = a[field] || "";
+      } else {
+        el = document.createElement("input");
+        el.type = opts.type || "text";
+        el.value = a[field] || "";
       }
       if (opts.placeholder) el.placeholder = opts.placeholder;
       el.dataset.field = field;
       el.dataset.idx = idx;
-      el.addEventListener("input", (e) => {
+      const apply = (e) => {
         const i = +e.target.dataset.idx;
         if (!actions[i]) return;
         actions[i][field] = e.target.value;
+        if (opts.options) e.target.dataset.value = e.target.value;
         if (field === "status") tr.dataset.status = e.target.value;
         onEdit();
-      });
-      el.addEventListener("change", (e) => {
-        if (field === "status") {
-          const i = +e.target.dataset.idx;
-          if (actions[i]) {
-            actions[i].status = e.target.value;
-            tr.dataset.status = e.target.value;
-            onEdit();
-          }
-        }
-      });
+      };
+      el.addEventListener("input", apply);
+      el.addEventListener("change", apply);
       td.appendChild(el);
       tr.appendChild(td);
     }
 
-    addInput("topic",  { placeholder: "Workstream / theme" });
-    addInput("action", { multiline: true, placeholder: "What needs to happen?" });
-    addInput("owner",  { placeholder: "Name" });
-    addInput("created", { type: "date" });
-    addInput("status", { select: true });
+    addInput("week",     { options: WEEK_OPTIONS });
+    addInput("topic",    { placeholder: "Workstream / theme" });
+    addInput("action",   { multiline: true, placeholder: "What needs to happen?" });
+    addInput("owner",    { placeholder: "Name" });
+    addInput("priority", { options: PRIORITY_OPTIONS, tdClass: "priority-cell" });
+    addInput("created",  { type: "date" });
+    addInput("due",      { type: "date" });
+    addInput("status",   { options: STATUS_OPTIONS });
+    addInput("notes",    { multiline: true, placeholder: "Context, blockers, links" });
 
     const delTd = document.createElement("td");
     delTd.className = "del-cell";
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.className = "del-row";
     btn.title = "Delete row";
     btn.textContent = "✕";
@@ -336,11 +370,15 @@
     if (!list) return false;
     actions = list.map((a) => ({
       id: a.id || newId(),
+      week: a.week || "",
       topic: a.topic || "",
       action: a.action || "",
       owner: a.owner || "",
+      priority: a.priority || "Medium",
       created: a.created || todayISO(),
+      due: a.due || "",
       status: a.status || "open",
+      notes: a.notes || "",
     }));
     return true;
   }
