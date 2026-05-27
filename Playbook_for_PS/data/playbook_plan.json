@@ -13,7 +13,7 @@
       "groupLabel": "Procurement Agents",
       "subRows": [
         {
-          "subLabel": "— Commodity / Price Forecast",
+          "subLabel": " Commodity / Price Forecast",
           "short": false,
           "weeks": [
             "Commodity: Process mapping, feature definition, data source IO. Hello World ✓",
