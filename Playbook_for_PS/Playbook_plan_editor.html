@@ -242,10 +242,17 @@
   </table>
 </div>
 
-<footer>Edits auto-save to your browser. Use Export JSON to share or back up.</footer>
+<footer>Edits auto-save as a local draft in your browser. Click <strong>Save</strong> to push them to the shared repo — this opens the GitHub edit tab with the JSON copied; paste &amp; commit to make it visible to everyone.</footer>
 
 <script>
   const STORAGE_KEY = "playbook_plan_v1";
+  const REPO_OWNER = "ZhengHayden";
+  const REPO_NAME = "AgenticPlaybook";
+  const DATA_PATH = "Playbook_for_PS/data/playbook_plan.json";
+  const RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_PATH}`;
+  const EDIT_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/edit/main/${DATA_PATH}`;
+
+  let lastSavedJSON = "";
 
   const ROWS = [
     {
@@ -434,19 +441,8 @@
     return out;
   }
 
-  function onEdit() {
-    setStatus("Editing…");
-    clearTimeout(onEdit._t);
-    onEdit._t = setTimeout(autoSave, 600);
-  }
-
-  function autoSave() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot()));
-      setStatus("Saved", true);
-    } catch (e) {
-      setStatus("Save failed: " + e.message);
-    }
+  function currentJSON() {
+    return JSON.stringify(snapshot(), null, 2);
   }
 
   function setStatus(msg, ok) {
@@ -455,28 +451,96 @@
     el.className = "status" + (ok ? " saved" : "");
   }
 
-  function loadFromStorage() {
+  function refreshSaveBadge() {
+    if (currentJSON() === lastSavedJSON) {
+      setStatus("Up to date with shared repo", true);
+    } else {
+      setStatus("Unsaved changes — click Save to push to repo");
+    }
+  }
+
+  function onEdit() {
+    refreshSaveBadge();
+    clearTimeout(onEdit._t);
+    onEdit._t = setTimeout(saveDraft, 600);
+  }
+
+  function saveDraft() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const data = JSON.parse(raw);
-      data.forEach((row, rIdx) => {
-        row.subRows.forEach((sub, sIdx) => {
-          sub.weeks.forEach((text, wIdx) => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot()));
+    } catch (e) {
+      console.warn("Local draft save failed:", e);
+    }
+  }
+
+  async function loadFromRepo() {
+    try {
+      const res = await fetch(`${RAW_URL}?t=${Date.now()}`, { cache: "no-store" });
+      if (!res.ok) return false;
+      const parsed = await res.json();
+      if (!Array.isArray(parsed)) return false;
+      parsed.forEach((row, rIdx) => {
+        row.subRows?.forEach((sub, sIdx) => {
+          sub.weeks?.forEach((text, wIdx) => {
             if (ROWS[rIdx] && ROWS[rIdx].subRows[sIdx]) {
               ROWS[rIdx].subRows[sIdx].weeks[wIdx] = text;
             }
           });
         });
       });
-      setStatus("Loaded from browser", true);
+      return true;
     } catch (e) {
-      console.warn("Load failed:", e);
+      console.warn("Repo data load failed", e);
+      return false;
     }
   }
 
+  function applyDraftFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const data = JSON.parse(raw);
+      data.forEach((row, rIdx) => {
+        row.subRows?.forEach((sub, sIdx) => {
+          sub.weeks?.forEach((text, wIdx) => {
+            if (ROWS[rIdx] && ROWS[rIdx].subRows[sIdx]) {
+              ROWS[rIdx].subRows[sIdx].weeks[wIdx] = text;
+            }
+          });
+        });
+      });
+      return true;
+    } catch (e) {
+      console.warn("Draft load failed:", e);
+      return false;
+    }
+  }
+
+  async function saveToRepo() {
+    const json = currentJSON();
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(json);
+      copied = true;
+    } catch (e) {
+      console.warn("Clipboard write failed; falling back to download", e);
+      const blob = new Blob([json], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "playbook_plan.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+    window.open(EDIT_URL, "_blank", "noopener");
+    setStatus(copied
+      ? "JSON copied → paste in GitHub tab, then commit"
+      : "playbook_plan.json downloaded → upload in GitHub tab, then commit");
+    lastSavedJSON = json;
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+  }
+
   function resetDefaults() {
-    if (!confirm("Reset all weekly updates to the original defaults?")) return;
+    if (!confirm("Discard your local draft and reload from the shared repo?")) return;
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   }
@@ -512,8 +576,9 @@
           });
         });
         buildTable(ROWS);
-        autoSave();
-        setStatus("Imported", true);
+        saveDraft();
+        refreshSaveBadge();
+        setStatus("Imported — click Save to push to repo");
       } catch (err) {
         alert("Invalid JSON: " + err.message);
       }
@@ -521,15 +586,21 @@
     reader.readAsText(f);
   });
 
-  document.getElementById("btn-save").addEventListener("click", autoSave);
+  document.getElementById("btn-save").addEventListener("click", saveToRepo);
   document.getElementById("btn-reset").addEventListener("click", resetDefaults);
   document.getElementById("btn-export").addEventListener("click", exportJson);
   document.getElementById("btn-import").addEventListener("click", importJson);
   document.getElementById("btn-print").addEventListener("click", () => window.print());
 
-  loadFromStorage();
-  buildTable(ROWS);
-  PSAuth.renderUserBadge("userBadge");
+  (async function init() {
+    setStatus("Loading from shared repo…");
+    await loadFromRepo();
+    lastSavedJSON = currentJSON();
+    applyDraftFromStorage();
+    buildTable(ROWS);
+    refreshSaveBadge();
+    PSAuth.renderUserBadge("userBadge");
+  })();
 </script>
 </body>
 </html>

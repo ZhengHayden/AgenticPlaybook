@@ -1,0 +1,121 @@
+[
+  {
+    "group": "procurement",
+    "groupLabel": "Procurement Agents",
+    "subRows": [
+      {
+        "subLabel": "— Commodity / Price Forecast",
+        "short": false,
+        "weeks": [
+          "Commodity: Process mapping, feature definition, data source IO. Hello World ✓",
+          "Commodity: Full build, ground truth testing, user validation, deploy",
+          "Price Forecast: Process mapping, model architecture, data setup. Hello World ✓",
+          "Price Forecast: Full build, backtest of historicals, shadow run. UAT, deploy",
+          "Generate agent patterns, extract reusable components, package for reuse",
+          "Asset documentation, deployment template, handover package"
+        ]
+      },
+      {
+        "subLabel": "— Commodity Trend Agent",
+        "short": true,
+        "weeks": [
+          "Hello World ✓",
+          "Hello World ✓",
+          "Assisted ✓",
+          "Assisted ✓",
+          "Assisted ✓",
+          "Assisted ✓"
+        ]
+      }
+    ]
+  },
+  {
+    "group": "sales",
+    "groupLabel": "Sales / Tipline Agents",
+    "subRows": [
+      {
+        "subLabel": "— Play Book / Quotation",
+        "short": false,
+        "weeks": [
+          "Play Book: Workflow mapping, CRM data sourcing, feature & eval criteria. Hello World",
+          "Play Book: Full build, ground truth testing, user testing, deploy",
+          "Quotation: Pricing rules mapping, agent design, data setup. Hello World",
+          "Quotation: Full build, shadow run on live cases. UAT, deploy",
+          "Generate agent patterns, extract reusable components, package for reuse",
+          "Asset documentation, deployment template, handover package"
+        ]
+      },
+      {
+        "subLabel": "— Pre-Account Play Book",
+        "short": true,
+        "weeks": [
+          "Hello World ✓",
+          "Hello World ✓",
+          "Assisted ✓",
+          "Assisted ✓",
+          "Assisted ✓",
+          "Assisted ✓"
+        ]
+      }
+    ]
+  },
+  {
+    "group": "nerve",
+    "groupLabel": "Nerve Center Agent",
+    "subRows": [
+      {
+        "subLabel": "",
+        "short": false,
+        "weeks": [
+          "Client data assessment, financial data mapping, gap analysis, data pipeline setup",
+          "Data cleansing & integration, connect client P&L and KPI sources. Hello World on client data",
+          "Agent configuration for client context, dashboard customization, shadow run on live data",
+          "UAT with finance team, deploy. Ongoing data quality monitoring",
+          "Generate configuration, define client onboarding template, package developed",
+          "Asset documentation, integration guide, handover package"
+        ]
+      }
+    ]
+  },
+  {
+    "group": "lop",
+    "groupLabel": "LOP Agent (Proposal Generator)",
+    "subRows": [
+      {
+        "subLabel": "— LOP Agent",
+        "short": false,
+        "weeks": [
+          "",
+          "",
+          "Define proposal structure, client data ingestion pipeline, demo generation logic. Hello World",
+          "Full build, auto-demo from client data, exception generation engine, ground truth testing",
+          "Iteration on output quality, partner review, UAT with BD team",
+          "Production deploy, package documentation, handover"
+        ]
+      },
+      {
+        "subLabel": "— Delivery Playbook",
+        "short": true,
+        "weeks": ["", "", "Structure", "Draft", "Refine", "Final"]
+      }
+    ]
+  },
+  {
+    "group": "team",
+    "groupLabel": "Team Setup",
+    "subRows": [
+      {
+        "subLabel": "",
+        "short": true,
+        "weeks": [
+          "1 SM + 1 Team",
+          "1 SM + 1 Team",
+          "1 SM + 1 Team",
+          "1 SM + 1 Team",
+          "1 SM + 1 Team",
+          "1 SM + 1 Team"
+        ]
+      }
+    ]
+  }
+]
