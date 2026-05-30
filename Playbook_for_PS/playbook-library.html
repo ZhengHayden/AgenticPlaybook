@@ -146,12 +146,25 @@
         </section>
 
         <section id="assetUploadPanel" hidden class="rounded-xl border border-indigo-200 bg-indigo-50/50 p-4 shadow-sm">
-          <h3 class="text-sm font-semibold text-slate-900">Upload asset metadata</h3>
+          <h3 class="text-sm font-semibold text-slate-900">Upload asset to repo</h3>
+          <p class="mt-1 text-xs leading-relaxed text-slate-500">Store the binary in <span class="font-mono text-slate-700">Playbook_for_PS/assets/</span>, then save this index so it appears under every selected sector and function.</p>
           <form id="assetForm" class="mt-3 space-y-3">
             <label for="assetFile" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400">Asset file</label>
             <input id="assetFile" type="file" title="Asset file" class="block w-full text-xs text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-700" />
+            <div class="rounded-lg border border-indigo-100 bg-white p-3 text-xs text-slate-600">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="font-semibold text-slate-800">GitHub binary storage</p>
+                  <p class="mt-1 break-all font-mono text-[11px] text-slate-500" id="assetRepoPathPreview">Choose a file to generate its repo path.</p>
+                </div>
+              </div>
+              <div class="mt-3 flex flex-wrap gap-2 font-semibold">
+                <a id="openAssetUploadFolder" href="#" target="_blank" rel="noopener" class="rounded-lg bg-indigo-600 px-3 py-1.5 text-white hover:bg-indigo-700">Open GitHub upload folder</a>
+                <a id="browseAssetFolder" href="#" target="_blank" rel="noopener" class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-slate-700 hover:bg-slate-50">Browse stored assets</a>
+              </div>
+            </div>
             <input id="assetTitle" type="text" required placeholder="Asset title" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none" />
-            <input id="assetUrl" type="text" placeholder="Repo path or URL" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none" />
+            <input id="assetUrl" type="text" placeholder="Asset URL auto-fills after selecting a file" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none" />
             <label for="assetCategory" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400">Asset category</label>
             <select id="assetCategory" required title="Asset category" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none">
               <option value="cxo_intro">CXO Intro</option>
@@ -168,8 +181,8 @@
             </fieldset>
             <textarea id="assetDescription" rows="2" placeholder="Short description" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none"></textarea>
             <div class="flex flex-wrap gap-2 text-xs font-semibold">
-              <button type="submit" class="px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Add asset</button>
-              <button type="button" id="saveAssetsToRepo" class="px-3 py-2 rounded-lg border border-indigo-200 bg-white text-indigo-700 hover:bg-indigo-50">Save to repo</button>
+              <button type="submit" class="px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Add to index</button>
+              <button type="button" id="saveAssetsToRepo" class="px-3 py-2 rounded-lg border border-indigo-200 bg-white text-indigo-700 hover:bg-indigo-50">Save index to repo</button>
             </div>
           </form>
           <p id="assetLibraryStatus" class="mt-3 text-xs text-slate-500">Loading shared asset index...</p>
@@ -660,8 +673,12 @@
     const REPO_OWNER = "ZhengHayden";
     const REPO_NAME = "AgenticPlaybook";
     const ASSET_DATA_PATH = "Playbook_for_PS/data/playbook_assets.json";
+    const ASSET_STORAGE_PATH = "Playbook_for_PS/assets";
     const ASSET_RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${ASSET_DATA_PATH}`;
     const ASSET_EDIT_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/edit/main/${ASSET_DATA_PATH}`;
+    const ASSET_UPLOAD_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/upload/main/${ASSET_STORAGE_PATH}`;
+    const ASSET_BROWSE_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/tree/main/${ASSET_STORAGE_PATH}`;
+    const ASSET_RAW_BASE_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${ASSET_STORAGE_PATH}`;
     const ASSET_DRAFT_KEY = "ps-playbook-library-assets-draft-v1";
     const VISIBILITY_DEFAULT_KEY = "ps-playbook-library-visibility-default-v1";
 
@@ -725,6 +742,8 @@
         title: String(raw?.title || raw?.fileName || "Untitled asset").trim(),
         fileName: String(raw?.fileName || "").trim(),
         url: String(raw?.url || "").trim(),
+        repoPath: String(raw?.repoPath || "").trim(),
+        rawUrl: String(raw?.rawUrl || "").trim(),
         category,
         sectors: normalizeTags(raw?.sectors, SECTORS),
         functions: normalizeTags(raw?.functions, FUNCTIONS),
@@ -901,8 +920,29 @@
       setStatus("visibilityStatus", "All sectors and functions are visible.", true);
     }
 
-    function safeRepoPath(fileName) {
-      return `assets/${String(fileName || "asset").trim().replace(/[^a-z0-9._-]+/gi, "-")}`;
+    function encodePathSegment(value) {
+      return encodeURIComponent(value).replace(/[!'()*]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
+    }
+
+    function repoAssetPath(fileName) {
+      return `${ASSET_STORAGE_PATH}/${String(fileName || "asset").trim()}`;
+    }
+
+    function pageAssetUrl(fileName) {
+      return `./assets/${encodePathSegment(String(fileName || "asset").trim())}`;
+    }
+
+    function rawAssetUrl(fileName) {
+      return `${ASSET_RAW_BASE_URL}/${encodePathSegment(String(fileName || "asset").trim())}`;
+    }
+
+    function refreshAssetStoragePreview(fileName) {
+      const uploadLink = document.getElementById("openAssetUploadFolder");
+      const browseLink = document.getElementById("browseAssetFolder");
+      const preview = document.getElementById("assetRepoPathPreview");
+      uploadLink.href = ASSET_UPLOAD_URL;
+      browseLink.href = ASSET_BROWSE_URL;
+      preview.textContent = fileName ? repoAssetPath(fileName) : "Choose a file to generate its repo path.";
     }
 
     async function loadAssetsFromRepo() {
@@ -941,7 +981,7 @@
         URL.revokeObjectURL(link.href);
       }
       window.open(ASSET_EDIT_URL, "_blank", "noopener");
-      setStatus("assetLibraryStatus", copied ? "JSON copied. Paste in the GitHub editor and commit. Local draft is retained." : "JSON downloaded. Upload it in the GitHub editor and commit. Local draft is retained.");
+      setStatus("assetLibraryStatus", copied ? "Index JSON copied. Paste in GitHub and commit after the binary is uploaded. Local draft is retained." : "Index JSON downloaded. Upload it in GitHub and commit after the binary is uploaded. Local draft is retained.");
     }
 
     function addAsset(event) {
@@ -954,11 +994,15 @@
         return;
       }
       const file = document.getElementById("assetFile").files?.[0];
+      const generatedRepoPath = file ? repoAssetPath(file.name) : "";
+      const generatedRawUrl = file ? rawAssetUrl(file.name) : "";
       const asset = normalizeAsset({
         id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}`,
         title,
         fileName: file?.name || "",
-        url: document.getElementById("assetUrl").value.trim() || (file ? safeRepoPath(file.name) : ""),
+        url: document.getElementById("assetUrl").value.trim() || (file ? pageAssetUrl(file.name) : ""),
+        repoPath: generatedRepoPath,
+        rawUrl: generatedRawUrl,
         category: document.getElementById("assetCategory").value,
         sectors,
         functions,
@@ -969,7 +1013,8 @@
       saveAssetDraft();
       renderAssetsInTiles();
       event.target.reset();
-      setStatus("assetLibraryStatus", "Asset added locally. Save to repo to share it.");
+      refreshAssetStoragePreview("");
+      setStatus("assetLibraryStatus", "Asset added to the local index. Upload the binary to GitHub assets, then save the index to repo.");
     }
 
     function bindPanelToggle(buttonId, panelId) {
@@ -1001,8 +1046,10 @@
       const title = document.getElementById("assetTitle");
       const url = document.getElementById("assetUrl");
       if (!title.value) title.value = file.name.replace(/\.[^.]+$/, "");
-      if (!url.value) url.value = safeRepoPath(file.name);
+      if (!url.value || url.value.startsWith("./assets/")) url.value = pageAssetUrl(file.name);
+      refreshAssetStoragePreview(file.name);
     });
+    refreshAssetStoragePreview("");
     loadVisibilityDefault(false);
     loadAssetsFromRepo();
 
