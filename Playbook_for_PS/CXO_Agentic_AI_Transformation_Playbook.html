@@ -1,0 +1,1252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Agentic AI Transformation Playbook · Sense. Shape. Sprint. Swarm.</title>
+<meta name="viewport" content="width=1320">
+<script src="./js/auth.js"></script>
+<script>
+  if (!PSAuth.requireAccess("cxo")) {
+    throw new Error("redirect");
+  }
+</script>
+<style>
+  /* ---------- McKinsey-style design system ---------- */
+  :root{
+    --navy:#051C2C;
+    --navy-2:#0B2A40;
+    --ink:#1F2A36;
+    --slate:#4A5A6A;
+    --muted:#6B7782;
+    --rule:#CFD6DD;
+    --bg:#F3F5F7;
+    --bg-2:#E6EEF5;
+    --white:#FFFFFF;
+    --accent:#007EB8;        /* McK signature blue */
+    --accent-dk:#004A77;
+    --gold:#C99A3B;
+    --violet:#6A4FA8;
+    --green:#1E8E63;
+    --red:#B5403D;
+
+    --font-sans:"Helvetica Neue","Arial",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+
+    --slide-w:1280px;
+    --slide-h:720px;
+    --pad-x:56px;
+    --pad-y:48px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#dadfe4;color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.45}
+
+  /* ---------- Deck container & slide frame ---------- */
+  .deck{padding:36px 24px 80px;display:flex;flex-direction:column;align-items:center;gap:36px}
+  .slide{position:relative;width:var(--slide-w);height:var(--slide-h);background:var(--white);overflow:hidden;box-shadow:0 6px 24px rgba(5,28,44,.18);border-radius:2px}
+  .slide.dark{background:var(--navy);color:var(--white)}
+
+  /* Tracker header */
+  .tracker{position:absolute;top:24px;left:var(--pad-x);right:var(--pad-x);display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:700;letter-spacing:.10em;color:var(--muted);text-transform:uppercase}
+  .tracker .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;margin-right:8px;vertical-align:middle}
+  .tracker .right{color:var(--muted);font-weight:600;letter-spacing:.06em}
+  .tracker.dark{color:rgba(255,255,255,.65)}
+  .rule-top{position:absolute;top:52px;left:var(--pad-x);right:var(--pad-x);height:1px;background:var(--rule)}
+  .rule-top.dark{background:rgba(255,255,255,.18)}
+
+  /* Footer */
+  .footer{position:absolute;bottom:24px;left:var(--pad-x);right:var(--pad-x);display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.04em}
+  .footer.dark{color:rgba(255,255,255,.55)}
+  .rule-bot{position:absolute;bottom:52px;left:var(--pad-x);right:var(--pad-x);height:1px;background:var(--rule)}
+
+  /* Title block */
+  .title-block{position:absolute;left:var(--pad-x);right:var(--pad-x);top:88px}
+  .kicker{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin:0 0 8px}
+  .kicker.gold{color:var(--gold)}
+  h1.title{font-size:26px;line-height:1.22;font-weight:700;color:var(--navy);margin:0 0 14px;letter-spacing:-.01em;max-width:1100px}
+  .accent-bar{width:54px;height:3px;background:var(--accent);margin:0 0 18px;border-radius:1px}
+  .accent-bar.gold{background:var(--gold)}
+
+  /* Generic stacks/grids */
+  .row{display:flex}
+  .col{display:flex;flex-direction:column}
+  .gap-12{gap:12px}.gap-16{gap:16px}.gap-20{gap:20px}.gap-24{gap:24px}
+  .grow{flex:1}
+
+  /* Body element styles */
+  .small{font-size:11px;color:var(--muted);letter-spacing:.02em}
+  .label{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--accent-dk);text-transform:uppercase}
+  .label.gold{color:var(--gold)}
+  .lead{font-size:14.5px;color:var(--ink);line-height:1.5}
+  .meta-pill{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--bg-2);color:var(--accent-dk);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+
+  /* Icon containers */
+  .icon-circle{width:42px;height:42px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  .icon-circle.navy{background:var(--navy);color:var(--white)}
+  .icon-circle.gold{background:var(--gold);color:var(--white)}
+  .icon-circle.accent{background:var(--accent);color:var(--white)}
+  .icon-circle.accent-dk{background:var(--accent-dk);color:var(--white)}
+  .icon-circle.violet{background:var(--violet);color:var(--white)}
+  .icon-circle.light{background:var(--bg);color:var(--accent-dk)}
+  .icon-circle svg{width:22px;height:22px}
+  .icon-sq{width:36px;height:36px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  .icon-sq svg{width:18px;height:18px}
+
+  /* Cards */
+  .card{background:var(--bg);border-radius:4px;padding:18px 20px;position:relative}
+  .card .head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .card h3{font-size:14.5px;font-weight:700;color:var(--navy);margin:0;line-height:1.3}
+  .card p{font-size:12.5px;color:var(--ink);line-height:1.5;margin:0}
+  .card .bar{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);border-radius:2px 0 0 2px}
+  .card.gold .bar{background:var(--gold)}
+  .card.violet .bar{background:var(--violet)}
+  .card.dark{background:var(--navy);color:var(--white)}
+  .card.dark h3{color:var(--white)}
+  .card.dark p{color:rgba(255,255,255,.85)}
+
+  /* Numbered tile */
+  .num-tile{background:var(--bg);border-radius:6px;padding:0;overflow:hidden;display:flex;flex-direction:column}
+  .num-tile .top{padding:18px 20px 14px;background:var(--accent-dk);color:var(--white);display:flex;align-items:center;justify-content:space-between}
+  .num-tile .top.gold{background:var(--gold)}
+  .num-tile .top.violet{background:var(--violet)}
+  .num-tile .num{font-size:32px;font-weight:800;letter-spacing:-.02em}
+  .num-tile .body{padding:14px 20px 18px;flex:1}
+  .num-tile h3{margin:0 0 6px;font-size:13.5px;font-weight:700;color:var(--navy)}
+  .num-tile p{margin:0;font-size:12px;color:var(--ink);line-height:1.45}
+
+  /* Stat block */
+  .stat{background:var(--bg);border-radius:6px;padding:18px 20px;position:relative;overflow:hidden}
+  .stat .ribbon{position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent)}
+  .stat.gold .ribbon{background:var(--gold)}
+  .stat .big{font-size:48px;font-weight:800;color:var(--navy);letter-spacing:-.02em;line-height:1;margin-bottom:8px}
+  .stat .sub{font-size:12.5px;font-weight:700;color:var(--accent-dk);margin-bottom:8px}
+  .stat .desc{font-size:11.5px;color:var(--ink);line-height:1.45}
+
+  /* Table */
+  table.matrix{width:100%;border-collapse:collapse}
+  table.matrix th{background:var(--navy);color:var(--white);font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;text-align:left;padding:10px 14px}
+  table.matrix td{padding:14px;font-size:12.5px;color:var(--ink);vertical-align:top;border-bottom:1px solid var(--rule);line-height:1.45}
+  table.matrix tr:nth-child(odd) td{background:var(--bg)}
+  table.matrix .phase-cell{font-weight:800;color:var(--navy);font-size:14px;letter-spacing:.02em}
+  table.matrix .timing{font-weight:700;color:var(--accent-dk);white-space:nowrap}
+  table.matrix .accent-cell{border-left:4px solid var(--accent)}
+  table.matrix .gold-cell{border-left:4px solid var(--gold)}
+  table.matrix .violet-cell{border-left:4px solid var(--violet)}
+  table.matrix .dkblue-cell{border-left:4px solid var(--accent-dk)}
+
+  /* Bullet list */
+  ul.ticks{list-style:none;padding:0;margin:0}
+  ul.ticks li{position:relative;padding:5px 0 5px 22px;font-size:12.5px;line-height:1.5;color:var(--ink)}
+  ul.ticks li::before{content:"";position:absolute;left:0;top:11px;width:11px;height:11px;background:var(--accent);clip-path:polygon(20% 50%,40% 70%,90% 15%,100% 25%,40% 90%,10% 60%)}
+  ul.ticks.gold li::before{background:var(--gold)}
+  ul.dots{list-style:none;padding:0;margin:0}
+  ul.dots li{position:relative;padding:4px 0 4px 16px;font-size:12px;line-height:1.5;color:var(--ink)}
+  ul.dots li::before{content:"";position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+  /* Quote band */
+  .quote-band{background:var(--navy);color:var(--white);padding:18px 24px;border-radius:4px;display:flex;align-items:center;gap:14px}
+  .quote-band .q{font-size:36px;font-weight:800;color:var(--gold);line-height:1;margin-right:4px}
+  .quote-band .qtext{font-size:14px;font-weight:600;line-height:1.4}
+  .quote-band .qattr{font-size:10.5px;color:rgba(255,255,255,.65);margin-top:4px}
+
+  /* Phase rail (left dark column on phase detail slides) */
+  .phase-rail{background:var(--navy);color:var(--white);padding:24px;border-radius:4px;display:flex;flex-direction:column;gap:18px;height:100%}
+  .phase-rail .meta-label{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
+  .phase-rail .meta-val{font-size:13px;color:rgba(255,255,255,.92);line-height:1.5}
+  .phase-rail .timing-big{font-size:22px;font-weight:800;color:var(--white);letter-spacing:-.01em}
+
+  /* Phase header */
+  .phase-head{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+  .phase-head .icon-circle{width:54px;height:54px}
+  .phase-head .icon-circle svg{width:26px;height:26px}
+  .phase-head .ph-num{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+  .phase-head .ph-name{font-size:30px;font-weight:800;color:var(--navy);letter-spacing:-.01em;line-height:1}
+  .phase-head .ph-q{font-size:13px;color:var(--slate);font-style:italic;margin-top:4px;max-width:560px}
+
+  /* Section divider */
+  .sd-num{font-size:160px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-.04em}
+  .sd-title{font-size:42px;font-weight:800;color:var(--white);letter-spacing:-.01em;margin:6px 0 14px;max-width:900px;line-height:1.15}
+  .sd-sub{font-size:16px;color:rgba(255,255,255,.78);max-width:900px;line-height:1.5}
+  .sd-side{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--gold);text-transform:uppercase}
+
+  /* Pipeline / gate diagram */
+  .pipeline{display:flex;align-items:stretch;gap:8px}
+  .pipe-phase{flex:1;color:var(--white);padding:14px 16px;display:flex;flex-direction:column;gap:6px;border-radius:4px;position:relative}
+  .pipe-phase h4{margin:0;font-size:17px;font-weight:800;letter-spacing:.01em}
+  .pipe-phase .pp-t{font-size:11px;font-weight:700;color:rgba(255,255,255,.78)}
+  .pipe-phase .pp-d{font-size:11px;color:rgba(255,255,255,.85);line-height:1.4;margin-top:auto}
+  .pipe-gate{align-self:center;background:var(--navy);color:var(--gold);padding:8px 10px;border-radius:4px;font-size:9.5px;font-weight:800;letter-spacing:.12em;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:60px;text-align:center;flex:none}
+  .pipe-gate .chev{color:var(--white);font-size:14px}
+
+  /* Generic glass row */
+  .panel{background:var(--bg);border-radius:4px;padding:20px}
+  .panel.dark{background:var(--navy);color:var(--white)}
+  .panel.tint{background:var(--bg-2)}
+
+  /* Closing slide */
+  .closing-headline{font-size:80px;font-weight:800;color:var(--white);line-height:1.02;letter-spacing:-.02em}
+  .closing-headline span.dot-sep{color:var(--gold)}
+  .closing-sub{font-size:22px;color:var(--gold);font-weight:600;margin-top:18px}
+
+  /* Print sizing — one slide per page */
+  @media print{
+    body{background:white}
+    .deck{padding:0;gap:0}
+    .slide{box-shadow:none;page-break-after:always;width:100%;height:auto;min-height:720px}
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- ==================== SLIDE 1 · COVER ==================== -->
+<section class="slide dark">
+  <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr">
+    <!-- LEFT navy panel -->
+    <div style="padding:64px 56px;position:relative">
+      <div style="width:60px;height:4px;background:var(--gold);margin-bottom:14px"></div>
+      <div class="kicker gold" style="color:var(--gold)">AGENTIC AI TRANSFORMATION</div>
+      <h1 style="font-size:54px;font-weight:800;line-height:1.02;letter-spacing:-.02em;color:#fff;margin:28px 0 0">The Agentic AI<br>Transformation<br>Playbook</h1>
+      <div style="margin-top:38px">
+        <div style="font-size:28px;font-weight:600;color:#fff">Sense. Shape. <span style="color:var(--gold)">Sprint. Swarm.</span></div>
+        <div style="font-size:14px;color:rgba(255,255,255,.78);margin-top:10px">From sensing opportunity to swarming at scale to capture full impact.</div>
+      </div>
+      <div style="position:absolute;bottom:48px;left:56px;display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        <span style="font-size:11px;color:rgba(255,255,255,.65);letter-spacing:.06em">For CXOs · ~30 minutes · Print or browse</span>
+      </div>
+    </div>
+    <!-- RIGHT phase panels -->
+    <div style="background:#fff;padding:64px 56px 56px;display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="kicker" style="margin-bottom:0;color:var(--accent-dk)">THE 4S METHODOLOGY · AT A GLANCE</div>
+      <!-- Phase row template -->
+      <div class="row" style="background:var(--bg);border-radius:6px;padding:14px 16px;align-items:center;gap:14px">
+        <div class="icon-circle gold">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="kicker" style="margin-bottom:2px">01 · SENSE</div>
+          <div style="font-size:13px;color:var(--ink)">Detect where agents create step-change impact</div>
+        </div>
+        <div class="meta-pill">4 weeks</div>
+      </div>
+      <div class="row" style="background:var(--bg);border-radius:6px;padding:14px 16px;align-items:center;gap:14px">
+        <div class="icon-circle accent">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 12h6l3-8 4 16 3-8h2"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="kicker" style="margin-bottom:2px;color:var(--accent-dk)">02 · SHAPE</div>
+          <div style="font-size:13px;color:var(--ink)">Design workflows, behaviors and guardrails</div>
+        </div>
+        <div class="meta-pill">2–4 weeks</div>
+      </div>
+      <div class="row" style="background:var(--bg);border-radius:6px;padding:14px 16px;align-items:center;gap:14px">
+        <div class="icon-circle accent-dk">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M13 2L4 14h7l-2 8 9-12h-7l2-8z"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="kicker" style="margin-bottom:2px;color:var(--accent-dk)">03 · SPRINT</div>
+          <div style="font-size:13px;color:var(--ink)">Build, pilot and iterate against real users</div>
+        </div>
+        <div class="meta-pill">4–8 weeks</div>
+      </div>
+      <div class="row" style="background:var(--bg);border-radius:6px;padding:14px 16px;align-items:center;gap:14px">
+        <div class="icon-circle violet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><circle cx="12" cy="12" r="2.5"/><path d="M8 7l3 4M16 7l-3 4M8 17l3-4M16 17l-3-4"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="kicker" style="margin-bottom:2px;color:var(--accent-dk)">04 · SWARM</div>
+          <div style="font-size:13px;color:var(--ink)">Multi-agent scale across functions and BUs</div>
+        </div>
+        <div class="meta-pill">3+ months</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 2 · SECTION 01 ==================== -->
+<section class="slide dark">
+  <div style="position:absolute;inset:0;padding:64px 80px;display:flex;flex-direction:column;justify-content:center">
+    <div style="display:flex;align-items:flex-end;gap:40px">
+      <div class="sd-num">01</div>
+      <div>
+        <div class="sd-side">Section 01</div>
+        <h1 class="sd-title">Why agentic AI, why now</h1>
+        <p class="sd-sub">The case for a different operating system — and why pilots stall in 80% of enterprises.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer dark"><span>Agentic AI Transformation Playbook</span><span>02 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 3 · The case ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>01 · WHY AGENTIC AI, WHY NOW</span><span class="right">The case for transformation</span></div>
+  <div class="rule-top"></div>
+  <div class="title-block">
+    <div class="kicker">THE CASE FOR AGENTIC TRANSFORMATION</div>
+    <h1 class="title">AI pilots stall in 80% of enterprises — agentic transformation needs a different operating system</h1>
+    <div class="accent-bar"></div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:230px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+    <!-- Trap -->
+    <div class="card" style="height:340px;padding-top:20px">
+      <div class="bar" style="background:var(--red)"></div>
+      <div class="head">
+        <div class="icon-sq" style="background:#FBE9E8;color:var(--red)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.86l-8.07 14a2 2 0 001.74 3h16.14a2 2 0 001.74-3l-8.07-14a2 2 0 00-3.48 0z"/></svg>
+        </div>
+        <div>
+          <div class="kicker" style="color:var(--red);margin:0">THE TRAP</div>
+          <h3 style="margin-top:4px">80% of AI initiatives never reach production</h3>
+        </div>
+      </div>
+      <ul class="ticks" style="margin-top:8px">
+        <li>Pilots stay pilots — months of slideware, no business value</li>
+        <li>Models tested on toy data, not real workflows</li>
+        <li>IT builds it; the business never adopts it</li>
+        <li>Failure surfaces at month 18, not week 4</li>
+      </ul>
+    </div>
+    <!-- Shift -->
+    <div class="card" style="height:340px;padding-top:20px">
+      <div class="bar" style="background:var(--accent)"></div>
+      <div class="head">
+        <div class="icon-sq" style="background:var(--bg-2);color:var(--accent-dk)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div>
+          <div class="kicker" style="margin:0">THE SHIFT</div>
+          <h3 style="margin-top:4px">Agents don't automate tasks — they own workflows</h3>
+        </div>
+      </div>
+      <ul class="ticks" style="margin-top:8px">
+        <li>Sense their environment, decide, act and learn</li>
+        <li>Multi-agent systems coordinate at near-zero marginal cost</li>
+        <li>One proven workflow multiplies across BUs</li>
+        <li>Compounding value, not one-off automation</li>
+      </ul>
+    </div>
+    <!-- Method -->
+    <div class="card" style="height:340px;padding-top:20px">
+      <div class="bar" style="background:var(--gold)"></div>
+      <div class="head">
+        <div class="icon-sq" style="background:#FCF3DE;color:var(--gold)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div>
+          <div class="kicker gold" style="margin:0;color:var(--gold)">THE METHOD</div>
+          <h3 style="margin-top:4px">Sense → Shape → Sprint → Swarm, with binding gates</h3>
+        </div>
+      </div>
+      <ul class="ticks gold" style="margin-top:8px">
+        <li>Each phase ends in evidence, not opinion</li>
+        <li>Kill decisions at week 4, not month 18</li>
+        <li>Co-built — capability stays after we leave</li>
+        <li>Compensation tied to your business outcomes</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>03 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 4 · Proof points ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>01 · WHY AGENTIC AI, WHY NOW</span><span class="right">Value creation proof points</span></div>
+  <div class="rule-top"></div>
+  <div class="title-block">
+    <div class="kicker">VALUE CREATION PROOF POINTS</div>
+    <h1 class="title">A venture-building methodology — proven across 300+ builds — delivers measurable, repeatable agentic value</h1>
+    <div class="accent-bar"></div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:230px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+    <div class="stat gold">
+      <div class="ribbon"></div>
+      <div class="big">5.1<span style="font-size:30px">x</span></div>
+      <div class="sub">average ROI</div>
+      <div class="desc">vs. 2.5× venture-capital average — proven across 300+ business builds.</div>
+    </div>
+    <div class="stat">
+      <div class="ribbon"></div>
+      <div class="big">8<span style="font-size:30px">x</span></div>
+      <div class="sub">likelihood of scaling</div>
+      <div class="desc">67% success rate vs. 8% baseline for standalone AI initiatives.</div>
+    </div>
+    <div class="stat">
+      <div class="ribbon"></div>
+      <div class="big">2<span style="font-size:30px">x</span></div>
+      <div class="sub">forecast margin</div>
+      <div class="desc">vs. legacy operations — compounding economics from multi-agent reuse.</div>
+    </div>
+    <div class="stat gold">
+      <div class="ribbon"></div>
+      <div class="big">4<span style="font-size:26px"> wk</span></div>
+      <div class="sub">to kill bad ideas</div>
+      <div class="desc">Sense gate stops 80%-failure-rate projects before budget is consumed.</div>
+    </div>
+  </div>
+
+  <!-- Quote band -->
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);bottom:90px">
+    <div class="quote-band">
+      <div class="q">"</div>
+      <div>
+        <div class="qtext">We sense where the value is <em>before</em> we shape anything — and we don't shape anything we wouldn't bet our gain-share on.</div>
+        <div class="qattr">— The 4S operating principle</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>04 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 5 · SECTION 02 ==================== -->
+<section class="slide dark">
+  <div style="position:absolute;inset:0;padding:64px 80px;display:flex;flex-direction:column;justify-content:center">
+    <div style="display:flex;align-items:flex-end;gap:40px">
+      <div class="sd-num">02</div>
+      <div>
+        <div class="sd-side">Section 02</div>
+        <h1 class="sd-title">The 4S Methodology</h1>
+        <p class="sd-sub">Sense → Shape → Sprint → Swarm. Same vocabulary used to design agents <em>and</em> to design the transformation.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer dark"><span>Agentic AI Transformation Playbook</span><span>05 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 6 · 4S Overview Table ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>02 · THE 4S METHODOLOGY</span><span class="right">The framework, at a glance</span></div>
+  <div class="rule-top"></div>
+  <div class="title-block">
+    <div class="kicker">METHODOLOGY OVERVIEW</div>
+    <h1 class="title">The 4S methodology mirrors how agents themselves operate — that's by design</h1>
+    <div class="accent-bar"></div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:230px">
+    <table class="matrix">
+      <thead><tr>
+        <th style="width:18%">Phase</th>
+        <th style="width:36%">What we do for you</th>
+        <th style="width:36%">What agents do in production</th>
+        <th style="width:10%">Timing</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="gold-cell"><div style="display:flex;align-items:center;gap:10px"><div class="icon-circle gold" style="width:32px;height:32px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="width:16px;height:16px"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7" stroke-dasharray="2 3"/></svg></div><span class="phase-cell">SENSE</span></div></td>
+          <td>Scan the organization for highest-value workflows; detect step-change impact</td>
+          <td>Agents sense their environment — observe, detect patterns, identify opportunities</td>
+          <td class="timing">4 weeks</td>
+        </tr>
+        <tr>
+          <td class="accent-cell"><div style="display:flex;align-items:center;gap:10px"><div class="icon-circle accent" style="width:32px;height:32px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="width:16px;height:16px"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><span class="phase-cell">SHAPE</span></div></td>
+          <td>Design agentic workflows; define behaviors, set guardrails, architect the operating model</td>
+          <td>Agents are shaped — behavior boundaries, decision logic, interaction patterns defined</td>
+          <td class="timing">2–4 weeks</td>
+        </tr>
+        <tr>
+          <td class="dkblue-cell"><div style="display:flex;align-items:center;gap:10px"><div class="icon-circle accent-dk" style="width:32px;height:32px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="width:16px;height:16px"><path d="M13 2L4 14h7l-2 8 9-12h-7l2-8z"/></svg></div><span class="phase-cell">SPRINT</span></div></td>
+          <td>Build MVP in rapid agile cycles; pilot with real users; iterate daily until proven</td>
+          <td>Agents operate in feedback loops — process, learn, adapt, improve every cycle</td>
+          <td class="timing">4–8 weeks</td>
+        </tr>
+        <tr>
+          <td class="violet-cell"><div style="display:flex;align-items:center;gap:10px"><div class="icon-circle violet" style="width:32px;height:32px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="width:16px;height:16px"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><circle cx="12" cy="12" r="2"/><path d="M8 7l2 3M16 7l-2 3M8 17l2-3M16 17l-2-3"/></svg></div><span class="phase-cell">SWARM</span></div></td>
+          <td>Deploy multi-agent systems across functions and BUs; compound value at near-zero marginal cost</td>
+          <td>Agents swarm — multiply, coordinate and scale autonomously across the enterprise</td>
+          <td class="timing">3+ months</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);bottom:88px">
+    <div class="panel tint" style="padding:14px 18px;display:flex;align-items:center;gap:14px">
+      <div class="icon-circle accent-dk" style="width:34px;height:34px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:18px;height:18px"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+      <div style="font-size:12.5px;font-weight:700;color:var(--accent-dk)">Same vocabulary used to design agents and to design the transformation — the language is native because the change is too.</div>
+    </div>
+  </div>
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>06 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 7 · Why this works (5 principles) ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>02 · THE 4S METHODOLOGY</span><span class="right">Why this approach works</span></div>
+  <div class="rule-top"></div>
+  <div class="title-block">
+    <div class="kicker">WHY THIS APPROACH WORKS</div>
+    <h1 class="title">Five principles — adapted from 300+ venture builds — translate directly to agentic transformation</h1>
+    <div class="accent-bar"></div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:230px;display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+    <div class="num-tile">
+      <div class="top"><div class="num">01</div><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+      <div class="body"><h3>Increase your odds of success</h3><p>Proven methodology from 300+ builds; Sense phase kills bad ideas before budget is consumed.</p></div>
+    </div>
+    <div class="num-tile">
+      <div class="top"><div class="num">02</div><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="#fff"/></svg></div>
+      <div class="body"><h3>Focus on what moves the needle</h3><p>Rigorous prioritization — Value × Fit × Risk, scored on evidence not opinion.</p></div>
+    </div>
+    <div class="num-tile">
+      <div class="top"><div class="num">03</div><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/><path d="M8 3v18M16 3v18"/></svg></div>
+      <div class="body"><h3>Bridge old and new</h3><p>Capitalize on existing workflows, data and talent — redeploy them in an agent-native way.</p></div>
+    </div>
+    <div class="num-tile">
+      <div class="top"><div class="num">04</div><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <div class="body"><h3>Operate as one team</h3><p>We build with you, not for you. 2-week sprints with daily iteration, no slideware handoffs.</p></div>
+    </div>
+    <div class="num-tile">
+      <div class="top gold"><div class="num">05</div><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+      <div class="body"><h3>Leave lasting capability</h3><p>Agent Center-of-Excellence design and progressive transfer — your swarm operates without us.</p></div>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);bottom:96px;text-align:center">
+    <div style="font-size:13px;color:var(--slate);font-weight:600">Five principles, one rule: <span style="color:var(--accent-dk)">corporate excellence × startup execution</span> — proven again and again across builds.</div>
+  </div>
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>07 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 8 · Gates ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>02 · THE 4S METHODOLOGY</span><span class="right">The gate-structured journey</span></div>
+  <div class="rule-top"></div>
+  <div class="title-block">
+    <div class="kicker">GATE-STRUCTURED JOURNEY</div>
+    <h1 class="title">Three binding gates — each prevents a known failure mode; passing requires evidence, not opinion</h1>
+    <div class="accent-bar"></div>
+  </div>
+
+  <!-- Pipeline -->
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:220px">
+    <div class="pipeline">
+      <div class="pipe-phase" style="background:var(--gold)">
+        <h4>SENSE</h4>
+        <div class="pp-t">4 weeks</div>
+        <div class="pp-d">Detect signal; kill noise early</div>
+      </div>
+      <div class="pipe-gate">GATE 1<span class="chev">▶</span></div>
+      <div class="pipe-phase" style="background:var(--accent)">
+        <h4>SHAPE</h4>
+        <div class="pp-t">2–4 weeks</div>
+        <div class="pp-d">Define agent behavior &amp; boundaries</div>
+      </div>
+      <div class="pipe-gate">GATE 2<span class="chev">▶</span></div>
+      <div class="pipe-phase" style="background:var(--accent-dk)">
+        <h4>SPRINT</h4>
+        <div class="pp-t">4–8 weeks</div>
+        <div class="pp-d">Prove it works with real data</div>
+      </div>
+      <div class="pipe-gate">GATE 3<span class="chev">▶</span></div>
+      <div class="pipe-phase" style="background:var(--violet)">
+        <h4>SWARM</h4>
+        <div class="pp-t">3+ months</div>
+        <div class="pp-d">Multiply across the enterprise</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gate details -->
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:370px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+    <div class="card">
+      <div class="bar"></div>
+      <div class="head">
+        <div class="icon-sq" style="background:var(--bg-2);color:var(--accent-dk)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg></div>
+        <h3>Gate 1 · Sense → Shape</h3>
+      </div>
+      <div class="label" style="margin-bottom:4px">PREVENTS</div>
+      <p>"AI for AI's sake" — no clear metrics, no business case</p>
+      <div class="label" style="margin:10px 0 4px">EVIDENCE REQUIRED</div>
+      <p style="font-weight:700;color:var(--navy)">Quantified impact &gt; threshold; readiness score &gt; minimum</p>
+    </div>
+    <div class="card">
+      <div class="bar"></div>
+      <div class="head">
+        <div class="icon-sq" style="background:var(--bg-2);color:var(--accent-dk)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21v-4a4 4 0 014-4h10a4 4 0 014 4v4"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <h3>Gate 2 · Shape → Sprint</h3>
+      </div>
+      <div class="label" style="margin-bottom:4px">PREVENTS</div>
+      <p>Building on unready foundations — wrong tech, no adoption plan</p>
+      <div class="label" style="margin:10px 0 4px">EVIDENCE REQUIRED</div>
+      <p style="font-weight:700;color:var(--navy)">Architecture approved; behavior spec signed; success KPIs testable</p>
+    </div>
+    <div class="card">
+      <div class="bar"></div>
+      <div class="head">
+        <div class="icon-sq" style="background:var(--bg-2);color:var(--accent-dk)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73L13 2.27a2 2 0 00-2 0L4 6.27A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.27 6.96L12 12l8.73-5.04M12 22.08V12"/></svg></div>
+        <h3>Gate 3 · Sprint → Swarm</h3>
+      </div>
+      <div class="label" style="margin-bottom:4px">PREVENTS</div>
+      <p>Pilot-to-production gap — works in lab, dies in org</p>
+      <div class="label" style="margin:10px 0 4px">EVIDENCE REQUIRED</div>
+      <p style="font-weight:700;color:var(--navy)">MVP KPIs met against pre-agreed criteria; pilot users adopting</p>
+    </div>
+  </div>
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>08 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 9 · SECTION 03 ==================== -->
+<section class="slide dark">
+  <div style="position:absolute;inset:0;padding:64px 80px;display:flex;flex-direction:column;justify-content:center">
+    <div style="display:flex;align-items:flex-end;gap:40px">
+      <div class="sd-num">03</div>
+      <div>
+        <div class="sd-side">Section 03</div>
+        <h1 class="sd-title">The 4S phases in detail</h1>
+        <p class="sd-sub">What we do, what you get, and how each phase ends in evidence — not opinion.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer dark"><span>Agentic AI Transformation Playbook</span><span>09 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 10 · SENSE detail ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>03 · THE 4S PHASES IN DETAIL</span><span class="right">Phase 1 · Sense</span></div>
+  <div class="rule-top"></div>
+
+  <!-- Phase header -->
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:86px">
+    <div class="phase-head">
+      <div class="icon-circle gold">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7" stroke-dasharray="2 3"/><circle cx="12" cy="12" r="10.5" stroke-dasharray="1 4"/></svg>
+      </div>
+      <div>
+        <div class="ph-num">PHASE 01 · SENSE</div>
+        <div class="ph-name">"Where should I start?"</div>
+        <div class="ph-q">Like an agent sensing its environment — observe, detect patterns, identify the highest-value opportunities before acting.</div>
+      </div>
+    </div>
+    <div class="accent-bar gold" style="margin-top:14px"></div>
+  </div>
+
+  <!-- 3-column body -->
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:240px;bottom:80px;display:grid;grid-template-columns:280px 1fr 1fr;gap:16px">
+    <!-- LEFT rail -->
+    <div class="phase-rail">
+      <div>
+        <div class="meta-label">OBJECTIVE</div>
+        <div class="meta-val">Scan the organization for the highest-value agentic workflow opportunities; answer where agents create step-change impact.</div>
+      </div>
+      <div>
+        <div class="meta-label">TIMING</div>
+        <div class="timing-big">4 weeks</div>
+      </div>
+      <div>
+        <div class="meta-label">GATE</div>
+        <div class="meta-val">Validated business case with quantified impact; clear go/no-go on each workflow.</div>
+      </div>
+      <div style="margin-top:auto">
+        <div class="meta-label">RESOURCING</div>
+        <div class="meta-val" style="font-size:11.5px">3–4 FTE · 1 Venture Builder · 1 Ops/Industry Expert · 1–2 Agent Experts</div>
+      </div>
+    </div>
+
+    <!-- MIDDLE: How we support -->
+    <div>
+      <div class="label" style="margin-bottom:8px">HOW WE SUPPORT YOU</div>
+      <div style="height:2px;background:var(--accent);width:48px;margin-bottom:14px"></div>
+      <ul class="ticks">
+        <li>Process diagnostics — sense step-change value, not incremental improvement</li>
+        <li>Impact sizing — financial model per workflow with resource and funding plan</li>
+        <li>Organizational readiness — capability &amp; tech maturity scored 1–5</li>
+        <li>Multi-year sequencing — second and third swarm waves visible from day 1</li>
+        <li>Kill decisions — where we deliberately don't invest matters as much as where we do</li>
+      </ul>
+    </div>
+
+    <!-- RIGHT: deliverables -->
+    <div>
+      <div class="label" style="margin-bottom:8px">WHAT YOU GET</div>
+      <div style="height:2px;background:var(--gold);width:48px;margin-bottom:14px"></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card gold" style="padding:10px 14px"><div class="bar"></div><h3 style="font-size:12.5px">Prioritized workflow portfolio (Value × Fit × Risk)</h3></div>
+        <div class="card gold" style="padding:10px 14px"><div class="bar"></div><h3 style="font-size:12.5px">Financial impact model with confidence ranges</h3></div>
+        <div class="card gold" style="padding:10px 14px"><div class="bar"></div><h3 style="font-size:12.5px">Readiness scorecard against agentic maturity model</h3></div>
+        <div class="card gold" style="padding:10px 14px"><div class="bar"></div><h3 style="font-size:12.5px">Swarm sequencing roadmap (3 horizons)</h3></div>
+        <div class="card gold" style="padding:10px 14px"><div class="bar"></div><h3 style="font-size:12.5px">Investment ask + go/no-go recommendation</h3></div>
+        <div class="card gold" style="padding:10px 14px"><div class="bar"></div><h3 style="font-size:12.5px">"Day-1" hypothesis memo (6 pages per workflow)</h3></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>10 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 11 · SHAPE detail ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>03 · THE 4S PHASES IN DETAIL</span><span class="right">Phase 2 · Shape</span></div>
+  <div class="rule-top"></div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:86px">
+    <div class="phase-head">
+      <div class="icon-circle accent">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <div class="ph-num" style="color:var(--accent)">PHASE 02 · SHAPE</div>
+        <div class="ph-name">"What does the future state look like with agents?"</div>
+        <div class="ph-q">Like shaping an agent's behavior — define what it does, where humans decide, what guardrails hold, and how the system evolves.</div>
+      </div>
+    </div>
+    <div class="accent-bar"></div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:240px;bottom:80px;display:grid;grid-template-columns:280px 1fr 1fr;gap:16px">
+    <div class="phase-rail">
+      <div><div class="meta-label">OBJECTIVE</div><div class="meta-val">Translate business workflows into agentic workflows; define agent behaviors, guardrails, operating model and adoption plan.</div></div>
+      <div><div class="meta-label">TIMING</div><div class="timing-big">2–4 weeks</div><div class="meta-val" style="font-size:11px">per process</div></div>
+      <div><div class="meta-label">GATE</div><div class="meta-val">Signed-off future-state design; tech decisions made; success criteria testable.</div></div>
+      <div style="margin-top:auto"><div class="meta-label">RESOURCING</div><div class="meta-val" style="font-size:11.5px">5 FTE · Venture Builder · Architect · PM · Interaction Designer · Ops Expert</div></div>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom:8px">HOW WE SUPPORT YOU</div>
+      <div style="height:2px;background:var(--accent);width:48px;margin-bottom:14px"></div>
+      <ul class="ticks">
+        <li>Shared, signed-off picture of the future workflow — humans at decision points</li>
+        <li>Workflow-to-agent translation with archetype selection + clickable prototype</li>
+        <li>Agent behavior spec — autonomy boundaries, escalation, guardrails</li>
+        <li>Tech selection — prioritized stack and prerequisites</li>
+        <li>Agent COE design — governance, staffing, decision rights</li>
+      </ul>
+      <!-- Archetype palette -->
+      <div style="margin-top:14px">
+        <div class="label" style="margin-bottom:6px">FIVE AGENT ARCHETYPES</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <div class="meta-pill" style="background:#FCF3DE;color:var(--gold)">Orchestrator</div>
+          <div class="meta-pill" style="background:var(--bg-2);color:var(--accent-dk)">Executor</div>
+          <div class="meta-pill" style="background:var(--bg-2);color:var(--accent-dk)">Analyst</div>
+          <div class="meta-pill" style="background:var(--bg-2);color:var(--accent-dk)">Retriever</div>
+          <div class="meta-pill" style="background:var(--bg-2);color:var(--accent-dk)">Evaluator</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom:8px">WHAT YOU GET</div>
+      <div style="height:2px;background:var(--gold);width:48px;margin-bottom:14px"></div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Future-state workflow blueprint with human decision points</h3></div>
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Agent behavior specification (one spec sheet per agent)</h3></div>
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Clickable prototype of the shaped workflow</h3></div>
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Technology architecture document (9 mandatory sections)</h3></div>
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Adoption &amp; change plan with role redesigns</h3></div>
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Testable success criteria signed by process owners</h3></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>11 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 12 · SPRINT detail ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>03 · THE 4S PHASES IN DETAIL</span><span class="right">Phase 3 · Sprint</span></div>
+  <div class="rule-top"></div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:86px">
+    <div class="phase-head">
+      <div class="icon-circle accent-dk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M13 2L4 14h7l-2 8 9-12h-7l2-8z"/></svg>
+      </div>
+      <div>
+        <div class="ph-num" style="color:var(--accent-dk)">PHASE 03 · SPRINT</div>
+        <div class="ph-name">"We've tried AI before — how do we do it differently?"</div>
+        <div class="ph-q">Like an agent in feedback loops — build, test, learn and iterate in rapid cycles until the system proves itself on real data.</div>
+      </div>
+    </div>
+    <div class="accent-bar" style="background:var(--accent-dk)"></div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:240px;bottom:80px;display:grid;grid-template-columns:280px 1fr 1fr;gap:16px">
+    <div class="phase-rail">
+      <div><div class="meta-label">OBJECTIVE</div><div class="meta-val">Build working agentic workflow; pilot with real users; iterate daily until proven against success criteria.</div></div>
+      <div><div class="meta-label">TIMING</div><div class="timing-big">4–8 weeks</div><div class="meta-val" style="font-size:11px">per process</div></div>
+      <div><div class="meta-label">GATE</div><div class="meta-val">Functional agent in production-like environment; pilot KPIs measured.</div></div>
+      <div style="margin-top:auto"><div class="meta-label">RESOURCING</div><div class="meta-val" style="font-size:11.5px">10–20 joint team · Engineers · Prompt &amp; ML · Ops · Change Leads</div></div>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom:8px">HOW WE SUPPORT YOU</div>
+      <div style="height:2px;background:var(--accent);width:48px;margin-bottom:14px"></div>
+      <ul class="ticks">
+        <li>Workable agentic workflow, validated with pilot group</li>
+        <li>Confidence on data that looks like reality, not slideware</li>
+        <li>Transparent scorecard — your team can challenge and trust it</li>
+        <li>Top-priority tech components live; future deployment plan laid out</li>
+        <li>COE team executing; governance proven in practice</li>
+      </ul>
+      <!-- Test harness -->
+      <div style="margin-top:14px">
+        <div class="label" style="margin-bottom:6px">4-LAYER TEST HARNESS</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+          <div style="background:var(--bg);padding:8px;border-radius:4px;text-align:center"><div style="font-size:9px;color:var(--muted);font-weight:700">L1</div><div style="font-size:11px;font-weight:700;color:var(--navy);margin-top:2px">Unit</div></div>
+          <div style="background:var(--bg);padding:8px;border-radius:4px;text-align:center"><div style="font-size:9px;color:var(--muted);font-weight:700">L2</div><div style="font-size:11px;font-weight:700;color:var(--navy);margin-top:2px">Contract</div></div>
+          <div style="background:var(--bg);padding:8px;border-radius:4px;text-align:center"><div style="font-size:9px;color:var(--muted);font-weight:700">L3</div><div style="font-size:11px;font-weight:700;color:var(--navy);margin-top:2px">Scenario</div></div>
+          <div style="background:var(--bg);padding:8px;border-radius:4px;text-align:center"><div style="font-size:9px;color:var(--muted);font-weight:700">L4</div><div style="font-size:11px;font-weight:700;color:var(--navy);margin-top:2px">Adversarial</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom:8px">WHAT YOU GET</div>
+      <div style="height:2px;background:var(--gold);width:48px;margin-bottom:14px"></div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Live MVP agent on real (or production-representative) data</h3></div>
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Sprint scorecard vs. Shape-phase success criteria</h3></div>
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Iteration log — feedback-to-fix cycle under 24h</h3></div>
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Agent behavior map — where it excels, escalates, fails</h3></div>
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Production-grade infrastructure with monitoring &amp; guardrails</h3></div>
+        <div class="card" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Swarm-readiness assessment + evidence package</h3></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>12 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 13 · SWARM detail ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>03 · THE 4S PHASES IN DETAIL</span><span class="right">Phase 4 · Swarm</span></div>
+  <div class="rule-top"></div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:86px">
+    <div class="phase-head">
+      <div class="icon-circle violet">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="18" r="2.2"/><circle cx="12" cy="12" r="2.2"/><path d="M8 7l2.5 3.5M16 7l-2.5 3.5M8 17l2.5-3.5M16 17l-2.5-3.5"/></svg>
+      </div>
+      <div>
+        <div class="ph-num" style="color:var(--violet)">PHASE 04 · SWARM</div>
+        <div class="ph-name">"How do I scale this across my organization?"</div>
+        <div class="ph-q">Like agents swarming — once proven, agents multiply across functions at near-zero marginal cost. One workflow becomes ten.</div>
+      </div>
+    </div>
+    <div class="accent-bar" style="background:var(--violet)"></div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:240px;bottom:80px;display:grid;grid-template-columns:280px 1fr 1fr;gap:16px">
+    <div class="phase-rail">
+      <div><div class="meta-label">OBJECTIVE</div><div class="meta-val">Deploy multi-agent systems across functions and BUs; compound value; transfer ownership so the swarm sustains itself.</div></div>
+      <div><div class="meta-label">TIMING</div><div class="timing-big">3+ months</div><div class="meta-val" style="font-size:11px">ongoing</div></div>
+      <div><div class="meta-label">GATE</div><div class="meta-val">Adoption KPIs met; team self-sufficient; swarm operating independently.</div></div>
+      <div style="margin-top:auto"><div class="meta-label">RESOURCING</div><div class="meta-val" style="font-size:11.5px">Thin core (2–3 advisors) + specialist modules; gradual ownership transfer</div></div>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom:8px">HOW WE SUPPORT YOU</div>
+      <div style="height:2px;background:var(--accent);width:48px;margin-bottom:14px"></div>
+      <ul class="ticks">
+        <li>People using the new way with live agents — measurable value vs. Shape KPIs</li>
+        <li>Multi-agent orchestration — agents coordinate, hand off, compound value</li>
+        <li>Handover your team can sustain without us — clean engagement close</li>
+        <li>Gain-share activated; ongoing value measurement</li>
+        <li>COE maturity — center of excellence sustains and evolves the swarm</li>
+      </ul>
+      <!-- A2A patterns -->
+      <div style="margin-top:14px">
+        <div class="label" style="margin-bottom:6px">6 A2A COORDINATION PATTERNS</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+          <div style="background:var(--bg);padding:6px 8px;border-radius:4px"><div style="font-size:10px;font-weight:700;color:var(--navy)">① Sequential</div></div>
+          <div style="background:var(--bg);padding:6px 8px;border-radius:4px"><div style="font-size:10px;font-weight:700;color:var(--navy)">② Parallel</div></div>
+          <div style="background:var(--bg);padding:6px 8px;border-radius:4px"><div style="font-size:10px;font-weight:700;color:var(--navy)">③ Hierarchical</div></div>
+          <div style="background:var(--bg);padding:6px 8px;border-radius:4px"><div style="font-size:10px;font-weight:700;color:var(--navy)">④ Debate</div></div>
+          <div style="background:var(--bg);padding:6px 8px;border-radius:4px"><div style="font-size:10px;font-weight:700;color:var(--navy)">⑤ Event-driven</div></div>
+          <div style="background:var(--bg);padding:6px 8px;border-radius:4px"><div style="font-size:10px;font-weight:700;color:var(--navy)">⑥ Blackboard</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom:8px">WHAT YOU GET</div>
+      <div style="height:2px;background:var(--gold);width:48px;margin-bottom:14px"></div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="card violet" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Production multi-agent swarm deployed &amp; governed</h3></div>
+        <div class="card violet" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Adoption metrics, trust scores, completion rates</h3></div>
+        <div class="card violet" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Value realization dashboard with gain-share</h3></div>
+        <div class="card violet" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Capability transfer package — runbooks, training</h3></div>
+        <div class="card violet" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Self-sufficient COE governing the swarm</h3></div>
+        <div class="card violet" style="padding:8px 12px"><div class="bar"></div><h3 style="font-size:12px">Swarm expansion playbook for waves 2 and 3</h3></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>13 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 14 · SECTION 04 ==================== -->
+<section class="slide dark">
+  <div style="position:absolute;inset:0;padding:64px 80px;display:flex;flex-direction:column;justify-content:center">
+    <div style="display:flex;align-items:flex-end;gap:40px">
+      <div class="sd-num">04</div>
+      <div>
+        <div class="sd-side">Section 04</div>
+        <h1 class="sd-title">The talent &amp; operating model</h1>
+        <p class="sd-sub">Agent Venture Builders, eight specialist roles, and a LEGO-brick library that accelerates every phase.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer dark"><span>Agentic AI Transformation Playbook</span><span>14 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 15 · Talent ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>04 · THE TALENT &amp; OPERATING MODEL</span><span class="right">Talent model</span></div>
+  <div class="rule-top"></div>
+  <div class="title-block">
+    <div class="kicker">TALENT MODEL</div>
+    <h1 class="title">Agent Venture Builders coordinate eight specialist roles across phases — your COE absorbs them progressively</h1>
+    <div class="accent-bar"></div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:230px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <!-- Role rows -->
+    <div class="card" style="padding:14px 16px"><div class="bar" style="background:var(--gold)"></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="icon-circle gold" style="width:34px;height:34px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:16px;height:16px"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+        <div style="flex:1"><h3 style="font-size:13px;margin-bottom:2px">Agent Venture Builder</h3><p style="font-size:11.5px;color:var(--slate)">Central coordinator; transformation plan &amp; business case</p></div>
+        <div class="meta-pill">All phases</div>
+      </div>
+    </div>
+    <div class="card" style="padding:14px 16px"><div class="bar"></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="icon-circle accent" style="width:34px;height:34px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:16px;height:16px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+        <div style="flex:1"><h3 style="font-size:13px;margin-bottom:2px">Agent Architect</h3><p style="font-size:11.5px;color:var(--slate)">Infrastructure, orchestration patterns, swarm topology</p></div>
+        <div class="meta-pill">Shape → Swarm</div>
+      </div>
+    </div>
+    <div class="card" style="padding:14px 16px"><div class="bar"></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="icon-circle accent" style="width:34px;height:34px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:16px;height:16px"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
+        <div style="flex:1"><h3 style="font-size:13px;margin-bottom:2px">Prompt &amp; Interaction Designer</h3><p style="font-size:11.5px;color:var(--slate)">Agent behaviors, guardrails, human interaction patterns</p></div>
+        <div class="meta-pill">Shape → Sprint</div>
+      </div>
+    </div>
+    <div class="card" style="padding:14px 16px"><div class="bar"></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="icon-circle accent" style="width:34px;height:34px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:16px;height:16px"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 9v12M15 9v12"/></svg></div>
+        <div style="flex:1"><h3 style="font-size:13px;margin-bottom:2px">Operations / Industry Expert</h3><p style="font-size:11.5px;color:var(--slate)">Domain knowledge; validates workflow design vs. reality</p></div>
+        <div class="meta-pill">All phases</div>
+      </div>
+    </div>
+    <div class="card" style="padding:14px 16px"><div class="bar"></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="icon-circle accent" style="width:34px;height:34px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:16px;height:16px"><path d="M9 11H5a2 2 0 00-2 2v7h18v-7a2 2 0 00-2-2h-4M9 11V5a3 3 0 116 0v6M9 11h6"/></svg></div>
+        <div style="flex:1"><h3 style="font-size:13px;margin-bottom:2px">ML / LLM Engineer</h3><p style="font-size:11.5px;color:var(--slate)">Fine-tuning, RAG pipelines, model optimization</p></div>
+        <div class="meta-pill">Sprint → Swarm</div>
+      </div>
+    </div>
+    <div class="card" style="padding:14px 16px"><div class="bar"></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="icon-circle accent" style="width:34px;height:34px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:16px;height:16px"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+        <div style="flex:1"><h3 style="font-size:13px;margin-bottom:2px">Data &amp; Analytics</h3><p style="font-size:11.5px;color:var(--slate)">Scalable data platform; evaluation frameworks</p></div>
+        <div class="meta-pill">Sense → Sprint</div>
+      </div>
+    </div>
+    <div class="card" style="padding:14px 16px"><div class="bar"></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="icon-circle accent" style="width:34px;height:34px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div style="flex:1"><h3 style="font-size:13px;margin-bottom:2px">Change &amp; Adoption Lead</h3><p style="font-size:11.5px;color:var(--slate)">Organizational transition; enables swarm adoption</p></div>
+        <div class="meta-pill">Shape → Swarm</div>
+      </div>
+    </div>
+    <div class="card" style="padding:14px 16px"><div class="bar"></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="icon-circle accent" style="width:34px;height:34px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:16px;height:16px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div style="flex:1"><h3 style="font-size:13px;margin-bottom:2px">Agent Governance Specialist</h3><p style="font-size:11.5px;color:var(--slate)">Compliance, safety, swarm policies, risk management</p></div>
+        <div class="meta-pill">Sprint → Swarm</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);bottom:90px">
+    <div class="panel dark" style="padding:14px 18px;display:flex;align-items:center;gap:14px">
+      <div class="icon-circle gold" style="width:34px;height:34px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:18px;height:18px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div>
+        <div class="label gold" style="margin-bottom:2px">STAFFING ENVELOPE</div>
+        <div style="font-size:12.5px;color:#fff;line-height:1.5">A standard 4S engagement runs ~4 person-months external + ~6 client-FTE-weeks over 13–17 weeks. Two senior practitioners lead; engineer joins at Sprint. Specialists modular.</div>
+      </div>
+    </div>
+  </div>
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>15 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 16 · LEGO bricks ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>04 · THE TALENT &amp; OPERATING MODEL</span><span class="right">Cross-phase accelerators</span></div>
+  <div class="rule-top"></div>
+  <div class="title-block">
+    <div class="kicker">CROSS-PHASE ACCELERATORS · OUR "LEGO BRICKS"</div>
+    <h1 class="title">Pre-built accelerators compress every phase — proven components, not bespoke artifacts</h1>
+    <div class="accent-bar"></div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:230px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+    <!-- SENSE bricks -->
+    <div style="background:var(--bg);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;height:300px">
+      <div style="background:var(--gold);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7" stroke-dasharray="2 3"/></svg>
+        <span style="font-size:15px;font-weight:800;letter-spacing:.02em">SENSE</span>
+      </div>
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--gold);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">Impact-sizing model — proven financial framework for agent ROI</div></div>
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--gold);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">Process-to-opportunity scanner — rapid workflow assessment</div></div>
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--gold);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">Agentic readiness diagnostic — automated maturity scoring</div></div>
+      </div>
+    </div>
+    <!-- SHAPE bricks -->
+    <div style="background:var(--bg);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;height:300px">
+      <div style="background:var(--accent);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <span style="font-size:15px;font-weight:800;letter-spacing:.02em">SHAPE</span>
+      </div>
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--accent);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">Agent archetype library (Orchestrator · Executor · Analyst · Retriever · Evaluator)</div></div>
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--accent);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">Behavior spec templates — guardrails, escalation, autonomy</div></div>
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--accent);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">Process-to-agent translation blueprints</div></div>
+      </div>
+    </div>
+    <!-- SPRINT bricks -->
+    <div style="background:var(--bg);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;height:300px">
+      <div style="background:var(--accent-dk);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2"><path d="M13 2L4 14h7l-2 8 9-12h-7l2-8z"/></svg>
+        <span style="font-size:15px;font-weight:800;letter-spacing:.02em">SPRINT</span>
+      </div>
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--accent-dk);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">Agent orchestration frameworks — multi-agent coordination</div></div>
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--accent-dk);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">4-layer test harness — unit · contract · scenario · adversarial</div></div>
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--accent-dk);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">RAG pipeline blueprints — production-grade retrieval</div></div>
+      </div>
+    </div>
+    <!-- SWARM bricks -->
+    <div style="background:var(--bg);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;height:300px">
+      <div style="background:var(--violet);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><circle cx="12" cy="12" r="2"/><path d="M8 7l2.5 3.5M16 7l-2.5 3.5M8 17l2.5-3.5M16 17l-2.5-3.5"/></svg>
+        <span style="font-size:15px;font-weight:800;letter-spacing:.02em">SWARM</span>
+      </div>
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--violet);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">A2A patterns (Sequential · Parallel · Hierarchical · Debate · Event-driven · Blackboard)</div></div>
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--violet);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">COE operating-model template — governance for swarm lifecycle</div></div>
+        <div style="display:flex;gap:8px"><div style="width:10px;height:10px;background:var(--violet);margin-top:5px;flex:none"></div><div style="font-size:11.5px;color:var(--ink);line-height:1.4">Adoption measurement framework — KPIs &amp; behavior analytics</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);bottom:92px">
+    <div class="panel dark" style="padding:12px 18px;display:flex;align-items:center;gap:14px">
+      <div class="label gold" style="margin:0">CROSS-CUTTING</div>
+      <div style="font-size:12px;color:#fff">Change-management playbook  ·  Agent talent role definitions  ·  Modular training curriculum (operators, builders, governors)</div>
+    </div>
+  </div>
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>16 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 17 · SECTION 05 ==================== -->
+<section class="slide dark">
+  <div style="position:absolute;inset:0;padding:64px 80px;display:flex;flex-direction:column;justify-content:center">
+    <div style="display:flex;align-items:flex-end;gap:40px">
+      <div class="sd-num">05</div>
+      <div>
+        <div class="sd-side">Section 05</div>
+        <h1 class="sd-title">How we partner</h1>
+        <p class="sd-sub">Risk-value architecture, incentive alignment, and how to start with a Sense Sprint.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer dark"><span>Agentic AI Transformation Playbook</span><span>17 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 18 · Incentives ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>05 · HOW WE PARTNER</span><span class="right">Risk-value architecture · incentive alignment</span></div>
+  <div class="rule-top"></div>
+  <div class="title-block">
+    <div class="kicker">RISK-VALUE ARCHITECTURE · INCENTIVE ALIGNMENT</div>
+    <h1 class="title">We tie compensation to your achieved outcomes — gain-share activates only after verified value</h1>
+    <div class="accent-bar"></div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:230px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <!-- LEFT: 5 mechanisms -->
+    <div style="background:var(--bg);border-radius:6px;padding:18px 20px">
+      <div class="label" style="margin-bottom:14px">FIVE RISK-REDUCTION MECHANISMS</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="font-size:22px;font-weight:800;color:var(--gold);width:30px">01</div>
+          <div><h3 style="margin:0;font-size:13px;color:var(--navy)">Gate-based progression</h3><p style="margin:2px 0 0;font-size:11.5px;color:var(--slate)">No phase advances without evidence of value</p></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="font-size:22px;font-weight:800;color:var(--gold);width:30px">02</div>
+          <div><h3 style="margin:0;font-size:13px;color:var(--navy)">Early kill decisions</h3><p style="margin:2px 0 0;font-size:11.5px;color:var(--slate)">Sense what won't work; stop it before it drains budget</p></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="font-size:22px;font-weight:800;color:var(--gold);width:30px">03</div>
+          <div><h3 style="margin:0;font-size:13px;color:var(--navy)">Outcome-linked incentives</h3><p style="margin:2px 0 0;font-size:11.5px;color:var(--slate)">Our compensation tied to your achieved success</p></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="font-size:22px;font-weight:800;color:var(--gold);width:30px">04</div>
+          <div><h3 style="margin:0;font-size:13px;color:var(--navy)">Co-creation model</h3><p style="margin:2px 0 0;font-size:11.5px;color:var(--slate)">Your team builds capability while we sprint together</p></div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="font-size:22px;font-weight:800;color:var(--gold);width:30px">05</div>
+          <div><h3 style="margin:0;font-size:13px;color:var(--navy)">Phased investment</h3><p style="margin:2px 0 0;font-size:11.5px;color:var(--slate)">Commit to 4 weeks of Sense — not 12 months to prove a concept</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: incentive table -->
+    <div style="background:var(--navy);border-radius:6px;padding:18px 20px;color:#fff">
+      <div class="label gold" style="margin-bottom:14px">INCENTIVE ALIGNMENT MODEL</div>
+      <table style="width:100%;border-collapse:collapse;font-size:11.5px">
+        <thead>
+          <tr style="background:var(--accent-dk)">
+            <th style="padding:8px 10px;text-align:left;font-size:10px;letter-spacing:.10em;color:#fff;font-weight:700">COMPONENT</th>
+            <th style="padding:8px 10px;text-align:left;font-size:10px;letter-spacing:.10em;color:#fff;font-weight:700">DESCRIPTION</th>
+            <th style="padding:8px 10px;text-align:left;font-size:10px;letter-spacing:.10em;color:#fff;font-weight:700">TIMEFRAME</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.08)">
+            <td style="padding:12px 10px;border-left:3px solid var(--accent)"><span style="font-weight:700;color:#fff">Fixed fee</span></td>
+            <td style="padding:12px 10px;color:rgba(255,255,255,.85)">Sense + Shape delivery — predictable cost</td>
+            <td style="padding:12px 10px;color:var(--gold);font-weight:700;white-space:nowrap">Immediate</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)">
+            <td style="padding:12px 10px;border-left:3px solid var(--accent)"><span style="font-weight:700;color:#fff">Delivery milestones</span></td>
+            <td style="padding:12px 10px;color:rgba(255,255,255,.85)">Tied to Sprint outputs (MVP, agents operational)</td>
+            <td style="padding:12px 10px;color:var(--gold);font-weight:700;white-space:nowrap">4–12 wks</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.08)">
+            <td style="padding:12px 10px;border-left:3px solid var(--accent)"><span style="font-weight:700;color:#fff">Business outcomes</span></td>
+            <td style="padding:12px 10px;color:rgba(255,255,255,.85)">Revenue uplift, cost reduction, cycle-time from Swarm</td>
+            <td style="padding:12px 10px;color:var(--gold);font-weight:700;white-space:nowrap">6–12 mo</td>
+          </tr>
+          <tr style="background:rgba(201,154,59,.10)">
+            <td style="padding:12px 10px;border-left:3px solid var(--gold)"><span style="font-weight:800;color:var(--gold)">Gain-share</span></td>
+            <td style="padding:12px 10px;color:#fff;font-weight:600">15–30% of verified savings above agreed baseline</td>
+            <td style="padding:12px 10px;color:var(--gold);font-weight:800;white-space:nowrap">12+ mo</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);bottom:92px;text-align:center">
+    <div style="font-size:13px;font-weight:700;color:var(--slate);font-style:italic">We don't monetize until you do. The model holds us — and you — to evidence over optimism.</div>
+  </div>
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>18 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 19 · Sense Sprint ==================== -->
+<section class="slide">
+  <div class="tracker"><span><span class="dot"></span>05 · HOW WE PARTNER</span><span class="right">How to get started</span></div>
+  <div class="rule-top"></div>
+  <div class="title-block">
+    <div class="kicker">HOW TO GET STARTED</div>
+    <h1 class="title">Start with a Sense Sprint — 2–4 weeks to detect and validate the highest-value agentic opportunity</h1>
+    <div class="accent-bar"></div>
+  </div>
+
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);top:230px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+    <!-- Desirability -->
+    <div style="background:var(--bg);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;height:300px">
+      <div style="background:var(--gold);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        <span style="font-size:13px;font-weight:800;letter-spacing:.04em">DESIRABILITY</span>
+      </div>
+      <div style="padding:16px 18px">
+        <h3 style="font-size:13.5px;margin:0 0 12px;color:var(--navy)">Will process owners adopt an agentic approach?</h3>
+        <ul class="ticks gold" style="font-size:11.5px">
+          <li>Which workflows have the most pain?</li>
+          <li>Where will adoption stick — and where will it fight back?</li>
+          <li>Are the right sponsors aligned?</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Viability -->
+    <div style="background:var(--bg);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;height:300px">
+      <div style="background:var(--accent);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        <span style="font-size:13px;font-weight:800;letter-spacing:.04em">VIABILITY</span>
+      </div>
+      <div style="padding:16px 18px">
+        <h3 style="font-size:13.5px;margin:0 0 12px;color:var(--navy)">What does the business case look like at swarm scale?</h3>
+        <ul class="ticks" style="font-size:11.5px">
+          <li>Sized financial impact per workflow</li>
+          <li>Multi-year sequencing of waves 2 and 3</li>
+          <li>Investment ask with confidence ranges</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Feasibility -->
+    <div style="background:var(--bg);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;height:300px">
+      <div style="background:var(--accent-dk);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        <span style="font-size:13px;font-weight:800;letter-spacing:.04em">FEASIBILITY</span>
+      </div>
+      <div style="padding:16px 18px">
+        <h3 style="font-size:13.5px;margin:0 0 12px;color:var(--navy)">Can we build this with available data and tech?</h3>
+        <ul class="ticks" style="font-size:11.5px">
+          <li>Data quality and access readiness</li>
+          <li>Tech-stack prerequisites assessed</li>
+          <li>Organizational capability scored 1–5</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: sprint structure + output -->
+  <div style="position:absolute;left:var(--pad-x);right:var(--pad-x);bottom:90px">
+    <div class="panel dark" style="padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:10px">
+      <div class="label gold" style="margin:0">SPRINT STRUCTURE</div>
+      <div style="font-size:12px;color:#fff">2–4 weeks  ·  workshops with process owners  ·  quantitative sizing on operational data  ·  rapid prototyping  ·  investment-committee pitch</div>
+    </div>
+    <div style="font-size:12.5px;font-weight:700;color:var(--accent-dk);text-align:center">
+      → <span style="text-transform:uppercase;letter-spacing:.06em">Output:</span> a validated signal — the highest-value agentic opportunity, brought to life with a prototype, ready to shape into production.
+    </div>
+  </div>
+  <div class="rule-bot"></div>
+  <div class="footer"><span>Agentic AI Transformation Playbook · Sense · Shape · Sprint · Swarm</span><span>19 / 20</span></div>
+</section>
+
+<!-- ==================== SLIDE 20 · Closing ==================== -->
+<section class="slide dark">
+  <div style="position:absolute;inset:0;padding:80px 80px;display:flex;flex-direction:column;justify-content:center">
+    <div style="width:80px;height:5px;background:var(--gold);margin-bottom:24px"></div>
+    <div class="closing-headline">Sense. Shape.<br><span class="dot-sep">Sprint. Swarm.</span></div>
+    <div class="closing-sub">From sensing opportunity to swarming at scale.</div>
+    <div style="font-size:15px;color:rgba(255,255,255,.78);margin-top:14px;max-width:900px">Don't just look to the future — let your agents build it.</div>
+    <div style="display:flex;gap:24px;margin-top:48px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="icon-circle gold" style="width:36px;height:36px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:18px;height:18px"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
+        <div><div style="font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.10em">CONTACT</div><div style="font-size:13px;color:#fff;font-weight:600">Run a Sense Sprint in 4 weeks</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="icon-circle accent" style="width:36px;height:36px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:18px;height:18px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div><div style="font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.10em">NEXT STEP</div><div style="font-size:13px;color:#fff;font-weight:600">Schedule the kickoff workshop</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer dark"><span>Agentic AI Transformation Playbook</span><span>20 / 20</span></div>
+</section>
+
+</div>
+</body>
+</html>
