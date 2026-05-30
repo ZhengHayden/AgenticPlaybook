@@ -15,7 +15,11 @@
       background: linear-gradient(to right, transparent, rgba(99,102,241,0.25), rgba(16,185,129,0.25), rgba(245,158,11,0.25), rgba(139,92,246,0.25), transparent);
       margin: 0;
     }
-    .nav-link.active { color: #4338ca; background: #eef2ff; }
+    .nav-link { transition: all 0.15s ease; white-space: nowrap; }
+    .nav-link.active { color: #0f172a; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .dimension-card[hidden] { display: none; }
+    .asset-pill { display: inline-flex; align-items: center; max-width: 100%; }
+    select[multiple] { min-height: 8.75rem; }
     main section[id] { scroll-margin-top: 130px; }
   </style>
 </head>
@@ -38,28 +42,28 @@
   <!-- Section nav -->
   <nav class="sticky top-[57px] z-20 border-b border-slate-200 bg-white/90 backdrop-blur-md">
     <div class="max-w-5xl mx-auto px-4 md:px-6">
-      <ul class="flex flex-nowrap overflow-x-auto gap-1 py-2 text-xs font-semibold text-slate-600">
-        <li><a data-nav href="#codified" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+      <ul class="inline-flex max-w-full overflow-x-auto p-1 my-2 rounded-xl bg-slate-100 text-xs font-semibold text-slate-500">
+        <li><a data-nav href="#codified" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-slate-900">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
           01 Codified Assets
         </a></li>
-        <li><a data-nav href="#methodology" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+        <li><a data-nav href="#methodology" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-slate-900">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
           02 Methodology
         </a></li>
-        <li><a data-nav href="#worksheets" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition-colors">
+        <li><a data-nav href="#worksheets" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-slate-900">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
           03 Worksheets
         </a></li>
-        <li><a data-nav href="#accelerators" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-violet-50 hover:text-violet-700 transition-colors">
+        <li><a data-nav href="#accelerators" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-slate-900">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           04 Accelerators
         </a></li>
-        <li><a data-nav href="#reference" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-sky-50 hover:text-sky-700 transition-colors">
+        <li><a data-nav href="#reference" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-slate-900">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
           05 Reference
         </a></li>
-        <li class="ml-auto"><a href="#roadmap" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+        <li><a data-nav href="#roadmap" class="nav-link flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-slate-900">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           Roadmap
         </a></li>
@@ -104,13 +108,82 @@
         <span class="text-xs font-medium px-2 py-1 rounded-full bg-indigo-100 text-indigo-800 shrink-0">Curating</span>
       </div>
 
+      <div class="mb-8 space-y-3">
+        <div class="flex flex-wrap gap-2 text-sm font-semibold">
+          <button type="button" id="toggleLibraryConfig" aria-controls="libraryConfigurationPanel" aria-expanded="false" class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-white hover:bg-slate-700">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Library configuration
+          </button>
+          <button type="button" id="toggleAssetUpload" aria-controls="assetUploadPanel" aria-expanded="false" class="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-white px-4 py-2 text-indigo-700 hover:bg-indigo-50">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M12 12v9m0-9l-3 3m3-3l3 3"/></svg>
+            Upload asset
+          </button>
+        </div>
+        <div class="grid lg:grid-cols-[minmax(0,1fr)_320px] gap-4">
+        <section id="libraryConfigurationPanel" hidden class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-900">Architect default view</h3>
+              <p class="text-xs text-slate-500 mt-1">Hide sectors or functions from this library view, then save and load that default later.</p>
+            </div>
+            <div class="flex flex-wrap gap-2 text-xs font-semibold">
+              <button type="button" id="saveVisibilityDefault" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-700">Save default</button>
+              <button type="button" id="loadVisibilityDefault" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50">Load default</button>
+              <button type="button" id="resetVisibility" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50">Show all</button>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Industry sectors</p>
+              <div id="sectorVisibilityControls" class="grid grid-cols-2 gap-2 text-xs"></div>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Functions</p>
+              <div id="functionVisibilityControls" class="grid grid-cols-2 gap-2 text-xs"></div>
+            </div>
+          </div>
+          <p id="visibilityStatus" class="mt-3 text-xs text-slate-400"></p>
+        </section>
+
+        <section id="assetUploadPanel" hidden class="rounded-xl border border-indigo-200 bg-indigo-50/50 p-4 shadow-sm">
+          <h3 class="text-sm font-semibold text-slate-900">Upload asset metadata</h3>
+          <form id="assetForm" class="mt-3 space-y-3">
+            <label for="assetFile" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400">Asset file</label>
+            <input id="assetFile" type="file" title="Asset file" class="block w-full text-xs text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-700" />
+            <input id="assetTitle" type="text" required placeholder="Asset title" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none" />
+            <input id="assetUrl" type="text" placeholder="Repo path or URL" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none" />
+            <label for="assetCategory" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400">Asset category</label>
+            <select id="assetCategory" required title="Asset category" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none">
+              <option value="cxo_intro">CXO Intro</option>
+              <option value="feature_spec">Feature Spec</option>
+              <option value="cst_playbook">CST Playbook</option>
+            </select>
+            <fieldset>
+              <legend class="block text-[11px] font-bold uppercase tracking-widest text-slate-400">Industry sector tags</legend>
+              <div id="assetSectors" class="mt-2 grid grid-cols-2 gap-2 text-xs"></div>
+            </fieldset>
+            <fieldset>
+              <legend class="block text-[11px] font-bold uppercase tracking-widest text-slate-400">Function tags</legend>
+              <div id="assetFunctions" class="mt-2 grid grid-cols-2 gap-2 text-xs"></div>
+            </fieldset>
+            <textarea id="assetDescription" rows="2" placeholder="Short description" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none"></textarea>
+            <div class="flex flex-wrap gap-2 text-xs font-semibold">
+              <button type="submit" class="px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Add asset</button>
+              <button type="button" id="saveAssetsToRepo" class="px-3 py-2 rounded-lg border border-indigo-200 bg-white text-indigo-700 hover:bg-indigo-50">Save to repo</button>
+            </div>
+          </form>
+          <p id="assetLibraryStatus" class="mt-3 text-xs text-slate-500">Loading shared asset index...</p>
+        </section>
+        </div>
+      </div>
+
       <!-- By industry sector -->
       <div class="mb-8">
         <h3 class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
           By industry sector
         </h3>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div id="sectorGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
               <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
@@ -216,7 +289,7 @@
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
           By function
         </h3>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div id="functionGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-3">
             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
               <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
@@ -583,6 +656,355 @@
   <script>
     PSAuth.requireAccess("playbook");
     PSAuth.renderUserBadge("userBadge");
+
+    const REPO_OWNER = "ZhengHayden";
+    const REPO_NAME = "AgenticPlaybook";
+    const ASSET_DATA_PATH = "Playbook_for_PS/data/playbook_assets.json";
+    const ASSET_RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${ASSET_DATA_PATH}`;
+    const ASSET_EDIT_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/edit/main/${ASSET_DATA_PATH}`;
+    const ASSET_DRAFT_KEY = "ps-playbook-library-assets-draft-v1";
+    const VISIBILITY_DEFAULT_KEY = "ps-playbook-library-visibility-default-v1";
+
+    const SECTORS = [
+      { key: "TMT", label: "TMT" },
+      { key: "GEM", label: "GEM" },
+      { key: "AI", label: "AI" },
+      { key: "CMT", label: "CMT" },
+      { key: "FIG", label: "FIG" },
+      { key: "HLS", label: "HLS" },
+      { key: "PSS", label: "PSS" },
+      { key: "Cross-sector", label: "Cross-sector" },
+    ];
+
+    const FUNCTIONS = [
+      { key: "R&D", label: "R&D" },
+      { key: "Supply Chain", label: "Supply Chain" },
+      { key: "Manufacturing", label: "Manufacturing" },
+      { key: "Procurement", label: "Procurement" },
+      { key: "Sales & Marketing", label: "Sales & Marketing" },
+      { key: "HR & People", label: "HR & People" },
+      { key: "Finance", label: "Finance" },
+      { key: "Strategy & Corp Dev", label: "Strategy & Corp Dev" },
+      { key: "Risk & Compliance", label: "Risk & Compliance" },
+      { key: "Customer Ops", label: "Customer Ops" },
+      { key: "IT & Engineering", label: "IT & Engineering" },
+    ];
+
+    const CATEGORY_LABELS = {
+      cxo_intro: "CXO Intro",
+      feature_spec: "Feature Spec",
+      cst_playbook: "CST Playbook",
+    };
+
+    let libraryAssets = [];
+    const hiddenSectors = new Set();
+    const hiddenFunctions = new Set();
+
+    function setStatus(id, message, isSaved) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = message;
+      el.classList.toggle("text-emerald-600", Boolean(isSaved));
+      el.classList.toggle("text-slate-500", !isSaved);
+    }
+
+    function selectedValues(selectId) {
+      return Array.from(document.querySelectorAll(`#${selectId} input[type="checkbox"]:checked`)).map((input) => input.value);
+    }
+
+    function normalizeTags(values, allowedItems) {
+      const allowed = new Set(allowedItems.map((item) => item.key));
+      const rawValues = Array.isArray(values) ? values : String(values || "").split(/[,;]/);
+      return rawValues.map((value) => String(value).trim()).filter((value, index, arr) => allowed.has(value) && arr.indexOf(value) === index);
+    }
+
+    function normalizeAsset(raw) {
+      const category = CATEGORY_LABELS[raw?.category] ? raw.category : "cxo_intro";
+      return {
+        id: String(raw?.id || (crypto.randomUUID ? crypto.randomUUID() : Date.now())),
+        title: String(raw?.title || raw?.fileName || "Untitled asset").trim(),
+        fileName: String(raw?.fileName || "").trim(),
+        url: String(raw?.url || "").trim(),
+        category,
+        sectors: normalizeTags(raw?.sectors, SECTORS),
+        functions: normalizeTags(raw?.functions, FUNCTIONS),
+        description: String(raw?.description || "").trim(),
+        updatedAt: raw?.updatedAt || new Date().toISOString(),
+      };
+    }
+
+    function currentAssetJSON() {
+      return JSON.stringify({ assets: libraryAssets }, null, 2);
+    }
+
+    function saveAssetDraft() {
+      try { localStorage.setItem(ASSET_DRAFT_KEY, currentAssetJSON()); } catch {}
+    }
+
+    function tagCheckboxList(name, items) {
+      return items.map((item) => `
+        <label class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50/60">
+          <input type="checkbox" name="${name}" value="${item.key}" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+          <span>${item.label}</span>
+        </label>`).join("");
+    }
+
+    function renderTagSelects() {
+      document.getElementById("assetSectors").innerHTML = tagCheckboxList("assetSector", SECTORS);
+      document.getElementById("assetFunctions").innerHTML = tagCheckboxList("assetFunction", FUNCTIONS);
+    }
+
+    function renderVisibilityControls(containerId, items, hiddenSet) {
+      const container = document.getElementById(containerId);
+      container.replaceChildren();
+      items.forEach((item) => {
+        const label = document.createElement("label");
+        label.className = "flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-slate-600";
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = !hiddenSet.has(item.key);
+        input.dataset.key = item.key;
+        input.className = "rounded border-slate-300 text-indigo-600 focus:ring-indigo-500";
+        input.addEventListener("change", () => {
+          if (input.checked) hiddenSet.delete(item.key);
+          else hiddenSet.add(item.key);
+          applyVisibilityToTiles();
+          setStatus("visibilityStatus", "View updated. Save default to keep it for later.");
+        });
+        const span = document.createElement("span");
+        span.textContent = item.label;
+        label.append(input, span);
+        container.appendChild(label);
+      });
+    }
+
+    function syncVisibilityControls() {
+      document.querySelectorAll("#sectorVisibilityControls input").forEach((input) => {
+        input.checked = !hiddenSectors.has(input.dataset.key);
+      });
+      document.querySelectorAll("#functionVisibilityControls input").forEach((input) => {
+        input.checked = !hiddenFunctions.has(input.dataset.key);
+      });
+    }
+
+    function markDimensionCards(gridId, dimension, items) {
+      const labels = new Map(items.map((item) => [item.label, item.key]));
+      document.querySelectorAll(`#${gridId} > div`).forEach((card) => {
+        const title = card.querySelector(".font-semibold.text-slate-900")?.textContent.trim();
+        const key = labels.get(title);
+        if (!key) return;
+        card.classList.add("dimension-card");
+        card.dataset.dimension = dimension;
+        card.dataset.key = key;
+        const badge = Array.from(card.querySelectorAll("span")).find((span) => span.textContent.trim() === "Seeding");
+        if (badge) badge.dataset.assetCount = "true";
+      });
+    }
+
+    function assetMatchesCard(asset, card) {
+      const key = card.dataset.key;
+      return card.dataset.dimension === "sector" ? asset.sectors.includes(key) : asset.functions.includes(key);
+    }
+
+    function createAssetLink(asset) {
+      const wrapper = document.createElement(asset.url ? "a" : "span");
+      wrapper.className = "asset-pill rounded-md bg-slate-50 px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700";
+      if (asset.url) {
+        wrapper.href = asset.url;
+        wrapper.target = asset.url.startsWith("http") ? "_blank" : "_self";
+        wrapper.rel = "noopener";
+      }
+      wrapper.textContent = asset.title;
+      return wrapper;
+    }
+
+    function renderAssetsInTiles() {
+      document.querySelectorAll(".asset-list").forEach((el) => el.remove());
+      document.querySelectorAll(".dimension-card").forEach((card) => {
+        const matches = libraryAssets.filter((asset) => assetMatchesCard(asset, card));
+        const badge = card.querySelector('[data-asset-count="true"]');
+        if (badge) {
+          badge.textContent = matches.length ? `${matches.length} asset${matches.length === 1 ? "" : "s"}` : "No assets";
+          badge.classList.toggle("bg-indigo-100", matches.length > 0);
+          badge.classList.toggle("text-indigo-700", matches.length > 0);
+        }
+        if (!matches.length) return;
+        const list = document.createElement("div");
+        list.className = "asset-list mt-3 flex flex-col gap-1.5";
+        matches.slice(0, 3).forEach((asset) => {
+          const row = document.createElement("div");
+          row.className = "flex min-w-0 items-center justify-between gap-2";
+          row.appendChild(createAssetLink(asset));
+          const category = document.createElement("span");
+          category.className = "shrink-0 rounded bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 ring-1 ring-slate-200";
+          category.textContent = CATEGORY_LABELS[asset.category];
+          row.appendChild(category);
+          list.appendChild(row);
+        });
+        if (matches.length > 3) {
+          const more = document.createElement("p");
+          more.className = "text-[11px] text-slate-400";
+          more.textContent = `+ ${matches.length - 3} more`;
+          list.appendChild(more);
+        }
+        card.querySelector(".flex-1.min-w-0")?.appendChild(list);
+      });
+    }
+
+    function applyVisibilityToTiles() {
+      document.querySelectorAll(".dimension-card").forEach((card) => {
+        const hidden = card.dataset.dimension === "sector" ? hiddenSectors.has(card.dataset.key) : hiddenFunctions.has(card.dataset.key);
+        card.hidden = hidden;
+      });
+      renderAssetsInTiles();
+    }
+
+    function saveVisibilityDefault() {
+      const data = {
+        hiddenSectors: Array.from(hiddenSectors),
+        hiddenFunctions: Array.from(hiddenFunctions),
+        updatedAt: new Date().toISOString(),
+      };
+      try {
+        localStorage.setItem(VISIBILITY_DEFAULT_KEY, JSON.stringify(data));
+        setStatus("visibilityStatus", "Default view saved for this browser.", true);
+      } catch {
+        setStatus("visibilityStatus", "Could not save default view in this browser.");
+      }
+    }
+
+    function loadVisibilityDefault(showStatus = true) {
+      try {
+        const raw = localStorage.getItem(VISIBILITY_DEFAULT_KEY);
+        if (!raw) {
+          if (showStatus) setStatus("visibilityStatus", "No saved default view found.");
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        hiddenSectors.clear();
+        hiddenFunctions.clear();
+        normalizeTags(parsed.hiddenSectors, SECTORS).forEach((key) => hiddenSectors.add(key));
+        normalizeTags(parsed.hiddenFunctions, FUNCTIONS).forEach((key) => hiddenFunctions.add(key));
+        syncVisibilityControls();
+        applyVisibilityToTiles();
+        if (showStatus) setStatus("visibilityStatus", "Default view loaded.", true);
+      } catch {
+        if (showStatus) setStatus("visibilityStatus", "No saved default view found.");
+      }
+    }
+
+    function resetVisibility() {
+      hiddenSectors.clear();
+      hiddenFunctions.clear();
+      syncVisibilityControls();
+      applyVisibilityToTiles();
+      setStatus("visibilityStatus", "All sectors and functions are visible.", true);
+    }
+
+    function safeRepoPath(fileName) {
+      return `assets/${String(fileName || "asset").trim().replace(/[^a-z0-9._-]+/gi, "-")}`;
+    }
+
+    async function loadAssetsFromRepo() {
+      try {
+        const res = await fetch(`${ASSET_RAW_URL}?t=${Date.now()}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const parsed = await res.json();
+        libraryAssets = Array.isArray(parsed?.assets) ? parsed.assets.map(normalizeAsset) : [];
+        setStatus("assetLibraryStatus", "Shared asset index loaded.", true);
+      } catch {
+        libraryAssets = [];
+        setStatus("assetLibraryStatus", "No shared asset index found yet. Add assets, then save to repo.");
+      }
+      try {
+        const draft = JSON.parse(localStorage.getItem(ASSET_DRAFT_KEY) || "{}");
+        if (Array.isArray(draft.assets) && draft.assets.length) {
+          libraryAssets = draft.assets.map(normalizeAsset);
+          setStatus("assetLibraryStatus", "Local draft loaded. Save to repo when ready.");
+        }
+      } catch {}
+      renderAssetsInTiles();
+    }
+
+    async function saveAssetsToRepo() {
+      const json = currentAssetJSON();
+      let copied = false;
+      try {
+        await navigator.clipboard.writeText(json);
+        copied = true;
+      } catch {
+        const blob = new Blob([json], { type: "application/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "playbook_assets.json";
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
+      window.open(ASSET_EDIT_URL, "_blank", "noopener");
+      setStatus("assetLibraryStatus", copied ? "JSON copied. Paste in the GitHub editor and commit. Local draft is retained." : "JSON downloaded. Upload it in the GitHub editor and commit. Local draft is retained.");
+    }
+
+    function addAsset(event) {
+      event.preventDefault();
+      const title = document.getElementById("assetTitle").value.trim();
+      const sectors = selectedValues("assetSectors");
+      const functions = selectedValues("assetFunctions");
+      if (!title || !sectors.length || !functions.length) {
+        setStatus("assetLibraryStatus", "Title, at least one sector, and at least one function are required.");
+        return;
+      }
+      const file = document.getElementById("assetFile").files?.[0];
+      const asset = normalizeAsset({
+        id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}`,
+        title,
+        fileName: file?.name || "",
+        url: document.getElementById("assetUrl").value.trim() || (file ? safeRepoPath(file.name) : ""),
+        category: document.getElementById("assetCategory").value,
+        sectors,
+        functions,
+        description: document.getElementById("assetDescription").value,
+        updatedAt: new Date().toISOString(),
+      });
+      libraryAssets = [...libraryAssets, asset];
+      saveAssetDraft();
+      renderAssetsInTiles();
+      event.target.reset();
+      setStatus("assetLibraryStatus", "Asset added locally. Save to repo to share it.");
+    }
+
+    function bindPanelToggle(buttonId, panelId) {
+      const button = document.getElementById(buttonId);
+      const panel = document.getElementById(panelId);
+      if (!button || !panel) return;
+      button.addEventListener("click", () => {
+        const isOpen = !panel.hidden;
+        panel.hidden = isOpen;
+        button.setAttribute("aria-expanded", String(!isOpen));
+      });
+    }
+
+    renderTagSelects();
+    renderVisibilityControls("sectorVisibilityControls", SECTORS, hiddenSectors);
+    renderVisibilityControls("functionVisibilityControls", FUNCTIONS, hiddenFunctions);
+    markDimensionCards("sectorGrid", "sector", SECTORS);
+    markDimensionCards("functionGrid", "function", FUNCTIONS);
+    document.getElementById("saveVisibilityDefault").addEventListener("click", saveVisibilityDefault);
+    document.getElementById("loadVisibilityDefault").addEventListener("click", () => loadVisibilityDefault(true));
+    document.getElementById("resetVisibility").addEventListener("click", resetVisibility);
+    document.getElementById("assetForm").addEventListener("submit", addAsset);
+    document.getElementById("saveAssetsToRepo").addEventListener("click", saveAssetsToRepo);
+    bindPanelToggle("toggleLibraryConfig", "libraryConfigurationPanel");
+    bindPanelToggle("toggleAssetUpload", "assetUploadPanel");
+    document.getElementById("assetFile").addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const title = document.getElementById("assetTitle");
+      const url = document.getElementById("assetUrl");
+      if (!title.value) title.value = file.name.replace(/\.[^.]+$/, "");
+      if (!url.value) url.value = safeRepoPath(file.name);
+    });
+    loadVisibilityDefault(false);
+    loadAssetsFromRepo();
 
     // Section nav active-state on scroll
     (function () {
