@@ -20,6 +20,10 @@ interface FormState {
 
 const DOMAINS = ["Finance", "Supply Chain", "HR", "Customer Service", "Manufacturing", "Other"];
 
+// Sentinel value: selecting this option in the domain dropdown switches to a
+// free-text input so the user can name a domain that isn't in the preset list.
+const ADD_NEW_DOMAIN = "__add_new_domain__";
+
 export function NewProjectWizard() {
   const { t, locale } = useLocale();
   const router = useRouter();
@@ -35,6 +39,8 @@ export function NewProjectWizard() {
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // When true, the domain dropdown is replaced by a free-text input for a custom domain.
+  const [addingDomain, setAddingDomain] = useState(false);
 
   const update = (patch: Partial<FormState>) => setForm((prev) => ({ ...prev, ...patch }));
 
@@ -79,7 +85,7 @@ export function NewProjectWizard() {
       const project = await createProject({
         name: form.name.trim(),
         client: form.client.trim(),
-        domain: form.domain,
+        domain: form.domain.trim() || "Other",
         // Project locale supports en|zh; treat "bilingual" as English for now.
         language: form.language === "zh" ? "zh" : "en",
         p1Variant: form.p1Variant,
@@ -125,15 +131,47 @@ export function NewProjectWizard() {
             </label>
             <label className="block text-sm">
               <span className="block text-xs text-zinc-500">{t.project.domain}</span>
-              <select
-                value={form.domain}
-                onChange={(e) => update({ domain: e.target.value })}
-                className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950"
-              >
-                {DOMAINS.map((d) => (
-                  <option key={d}>{d}</option>
-                ))}
-              </select>
+              {addingDomain ? (
+                <div className="mt-1 flex gap-2">
+                  <input
+                    autoFocus
+                    value={form.domain}
+                    onChange={(e) => update({ domain: e.target.value })}
+                    placeholder={locale === "en" ? "New domain name" : "新领域名称"}
+                    className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAddingDomain(false);
+                      update({ domain: DOMAINS[0] });
+                    }}
+                    className="shrink-0 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                  >
+                    {t.common.back}
+                  </button>
+                </div>
+              ) : (
+                <select
+                  value={form.domain}
+                  onChange={(e) => {
+                    if (e.target.value === ADD_NEW_DOMAIN) {
+                      setAddingDomain(true);
+                      update({ domain: "" });
+                    } else {
+                      update({ domain: e.target.value });
+                    }
+                  }}
+                  className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950"
+                >
+                  {DOMAINS.map((d) => (
+                    <option key={d}>{d}</option>
+                  ))}
+                  <option value={ADD_NEW_DOMAIN}>
+                    {locale === "en" ? "➕ Add new domain…" : "➕ 添加新领域…"}
+                  </option>
+                </select>
+              )}
             </label>
             <fieldset>
               <legend className="text-xs text-zinc-500">{t.project.language}</legend>
@@ -232,7 +270,7 @@ export function NewProjectWizard() {
               </div>
               <div className="flex justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800">
                 <dt className="text-zinc-500">{t.project.domain}</dt>
-                <dd className="font-medium">{form.domain}</dd>
+                <dd className="font-medium">{form.domain.trim() || "Other"}</dd>
               </div>
               <div className="flex justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800">
                 <dt className="text-zinc-500">{t.project.language}</dt>

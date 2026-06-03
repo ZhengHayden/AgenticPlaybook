@@ -1,0 +1,56 @@
+﻿Function,Workflow
+PPM,整理超過6套PCBA BOM shorgate list
+PPM,Server大表
+PPM,Server小表
+PPM,Server daily NPI report
+PPM,Review 2nd source & 整理MSP BOM
+PPM,Risk buy
+PPM,SSS report
+PPM,Material control tabel for PCBA
+PPM,Pull HUB/组包工单缺料的处理
+PPM,PCBA 工单回复缺料
+PPM,Free sample HUB 库存确认
+PPM,PCB tracking 交期入料
+EM Sever,AVAP GR upload
+EM Sever,PO upload missing 
+EM Sever,系统按机种生成RYG 表报
+EM Sever,系统自动比对提醒不同厂区Quota 不同， Group BOM 少item 料号
+EM Sever,系统自动调整料拉料拉偏的料号
+EM Sever,净重查詢
+EM Sever,原产国查詢
+EM Sever,HS CODE /MSC 
+EM Sever,PO quota
+EM Sever,报关
+EM Sever,付款
+KPM,1.Reply COS report(Margaret)
+KPM,2.DSI Report(Colin)
+KPM,1.LTB(Yoyo)
+KPM,2. 52PO 結案(Margaret)
+KPM,3.Resell(Fly)
+KPM,4.CPU pull(Steven)
+KPM,5.RYG(Tracy)
+ME,Excess PO review and cancellation
+ME,不良品退运
+ME,TCO转售
+ME,62PO
+ME,跨厂区转售
+ME,DN扣款
+ME,报关资料
+ME,52PO 结案
+ME,42PO 结案
+ME,DGP TAM 调准
+EE,"需求核对,交期跟催,报表回复及汇总,异常处理,处理订单等"
+EE,PO error 無法正常入帳
+EE,释放订单，跟进交期，call料，异常处理等
+EE,"需求核对,交期跟催,报表回复及汇总,异常处理,处理订单等"
+EE,1.每日光板铺料;
+EE,2.Z33/Z34
+EE,Po issue;放量；邮件回复；删除无关邮件
+EE,
+EE,"需求核对,交期跟催,报表回复及汇总,异常处理,处理订单等"
+EE,"需求核對,交期跟催,郵件回復,異常處理等"
+EE,"RYG review,tracking交期"
+EE,报关处理，异常处理
+EE,交期提供，相关CKD资料提供
+EE,日常邮件处理
+EE,"需求核對,交期跟催,郵件回復,異常處理等"

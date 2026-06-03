@@ -85,6 +85,8 @@ const riskAssessmentSchema = z.object({
 
 const solutionProposalSchema = z.enum(["rpa", "agent", "legacy", "defer"]);
 
+const quadrantIdSchema = z.enum(["quickWin", "sponsorAlign", "investProve", "deferMature"]);
+
 const sopFileSchema = z.object({
   filename: z.string(),
   storedName: z.string().min(1),
@@ -114,7 +116,13 @@ const candidateSchema = z.object({
   processOwner: z.string().optional(),
   targetCompletionDate: z.string().optional(),
   solutionProposal: solutionProposalSchema.optional(),
+  quadrantOverride: quadrantIdSchema.optional(),
   sopFile: sopFileSchema.optional(),
+});
+
+const teamMemberSchema = z.object({
+  name: z.string(),
+  role: z.string(),
 });
 
 const hitlConfigSchema = z.object({
@@ -207,6 +215,7 @@ export const projectFieldsSchema = z.object({
   workflows: z.array(workflowSchema),
   p1Gate: z.array(gateCriterionSchema),
   p2Gate: z.array(gateCriterionSchema),
+  team: z.array(teamMemberSchema).optional(),
 });
 
 /** PATCH body: any subset of the editable fields. */

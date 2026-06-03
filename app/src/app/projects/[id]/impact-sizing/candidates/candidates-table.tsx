@@ -7,20 +7,34 @@ import { useProjectSave } from "@/lib/use-project-save";
 import type { Candidate } from "@/content/sample-data";
 import { makeBlankCandidate, type CandidateBasics } from "@/content/candidate-factory";
 import { screenCriteria, SCREEN_PASS_THRESHOLD } from "@/content/binary-screen";
-import { Plus, Upload, Sparkles, Trash2 } from "lucide-react";
+import { Plus, Upload, Sparkles, Pencil, Trash2 } from "lucide-react";
 
 interface CandidatesTableProps {
   projectId: string;
   candidates: ReadonlyArray<Candidate>;
 }
 
-const EMPTY_BASICS: CandidateBasics = {
+/** The editable "header" fields: candidate basics plus the business function. */
+type CandidateForm = CandidateBasics & { businessFunction: string };
+
+const EMPTY_FORM: CandidateForm = {
   name: "",
   description: "",
   sourceSystem: "",
   volumePerMonth: 0,
   pain: "med",
+  businessFunction: "",
 };
+
+/** Pull the editable "header" fields out of a candidate. */
+const toForm = (c: Candidate): CandidateForm => ({
+  name: c.name,
+  description: c.description,
+  sourceSystem: c.sourceSystem,
+  volumePerMonth: c.volumePerMonth,
+  pain: c.pain,
+  businessFunction: c.businessFunction ?? "",
+});
 
 const painLabels: Record<Candidate["pain"], { en: string; zh: string; cls: string }> = {
   low: { en: "Low", zh: "低", cls: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300" },
@@ -32,10 +46,29 @@ export function CandidatesTable({ projectId, candidates }: CandidatesTableProps)
   const { t, locale } = useLocale();
   const { status: saveStatus, error, save } = useProjectSave(projectId);
   const [showAdd, setShowAdd] = useState(false);
+  const [editing, setEditing] = useState<Candidate | null>(null);
 
-  const addCandidate = async (basics: CandidateBasics) => {
-    await save({ candidates: [...candidates, makeBlankCandidate(basics)] });
+  const addCandidate = async (form: CandidateForm) => {
+    const { businessFunction, ...basics } = form;
+    const blank = makeBlankCandidate(basics);
+    const fn = businessFunction.trim();
+    const candidate = fn ? { ...blank, businessFunction: fn } : blank;
+    await save({ candidates: [...candidates, candidate] });
     setShowAdd(false);
+  };
+
+  const saveEdit = async (form: CandidateForm) => {
+    if (!editing) return;
+    const id = editing.id;
+    const { businessFunction, ...basics } = form;
+    const fn = businessFunction.trim();
+    // Merge the edited header fields back, preserving all rubric/scoring data.
+    await save({
+      candidates: candidates.map((c) =>
+        c.id === id ? { ...c, ...basics, businessFunction: fn || undefined } : c,
+      ),
+    });
+    setEditing(null);
   };
 
   const deleteCandidate = async (id: string) => {
@@ -138,9 +171,20 @@ export function CandidatesTable({ projectId, candidates }: CandidatesTableProps)
                       </button>
                       <button
                         type="button"
+                        onClick={() => setEditing(c)}
+                        disabled={saveStatus === "saving"}
+                        aria-label={locale === "en" ? "Edit candidate" : "编辑候选"}
+                        title={locale === "en" ? "Edit candidate" : "编辑候选"}
+                        className="inline-flex items-center text-xs text-zinc-400 hover:text-indigo-600 disabled:opacity-40 dark:hover:text-indigo-400"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => deleteCandidate(c.id)}
                         disabled={saveStatus === "saving"}
                         aria-label={locale === "en" ? "Delete candidate" : "删除候选"}
+                        title={locale === "en" ? "Delete candidate" : "删除候选"}
                         className="inline-flex items-center text-xs text-zinc-400 hover:text-rose-600 disabled:opacity-40 dark:hover:text-rose-400"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -161,26 +205,43 @@ export function CandidatesTable({ projectId, candidates }: CandidatesTableProps)
       </div>
 
       {showAdd && (
-        <AddCandidateModal
+        <CandidateModal
+          title={locale === "en" ? "Add Candidate" : "添加候选"}
+          submitLabel={locale === "en" ? "Add" : "添加"}
+          initial={EMPTY_FORM}
           saving={saveStatus === "saving"}
           onCancel={() => setShowAdd(false)}
           onSubmit={addCandidate}
+        />
+      )}
+
+      {editing && (
+        <CandidateModal
+          title={locale === "en" ? "Edit Candidate" : "编辑候选"}
+          submitLabel={t.common.save}
+          initial={toForm(editing)}
+          saving={saveStatus === "saving"}
+          onCancel={() => setEditing(null)}
+          onSubmit={saveEdit}
         />
       )}
     </div>
   );
 }
 
-interface AddCandidateModalProps {
+interface CandidateModalProps {
+  title: string;
+  submitLabel: string;
+  initial: CandidateForm;
   saving: boolean;
   onCancel: () => void;
-  onSubmit: (basics: CandidateBasics) => void;
+  onSubmit: (form: CandidateForm) => void;
 }
 
-function AddCandidateModal({ saving, onCancel, onSubmit }: AddCandidateModalProps) {
+function CandidateModal({ title, submitLabel, initial, saving, onCancel, onSubmit }: CandidateModalProps) {
   const { locale } = useLocale();
-  const [form, setForm] = useState<CandidateBasics>(EMPTY_BASICS);
-  const update = (patch: Partial<CandidateBasics>) => setForm((prev) => ({ ...prev, ...patch }));
+  const [form, setForm] = useState<CandidateForm>(initial);
+  const update = (patch: Partial<CandidateForm>) => setForm((prev) => ({ ...prev, ...patch }));
   const canSubmit = form.name.trim() !== "" && !saving;
 
   const labelCls = "block text-xs text-zinc-500";
@@ -198,9 +259,7 @@ function AddCandidateModal({ saving, onCancel, onSubmit }: AddCandidateModalProp
         className="w-full max-w-md space-y-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-base font-semibold">
-          {locale === "en" ? "Add Candidate" : "添加候选"}
-        </h2>
+        <h2 className="text-base font-semibold">{title}</h2>
         <label className={labelCls}>
           {locale === "en" ? "Workflow name *" : "工作流名称 *"}
           <input
@@ -226,6 +285,15 @@ function AddCandidateModal({ saving, onCancel, onSubmit }: AddCandidateModalProp
             value={form.sourceSystem}
             onChange={(e) => update({ sourceSystem: e.target.value })}
             placeholder="e.g. SAP S/4 + Coupa"
+            className={inputCls}
+          />
+        </label>
+        <label className={labelCls}>
+          {locale === "en" ? "Business function" : "业务职能"}
+          <input
+            value={form.businessFunction}
+            onChange={(e) => update({ businessFunction: e.target.value })}
+            placeholder={locale === "en" ? "e.g. PPM, EM Sever, KPM" : "例如:PPM、EM Sever、KPM"}
             className={inputCls}
           />
         </label>
@@ -267,7 +335,7 @@ function AddCandidateModal({ saving, onCancel, onSubmit }: AddCandidateModalProp
             disabled={!canSubmit}
             className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-40"
           >
-            {saving ? (locale === "en" ? "Adding…" : "添加中…") : locale === "en" ? "Add" : "添加"}
+            {saving ? (locale === "en" ? "Saving…" : "保存中…") : submitLabel}
           </button>
         </div>
       </div>

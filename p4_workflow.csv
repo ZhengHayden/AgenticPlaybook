@@ -1,0 +1,46 @@
+﻿Function,Workflow
+LGC,ATP缺料表自動化(1天4版本) 
+LGC,BPS上傳 
+LGC,PSD-ATP&MR list 
+LGC,PSD Dashboard
+LGC,"空運直發提供GC料號,查詢電鑒 (C38/T88)"
+LGC,POR資料更新
+LGC,ZMMA151资料上传
+MFG,預報加班申請檔案異常欄位生成明細轉
+MFG,Demand與stock差異產生缺料清單分析
+IE,SAP 中Routing 自动建立
+计管,DL各工種時薪分析
+计管,IDL OT加班分析
+计管,固定資產費用攤提分析
+计管,三購各項申購費用的入账月份分析
+品管,IFIR/RA資料分析
+PM,出貨資料上傳
+PE,SAP資料自動獲取分析發送
+SQE,SMT物料检验与105入账.
+SQE,E-aduit 导入AI设备代替人工现场稽核
+SQE,"AI 自动上传资料（Excel，Word, PPT）到NPI validation和自动核对签核."
+SQE,"AI 自主检索PPAP资料（Excel，Word, PPT）并汇总NPI报告."
+PM,NPI CN73转CN55 PCBA PO自动生成维护
+PM,"TTV首發 訂單(SS+3WK) RSD投產為第一優先順序,  包含材料預留"
+PM,工單BOM與Build Plan自動比對除錯
+PM,reddot標案生產時MSC KEY ACK 時間維護
+PM,"系统自动定期催签单据(報廢單, 轉售單)"
+LGC,尋找呆滯料相關佐證資料
+LGC,MO 超領 
+SQE,AI識別SQE RMA 高單價PID本體國別;
+PE,Repair Output報表:
+PE,Repair 多次回鍋報表:
+PE,查詢Repair出貨機台報表
+LGC,2CD Order自動開工單：
+LGC,auto upload MO to MES for material kitting
+LGC,調整排程時間優化
+LGC,Forecast update
+LGC,KPI分析
+LGC,Mapping table上传                                                                                                                                                                                                                                                                                           
+LGC,EOL lock Model FO完善系统
+LGC,Order hit rate
+LGC,Open Order Analysis
+计管,廠區CPB成本預測：DL daily的用人成本費用
+计管,廠區CPB成本預測: IDL daily費用
+AE,鐳雕信息調取与 格式轉換
+计管,廠區CPB成本預測:G&A各項費用

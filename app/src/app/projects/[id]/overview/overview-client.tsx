@@ -5,6 +5,7 @@ import { useLocale } from "@/lib/locale-context";
 import type { Project, PhaseId } from "@/content/sample-data";
 import { ProjectHeader } from "./_components/project-header";
 import { WorkflowPortfolio } from "./_components/workflow-portfolio";
+import { TeamEditor } from "./_components/team-editor";
 
 interface OverviewClientProps {
   project: Project;
@@ -63,27 +64,7 @@ export function OverviewClient({ project }: OverviewClientProps) {
         </div>
       </section>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <section>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
-            {t.project.team}
-          </h3>
-          <ul className="mt-2 space-y-1 rounded-xl border border-zinc-200 bg-white p-4 text-sm dark:border-zinc-800 dark:bg-zinc-900">
-            <li>Hayden — Functional Consultant</li>
-            <li className="text-zinc-400">(unassigned) — Agentic Architect</li>
-          </ul>
-        </section>
-        <section>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
-            {t.project.activity}
-          </h3>
-          <ul className="mt-2 space-y-1 rounded-xl border border-zinc-200 bg-white p-4 text-sm dark:border-zinc-800 dark:bg-zinc-900">
-            <li>Scored AP Invoice Match — 8.21</li>
-            <li>Funnel: 3 in Q1, 1 in Q2</li>
-            <li>AI suggestion accepted on Step 3 archetype</li>
-          </ul>
-        </section>
-      </div>
+      <TeamEditor project={project} />
     </div>
   );
 }

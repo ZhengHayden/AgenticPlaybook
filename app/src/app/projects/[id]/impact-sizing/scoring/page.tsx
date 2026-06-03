@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getProject } from "@/db/projects-repo";
-import { quadrantFromScores, odsIndicators, orsIndicators } from "@/content/funnel-rubric";
+import { screenCriteria, SCREEN_PASS_THRESHOLD } from "@/content/binary-screen";
 import { ScoringEditor } from "./scoring-editor";
 
 interface ScoringPageProps {
@@ -12,12 +12,10 @@ export default async function ScoringPage({ params }: ScoringPageProps) {
   const project = await getProject(id);
   if (!project) notFound();
 
-  const eligible = project.candidates.filter((c) => {
-    const ods = odsIndicators.reduce((s, i) => s + c.ods[i.id] * i.weight, 0);
-    const ors = orsIndicators.reduce((s, i) => s + c.ors[i.id] * i.weight, 0);
-    const q = quadrantFromScores(ods, ors);
-    return q === "quickWin" || q === "sponsorAlign" || q === "investProve";
-  });
+  // Eligible = candidates that passed the Readiness Check (binary screen ≥ threshold).
+  const eligible = project.candidates.filter(
+    (c) => screenCriteria.reduce((s, cr) => s + (c.screen[cr.id].yes ? 1 : 0), 0) >= SCREEN_PASS_THRESHOLD,
+  );
 
   return (
     <ScoringEditor

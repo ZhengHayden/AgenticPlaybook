@@ -55,7 +55,8 @@ export function scoreCandidates(
     const vm = computeVm(c.vm);
     const ddiRaw = computeDdiRaw(c.ddi, c.totalSteps);
     const ras = computeRas(vm, computeRiskPenalty(c.risk));
-    return { id: c.id, quadrant: quadrantFromScores(ods, ors), priorityScore: 0, vm, ddiRaw, ras };
+    const quadrant = c.quadrantOverride ?? quadrantFromScores(ods, ors);
+    return { id: c.id, quadrant, priorityScore: 0, vm, ddiRaw, ras };
   });
 
   const maxDdiRaw = Math.max(...working.map((w) => w.ddiRaw), 0.0001);

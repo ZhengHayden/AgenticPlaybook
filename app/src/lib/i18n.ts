@@ -61,7 +61,6 @@ export type Dictionary = {
     title: string;
     candidates: string;
     screen: string;
-    funnel: string;
     scoring: string;
     portfolio: string;
     gate: string;
@@ -180,9 +179,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       title: "Roadmap Prioritization",
       candidates: "Candidates",
       screen: "Readiness Check",
-      funnel: "Prioritization",
       scoring: "Impact Sizing and Risk Evaluation",
-      portfolio: "Portfolio",
+      portfolio: "Prioritization",
       gate: "Gate",
       addCandidate: "Add Candidate",
       importCsv: "Import CSV",
@@ -297,9 +295,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       title: "路线图优先级",
       candidates: "候选流程",
       screen: "准备度检查",
-      funnel: "优先级排序",
       scoring: "影响评估与风险评估",
-      portfolio: "组合",
+      portfolio: "优先级排序",
       gate: "决策门",
       addCandidate: "添加候选",
       importCsv: "导入 CSV",

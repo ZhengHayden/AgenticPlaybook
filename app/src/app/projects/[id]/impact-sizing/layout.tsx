@@ -17,7 +17,6 @@ export default async function ImpactSizingLayout({ children, params }: ImpactSiz
     { href: `${base}/candidates`, key: "candidates" },
     ...(project.p1Variant === "C" ? [{ href: `${base}/screen`, key: "screen" }] : []),
     { href: `${base}/scoring`, key: "scoring" },
-    { href: `${base}/funnel`, key: "funnel" },
     { href: `${base}/portfolio`, key: "portfolio" },
     { href: `${base}/gate`, key: "gate" },
   ];

@@ -85,8 +85,16 @@ export interface Candidate {
   targetCompletionDate?: string;
   /** Disposition decided during Impact-Sizing; drives Design eligibility. */
   solutionProposal?: SolutionProposal;
+  /** Manually selected quadrant; when set, overrides the ODS/ORS-computed one. */
+  quadrantOverride?: QuadrantId;
   /** Uploaded SOP PDF reference, if any. */
   sopFile?: SopFileRef;
+}
+
+/** A named member of the engagement team shown on the project overview. */
+export interface TeamMember {
+  name: string;
+  role: string;
 }
 
 /** When the human is brought into the loop relative to agent execution. */
@@ -185,6 +193,8 @@ export interface Project {
   workflows: Workflow[];
   p1Gate: GateCriterion[];
   p2Gate: GateCriterion[];
+  /** Engagement team members shown on the project overview. */
+  team?: TeamMember[];
 }
 
 // ─── Sample data ──────────────────────────────────────────────

@@ -26,7 +26,7 @@ import { ToolDrawer } from "@/components/tool-drawer";
 
 interface ScoringEditorProps {
   projectId: string;
-  /** Eligible candidates shown in the editor (Quick Win / Sponsor & Align / Invest & Prove). */
+  /** Eligible candidates shown in the editor — those that passed the Readiness Check (≥ threshold). */
   candidates: ReadonlyArray<Candidate>;
   /** The project's full candidate list — edits are merged into this on save. */
   allCandidates: ReadonlyArray<Candidate>;
@@ -63,8 +63,8 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
     return (
       <p className="rounded-md border border-zinc-200 bg-white p-4 text-sm text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900">
         {locale === "en"
-          ? "No Quick Win / Sponsor & Align / Invest & Prove candidates yet. Score them in the Funnel tab first."
-          : "尚无 Quick Win / Sponsor & Align / Invest & Prove 候选。请先在漏斗页评分。"}
+          ? "No candidates have passed the Readiness Check yet. Complete a candidate's Readiness Check (≥5 of 6) first."
+          : "尚无通过准备度检查的候选。请先在准备度检查页完成候选评估(6 项中 ≥5 项)。"}
       </p>
     );
   }

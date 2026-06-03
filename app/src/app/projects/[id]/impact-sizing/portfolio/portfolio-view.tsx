@@ -35,7 +35,10 @@ interface PortfolioViewProps {
 
 interface RankedCandidate {
   candidate: Candidate;
+  /** Effective quadrant: manual override if set, else computed from scores. */
   quadrant: QuadrantId | "failed";
+  /** The ODS/ORS-computed quadrant, shown as the "Auto" choice (absent if failed). */
+  computedQuadrant?: QuadrantId;
   priorityScore: number;
   vm: number;
 }
@@ -43,7 +46,12 @@ interface RankedCandidate {
 /** The subset of candidate fields editable from the portfolio. */
 type CandidateEdit = Pick<
   Candidate,
-  "businessFunction" | "agentOwner" | "processOwner" | "targetCompletionDate" | "solutionProposal"
+  | "businessFunction"
+  | "agentOwner"
+  | "processOwner"
+  | "targetCompletionDate"
+  | "solutionProposal"
+  | "quadrantOverride"
 >;
 
 const quadrantBadge: Record<QuadrantId | "failed", string> = {
@@ -64,6 +72,7 @@ function pickEdit(c: Candidate): CandidateEdit {
     processOwner: c.processOwner,
     targetCompletionDate: c.targetCompletionDate,
     solutionProposal: c.solutionProposal,
+    quadrantOverride: c.quadrantOverride,
   };
 }
 
@@ -108,11 +117,19 @@ export function PortfolioView({ projectId, candidates }: PortfolioViewProps) {
     }
     const ods = odsIndicators.reduce((s, i) => s + c.ods[i.id] * i.weight, 0);
     const ors = orsIndicators.reduce((s, i) => s + c.ors[i.id] * i.weight, 0);
-    const quadrant = quadrantFromScores(ods, ors);
+    const computedQuadrant = quadrantFromScores(ods, ors);
     const vm = computeVm(c.vm);
     const ddiRaw = computeDdiRaw(c.ddi, c.totalSteps);
     const ras = computeRas(vm, computeRiskPenalty(c.risk));
-    return { candidate: c, quadrant, priorityScore: 0, vm, _ddiRaw: ddiRaw, _ras: ras } as RankedCandidate & { _ddiRaw: number; _ras: number };
+    return {
+      candidate: c,
+      quadrant: c.quadrantOverride ?? computedQuadrant,
+      computedQuadrant,
+      priorityScore: 0,
+      vm,
+      _ddiRaw: ddiRaw,
+      _ras: ras,
+    } as RankedCandidate & { _ddiRaw: number; _ras: number };
   }) as Array<RankedCandidate & { _ddiRaw?: number; _ras?: number }>;
 
   const maxDdiRaw = Math.max(...all.map((r) => r._ddiRaw ?? 0), 0.0001);
@@ -133,7 +150,8 @@ export function PortfolioView({ projectId, candidates }: PortfolioViewProps) {
   const renderRow = (r: RankedCandidate, index: number | null) => {
     const c = r.candidate;
     const edit = edits[c.id];
-    const q = quadrants.find((x) => x.id === r.quadrant);
+    const effectiveQuadrant = edit.quadrantOverride ?? r.computedQuadrant;
+    const autoLabel = quadrants.find((x) => x.id === r.computedQuadrant)?.shortName[locale];
     const passesFloor = r.priorityScore >= PRIORITY_FLOOR;
     const expanded = expandedRow === c.id;
     const proposal = edit.solutionProposal;
@@ -154,9 +172,31 @@ export function PortfolioView({ projectId, candidates }: PortfolioViewProps) {
           <td className="px-3 py-3 text-zinc-400">{index === null ? "—" : index + 1}</td>
           <td className="px-3 py-3 font-medium">{c.name}</td>
           <td className="px-3 py-3">
-            <span className={`inline-flex rounded-md px-2 py-0.5 text-xs font-semibold ${quadrantBadge[r.quadrant]}`}>
-              {r.quadrant === "failed" ? "FAIL L1" : q?.shortName[locale] ?? r.quadrant}
-            </span>
+            {r.quadrant === "failed" || !effectiveQuadrant ? (
+              <span className={`inline-flex rounded-md px-2 py-0.5 text-xs font-semibold ${quadrantBadge.failed}`}>
+                FAIL L1
+              </span>
+            ) : (
+              <select
+                value={edit.quadrantOverride ?? ""}
+                onChange={(e) =>
+                  updateEdit(c.id, {
+                    quadrantOverride: (e.target.value || undefined) as QuadrantId | undefined,
+                  })
+                }
+                aria-label={en ? "Quadrant" : "象限"}
+                className={`cursor-pointer rounded-md border-0 px-2 py-0.5 text-xs font-semibold ${quadrantBadge[effectiveQuadrant]}`}
+              >
+                <option value="">
+                  {(en ? "Auto" : "自动") + (autoLabel ? ` · ${autoLabel}` : "")}
+                </option>
+                {quadrants.map((qd) => (
+                  <option key={qd.id} value={qd.id}>
+                    {qd.shortName[locale]}
+                  </option>
+                ))}
+              </select>
+            )}
           </td>
           <td className="px-3 py-3 text-right">
             {r.quadrant === "failed" ? (
