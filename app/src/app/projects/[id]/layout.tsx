@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getProject, sampleProjects } from "@/content/sample-data";
+import { getProject } from "@/db/projects-repo";
 import { ProjectTabs } from "./_components/project-tabs";
 
 interface ProjectLayoutProps {
@@ -8,13 +8,12 @@ interface ProjectLayoutProps {
   params: Promise<{ id: string }>;
 }
 
-export function generateStaticParams() {
-  return sampleProjects.map((p) => ({ id: p.id }));
-}
+// Project data is read from SQLite at request time — never prerender at build.
+export const dynamic = "force-dynamic";
 
 export default async function ProjectLayout({ children, params }: ProjectLayoutProps) {
   const { id } = await params;
-  const project = getProject(id);
+  const project = await getProject(id);
   if (!project) notFound();
 
   return (

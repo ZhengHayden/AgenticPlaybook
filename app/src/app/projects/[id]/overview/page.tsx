@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProject } from "@/content/sample-data";
+import { getProject } from "@/db/projects-repo";
 import { OverviewClient } from "./overview-client";
 
 interface OverviewPageProps {
@@ -8,7 +8,7 @@ interface OverviewPageProps {
 
 export default async function OverviewPage({ params }: OverviewPageProps) {
   const { id } = await params;
-  const project = getProject(id);
+  const project = await getProject(id);
   if (!project) notFound();
   return <OverviewClient project={project} />;
 }

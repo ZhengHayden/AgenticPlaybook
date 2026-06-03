@@ -40,6 +40,24 @@ export type VmScores = Record<VmDimensionId, 1 | 2 | 3 | 4 | 5>;
 export type DdiCounts = Record<DecisionTypeId, number>;
 export type RiskAssessment = Record<RiskCategoryId, RiskLevel>;
 
+/** The disposition chosen for a candidate during Impact-Sizing. */
+export type SolutionProposal = "rpa" | "agent" | "legacy" | "defer";
+
+/** Lifecycle status of a workflow as it moves through Design → Production. */
+export type WorkflowStatus = "notStarted" | "inDesign" | "built" | "live" | "onHold";
+
+/** Metadata for an uploaded SOP PDF (the file lives on the server filesystem). */
+export interface SopFileRef {
+  /** Original client filename (display only — never used for storage paths). */
+  filename: string;
+  /** Server-generated storage name (uuid.pdf) used to locate the file. */
+  storedName: string;
+  /** File size in bytes. */
+  size: number;
+  /** ISO timestamp of when the upload completed. */
+  uploadedAt: string;
+}
+
 export interface Candidate {
   id: string;
   name: string;
@@ -57,6 +75,36 @@ export interface Candidate {
   risk: RiskAssessment;
   scoringNotes?: string;
   recommendation: string;
+  /** Free-text business function (e.g. "Accounts Payable"). */
+  businessFunction?: string;
+  /** Named owner accountable for the agent build. */
+  agentOwner?: string;
+  /** Named owner accountable for the underlying business process. */
+  processOwner?: string;
+  /** Target completion date as an ISO yyyy-mm-dd string. */
+  targetCompletionDate?: string;
+  /** Disposition decided during Impact-Sizing; drives Design eligibility. */
+  solutionProposal?: SolutionProposal;
+  /** Uploaded SOP PDF reference, if any. */
+  sopFile?: SopFileRef;
+}
+
+/** When the human is brought into the loop relative to agent execution. */
+export type HitlCheckpoint = "pre" | "post";
+
+export interface HitlConfig {
+  /** Where the human intervenes: before execution (approve) or after (review). */
+  checkpoint?: HitlCheckpoint;
+  /** Condition that surfaces the step to a human (e.g. "Variance > $1k"). */
+  trigger?: string;
+  /** Agent self-confidence (0–100) below which the step always escalates. */
+  confidenceThreshold?: number;
+  /** Response time the human review must meet (e.g. "4h business"). */
+  sla?: string;
+  /** Role that owns the review (e.g. "AP Controller"). */
+  reviewer?: string;
+  /** Escalation path if the SLA is breached (e.g. "Controller → CFO"). */
+  escalation?: string;
 }
 
 export interface WorkflowStep {
@@ -71,6 +119,45 @@ export interface WorkflowStep {
   archetypeRationale?: string;
   interactionMode?: InteractionId;
   interactionRationale?: string;
+  failureCost?: "low" | "med" | "high";
+  reversible?: boolean;
+  hitl?: HitlConfig;
+}
+
+/** A step placed on the orchestration canvas at a free-form position. */
+export interface CanvasNode {
+  stepId: string;
+  x: number;
+  y: number;
+}
+
+/** A directed connection between two placed steps (by step id). */
+export interface WorkflowEdge {
+  id: string;
+  from: string;
+  to: string;
+  label?: string;
+}
+
+/** Free-form orchestration diagram: a view-layer over the workflow's steps. */
+export interface WorkflowCanvas {
+  nodes: CanvasNode[];
+  edges: WorkflowEdge[];
+}
+
+export interface Workflow {
+  id: string;
+  name: string;
+  /** Origin Impact-Sizing candidate (drives the portfolio priority). */
+  candidateId?: string;
+  description?: string;
+  steps: WorkflowStep[];
+  a2aPattern?: A2APatternId;
+  architectureSummary?: string;
+  /** Persisted orchestration canvas (node positions + edges). */
+  canvas?: WorkflowCanvas;
+  /** Lifecycle status; feeds MVP/Production phase KPIs. */
+  status?: WorkflowStatus;
 }
 
 export interface GateCriterion {
@@ -86,6 +173,7 @@ export interface Project {
   name: string;
   client: string;
   domain: string;
+  description?: string;
   language: Locale;
   p1Variant: "A" | "B" | "C";
   p2Variant: "A" | "B" | "C";
@@ -94,8 +182,7 @@ export interface Project {
   currentPhase: PhaseId;
   phaseProgress: Record<PhaseId, number>;
   candidates: Candidate[];
-  workflowSteps: WorkflowStep[];
-  a2aPattern?: A2APatternId;
+  workflows: Workflow[];
   p1Gate: GateCriterion[];
   p2Gate: GateCriterion[];
 }
@@ -285,7 +372,13 @@ export const sampleProjects: Project[] = [
         recommendation: "Proceed to Design",
       },
     ],
-    workflowSteps: [
+    workflows: [
+      {
+        id: "wf-ap-match",
+        name: "AP Invoice Match",
+        candidateId: "c1",
+        a2aPattern: "pipeline",
+        steps: [
       {
         id: "s1",
         seq: 1,
@@ -338,8 +431,9 @@ export const sampleProjects: Project[] = [
         interactionMode: "guardian",
         interactionRationale: "Posts are difficult to reverse — human sign-off required.",
       },
+        ],
+      },
     ],
-    a2aPattern: "pipeline",
     p1Gate: [
       { id: "g1-1", text: "At least one Quick Win candidate with PriorityScore ≥ 3.0", passed: true, evidence: "AP Invoice Match scored 4.36" },
       { id: "g1-2", text: "Top-3 ranking variance documented (inter-rater Cohen's κ ≥ 0.70)", passed: true, evidence: "κ = 0.81 on full candidate set" },
@@ -369,12 +463,8 @@ export const sampleProjects: Project[] = [
     currentPhase: "design",
     phaseProgress: { impactSizing: 1.0, design: 0.22, mvp: 0, production: 0 },
     candidates: [],
-    workflowSteps: [],
+    workflows: [],
     p1Gate: [],
     p2Gate: [],
   },
 ];
-
-export function getProject(id: string): Project | undefined {
-  return sampleProjects.find((p) => p.id === id);
-}

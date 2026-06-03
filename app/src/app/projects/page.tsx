@@ -1,6 +1,9 @@
-import { sampleProjects } from "@/content/sample-data";
+import { listProjects } from "@/db/projects-repo";
 import { ProjectListClient } from "./_components/project-list-client";
 
-export default function ProjectsPage() {
-  return <ProjectListClient projects={sampleProjects} />;
+export const dynamic = "force-dynamic";
+
+export default async function ProjectsPage() {
+  const projects = await listProjects();
+  return <ProjectListClient projects={projects} />;
 }

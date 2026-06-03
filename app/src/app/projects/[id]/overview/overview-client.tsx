@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useLocale } from "@/lib/locale-context";
 import type { Project, PhaseId } from "@/content/sample-data";
+import { ProjectHeader } from "./_components/project-header";
+import { WorkflowPortfolio } from "./_components/workflow-portfolio";
 
 interface OverviewClientProps {
   project: Project;
@@ -21,6 +23,10 @@ export function OverviewClient({ project }: OverviewClientProps) {
 
   return (
     <div className="space-y-6">
+      <ProjectHeader project={project} />
+
+      <WorkflowPortfolio project={project} />
+
       <section>
         <h2 className="text-lg font-semibold tracking-tight">{t.project.progress}</h2>
         <div className="mt-3 space-y-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">

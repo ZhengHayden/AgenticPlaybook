@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProject } from "@/content/sample-data";
+import { getProject } from "@/db/projects-repo";
 import { EditableGate } from "@/components/editable-gate";
 
 const P2_DEFAULTS: ReadonlyArray<string> = [
@@ -17,7 +17,7 @@ interface GatePageProps {
 
 export default async function GatePage({ params }: GatePageProps) {
   const { id } = await params;
-  const project = getProject(id);
+  const project = await getProject(id);
   if (!project) notFound();
   return (
     <EditableGate

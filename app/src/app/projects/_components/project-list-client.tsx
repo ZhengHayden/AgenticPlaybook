@@ -3,12 +3,22 @@
 import Link from "next/link";
 import { useLocale } from "@/lib/locale-context";
 import { formatRelativeTime } from "@/lib/utils";
-import type { Project } from "@/content/sample-data";
+import type { PhaseId, Project } from "@/content/sample-data";
+import { projectPhaseKpis } from "@/content/phase-kpis";
 import { Plus } from "lucide-react";
 
 interface ProjectListClientProps {
   projects: ReadonlyArray<Project>;
 }
+
+const PHASE_ORDER: ReadonlyArray<PhaseId> = ["impactSizing", "design", "mvp", "production"];
+
+const phaseChipColor: Record<PhaseId, string> = {
+  impactSizing: "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-300",
+  design: "border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-900/50 dark:bg-indigo-950/30 dark:text-indigo-300",
+  mvp: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300",
+  production: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300",
+};
 
 const variantLabels: Record<Project["p1Variant"], { en: string; zh: string }> = {
   A: { en: "Sequential", zh: "精确顺序" },
@@ -45,6 +55,7 @@ export function ProjectListClient({ projects }: ProjectListClientProps) {
           const phaseKey = project.currentPhase;
           const phaseLabel = t.phases[phaseKey];
           const progress = Math.round(project.phaseProgress[phaseKey] * 100);
+          const kpis = projectPhaseKpis(project);
           return (
             <Link
               key={project.id}
@@ -69,6 +80,21 @@ export function ProjectListClient({ projects }: ProjectListClientProps) {
                     />
                   </div>
                   <span className="w-10 shrink-0 text-right text-xs tabular-nums">{progress}%</span>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5 pt-0.5">
+                  {PHASE_ORDER.map((phase) => (
+                    <div
+                      key={phase}
+                      className={`rounded-md border px-1.5 py-1 text-center ${phaseChipColor[phase]}`}
+                      title={`${t.phases[phase]}: ${kpis[phase].count} · ${kpis[phase].pct}%`}
+                    >
+                      <div className="truncate text-[10px] font-medium leading-tight">{t.phases[phase]}</div>
+                      <div className="text-xs font-semibold tabular-nums leading-tight">
+                        {kpis[phase].count}
+                        <span className="ml-1 font-normal opacity-70">{kpis[phase].pct}%</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
                 <div className="flex justify-between text-xs">
                   <span>

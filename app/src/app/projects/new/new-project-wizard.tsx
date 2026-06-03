@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/locale-context";
+import { createProject } from "@/lib/api-client";
 
 type Step = 1 | 2 | 3;
 type Variant = "A" | "B" | "C";
@@ -31,6 +32,9 @@ export function NewProjectWizard() {
     p1Variant: "C",
     p2Variant: "A",
   });
+
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const update = (patch: Partial<FormState>) => setForm((prev) => ({ ...prev, ...patch }));
 
@@ -68,9 +72,24 @@ export function NewProjectWizard() {
     </div>
   );
 
-  const onSubmit = () => {
-    // V0: no persistence yet — route back to project list with sample
-    router.push("/projects");
+  const onSubmit = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      const project = await createProject({
+        name: form.name.trim(),
+        client: form.client.trim(),
+        domain: form.domain,
+        // Project locale supports en|zh; treat "bilingual" as English for now.
+        language: form.language === "zh" ? "zh" : "en",
+        p1Variant: form.p1Variant,
+        p2Variant: form.p2Variant,
+      });
+      router.push(`/projects/${project.id}/overview`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create project");
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -228,11 +247,18 @@ export function NewProjectWizard() {
                 <dd className="font-medium">Variant {form.p2Variant}</dd>
               </div>
             </dl>
-            <p className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200">
-              {locale === "en"
-                ? "V0 mockup: project creation is not persisted yet. You'll be returned to the project list."
-                : "V0 原型: 当前尚未持久化项目创建。完成后将回到项目列表。"}
-            </p>
+            {form.name.trim() === "" && (
+              <p className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200">
+                {locale === "en"
+                  ? "A project name is required before you can create the project."
+                  : "创建项目前需要填写项目名称。"}
+              </p>
+            )}
+            {error && (
+              <p className="rounded-md border border-red-200 bg-red-50 p-3 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+                {error}
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -255,9 +281,16 @@ export function NewProjectWizard() {
         ) : (
           <button
             onClick={onSubmit}
-            className="rounded-md bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+            disabled={submitting || form.name.trim() === ""}
+            className="rounded-md bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
           >
-            {locale === "en" ? "Create Project" : "创建项目"}
+            {submitting
+              ? locale === "en"
+                ? "Creating…"
+                : "创建中…"
+              : locale === "en"
+                ? "Create Project"
+                : "创建项目"}
           </button>
         )}
       </div>

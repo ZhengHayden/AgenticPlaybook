@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useLocale } from "@/lib/locale-context";
+import { useProjectSave } from "@/lib/use-project-save";
 import type { Candidate, OdsScores, OrsScores } from "@/content/sample-data";
 import {
   odsIndicators,
@@ -17,6 +18,7 @@ import { screenCriteria, SCREEN_PASS_THRESHOLD } from "@/content/binary-screen";
 import { ToolDrawer } from "@/components/tool-drawer";
 
 interface FunnelBoardProps {
+  projectId: string;
   candidates: ReadonlyArray<Candidate>;
 }
 
@@ -57,8 +59,10 @@ const quadrantPalette: Record<QuadrantId, { bg: string; ring: string; text: stri
   },
 };
 
-export function FunnelBoard({ candidates }: FunnelBoardProps) {
+export function FunnelBoard({ projectId, candidates }: FunnelBoardProps) {
   const { locale } = useLocale();
+  const { status, error, save } = useProjectSave(projectId);
+  const [dirty, setDirty] = useState(false);
 
   const eligible = useMemo(
     () =>
@@ -146,11 +150,38 @@ export function FunnelBoard({ candidates }: FunnelBoardProps) {
   // ── Score updates ───────────────────────────────────────────
   const setOdsScore = (candidateId: string, ind: OdsIndicatorId, value: 0 | 1 | 2) => {
     setOds((prev) => ({ ...prev, [candidateId]: { ...prev[candidateId], [ind]: value } }));
+    setDirty(true);
   };
 
   const setOrsScore = (candidateId: string, ind: OrsIndicatorId, value: 0 | 1 | 2) => {
     setOrs((prev) => ({ ...prev, [candidateId]: { ...prev[candidateId], [ind]: value } }));
+    setDirty(true);
   };
+
+  // Persist ODS/ORS for eligible candidates back into the full list (others
+  // untouched). Free-drag positions are a viz aid, not part of the model.
+  const onSave = async () => {
+    const merged = candidates.map((c) =>
+      odsByCandidate[c.id]
+        ? { ...c, ods: odsByCandidate[c.id], ors: orsByCandidate[c.id] }
+        : c,
+    );
+    await save({ candidates: merged });
+    setDirty(false);
+  };
+
+  const saveLabel =
+    status === "saving"
+      ? locale === "en"
+        ? "Saving…"
+        : "保存中…"
+      : status === "saved" && !dirty
+        ? locale === "en"
+          ? "Saved ✓"
+          : "已保存 ✓"
+        : locale === "en"
+          ? "Save"
+          : "保存";
 
   const selectedCandidate = selected ? getCandidate(selected) : undefined;
   const selectedQuadrantId = selected ? quadrantOf(selected) : undefined;
@@ -198,6 +229,14 @@ export function FunnelBoard({ candidates }: FunnelBoardProps) {
               {locale === "en" ? "Free drag" : "自由拖动"}
             </button>
           </div>
+          <button
+            type="button"
+            onClick={onSave}
+            disabled={status === "saving" || !dirty}
+            className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
+          >
+            {saveLabel}
+          </button>
           <ToolDrawer
             buttonLabel={locale === "en" ? "Tool Reference" : "工具参考"}
             title={locale === "en" ? "Prioritization Matrix Guide" : "优先级矩阵指南"}
@@ -211,6 +250,19 @@ export function FunnelBoard({ candidates }: FunnelBoardProps) {
           </ToolDrawer>
         </div>
       </header>
+
+      {error && (
+        <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+          {error}
+        </p>
+      )}
+      {mode === "free" && (
+        <p className="text-[11px] text-zinc-500">
+          {locale === "en"
+            ? "Free-drag positions are a visualization aid and are not saved. Use Structured mode and Save to persist ODS/ORS scores."
+            : "自由拖动位置仅用于可视化,不会被保存。请使用「结构化」模式并保存以持久化 ODS/ORS 分数。"}
+        </p>
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
         <section className="space-y-2">
@@ -364,7 +416,8 @@ interface ScoreEditorProps {
 function ScoreEditor({ ods, ors, onOds, onOrs }: ScoreEditorProps) {
   const { locale } = useLocale();
 
-  const row = <TId extends string>(
+  const row = (
+    key: string,
     label: string,
     weight: number,
     current: 0 | 1 | 2,
@@ -373,7 +426,7 @@ function ScoreEditor({ ods, ors, onOds, onOrs }: ScoreEditorProps) {
   ) => {
     const currentAnchor = anchors.find((a) => a.score === current);
     return (
-      <div className="space-y-1">
+      <div key={key} className="space-y-1">
         <div className="flex items-center justify-between text-xs">
           <span className="font-medium">
             {label} <span className="text-zinc-400">×{weight}</span>
@@ -411,7 +464,7 @@ function ScoreEditor({ ods, ors, onOds, onOrs }: ScoreEditorProps) {
       </h3>
       <div className="mt-2 space-y-3">
         {odsIndicators.map((ind) =>
-          row(ind.label[locale], ind.weight, ods[ind.id], ind.anchors, (v) => onOds(ind.id, v)),
+          row(ind.id, ind.label[locale], ind.weight, ods[ind.id], ind.anchors, (v) => onOds(ind.id, v)),
         )}
       </div>
 
@@ -420,7 +473,7 @@ function ScoreEditor({ ods, ors, onOds, onOrs }: ScoreEditorProps) {
       </h3>
       <div className="mt-2 space-y-3">
         {orsIndicators.map((ind) =>
-          row(ind.label[locale], ind.weight, ors[ind.id], ind.anchors, (v) => onOrs(ind.id, v)),
+          row(ind.id, ind.label[locale], ind.weight, ors[ind.id], ind.anchors, (v) => onOrs(ind.id, v)),
         )}
       </div>
     </div>

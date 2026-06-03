@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agentic Playbook — Simplified Reference</title>
+<style>
+  :root {
+    --navy: #051c2c; --blue: #2251ff; --teal: #00a9a5; --amber: #f0b323; --coral: #e8927c;
+    --deep: #0a3d62; --grey-900: #1f2933; --grey-700: #3e4c59; --grey-500: #7b8794;
+    --grey-300: #cbd2d9; --grey-200: #e4e7eb; --grey-100: #f4f5f7;
+    --bg: #fff; --page: #f0f2f5;
+    --serif: Georgia, 'EB Garamond', 'Times New Roman', serif;
+    --sans: 'Helvetica Neue', Inter, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--page); font-family: var(--sans); color: var(--grey-900); font-size: 14px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+
+  .nav { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,.94); border-bottom: 1px solid var(--grey-200); padding: 8px 18px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; backdrop-filter: blur(12px); }
+  .nav-brand { font-size: 13px; font-weight: 700; color: var(--navy); padding-right: 12px; margin-right: 4px; border-right: 1px solid var(--grey-200); }
+  .nav a { color: var(--grey-700); text-decoration: none; font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 8px; }
+  .nav a:hover { background: #fff; color: var(--navy); }
+
+  .stage { padding: 24px 32px 80px; }
+  .slide {
+    width: 1240px; max-width: 100%; aspect-ratio: 16/9; background: var(--bg);
+    margin: 0 auto 28px; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(5,28,44,.06);
+    position: relative; padding: 36px 56px 50px; display: flex; flex-direction: column; overflow: hidden;
+  }
+  .slide-kicker { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--grey-200); padding-bottom: 6px; margin-bottom: 8px; flex-shrink: 0; }
+  .slide-kicker .tag { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--blue); font-weight: 600; }
+  .slide-kicker .phase { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--grey-500); }
+  .action-title { font-family: var(--serif); font-size: 22px; font-weight: 400; line-height: 1.2; color: var(--navy); margin-bottom: 3px; flex-shrink: 0; }
+  .action-title b { font-weight: 600; color: var(--blue); }
+  .sub-title { font-size: 13px; color: var(--grey-700); font-style: italic; margin-bottom: 8px; flex-shrink: 0; line-height: 1.35; }
+  .slide-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 4px; }
+  .slide-footer { position: absolute; left: 56px; right: 56px; bottom: 14px; display: flex; justify-content: space-between; font-size: 9.5px; color: var(--grey-500); border-top: 1px solid var(--grey-200); padding-top: 6px; z-index: 2; background: var(--bg); }
+  .slide-footer .pg { font-weight: 600; color: var(--grey-700); }
+  .slide-footer .brand { font-weight: 600; color: var(--navy); }
+
+  .ico { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0; }
+  .ico svg { width: 15px; height: 15px; }
+  .ico.blue { background: #e6ecff; color: var(--blue); }
+  .ico.teal { background: #defcfa; color: #007a76; }
+  .ico.amber { background: #fff6dc; color: #8a6310; }
+  .ico-lg { width: 32px; height: 32px; border-radius: 7px; }
+  .ico-lg svg { width: 18px; height: 18px; }
+
+  .row { display: flex; gap: 12px; flex: 1; min-height: 0; }
+  .row > * { flex: 1; min-width: 0; min-height: 0; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; flex: 1; min-height: 0; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; flex: 1; min-height: 0; }
+
+  .panel { background: #fff; border: 1px solid var(--grey-200); padding: 10px 11px; overflow: hidden; display: flex; flex-direction: column; }
+  .panel.tint { background: linear-gradient(180deg, #f7f9fc 0%, #fff 100%); }
+  .panel h5 { font-family: var(--serif); font-size: 15px; color: var(--navy); margin-bottom: 5px; border-bottom: 2px solid var(--blue); padding-bottom: 3px; display: inline-block; }
+
+  /* Page 1 — compact to avoid bottom clip */
+  .p1-panel { border-top: 4px solid var(--blue); }
+  .p1-panel.teal-border { border-top-color: var(--teal); }
+  .score-header { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .prs-big { font-family: var(--serif); font-size: 32px; font-weight: 600; line-height: 1; }
+  .score-label { font-size: 13px; color: var(--grey-700); font-weight: 600; }
+  .tagline { font-size: 13px; font-style: italic; color: var(--navy); border-left: 3px solid var(--blue); padding: 3px 8px; margin-bottom: 6px; line-height: 1.3; }
+  .tagline.teal { border-left-color: var(--teal); }
+  .dim-row { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; border-bottom: 1px dotted var(--grey-200); }
+  .dim-row:last-of-type { border-bottom: none; }
+  .dim-text .name { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 1px; }
+  .dim-text .desc { font-size: 12.5px; color: var(--grey-700); line-height: 1.32; }
+  .example-strip { display: flex; gap: 6px; margin-top: 6px; }
+  .example-box { flex: 1; padding: 5px 8px; border-radius: 4px; font-size: 11.5px; line-height: 1.32; display: flex; gap: 6px; }
+  .example-box.good { background: #defcfa; border: 1px solid #9ee8e0; }
+  .example-box.bad { background: #fde2d8; border: 1px solid #f0b8a8; }
+  .example-box .ex-label { font-size: 9px; text-transform: uppercase; letter-spacing: .7px; font-weight: 700; white-space: nowrap; }
+  .example-box.good .ex-label { color: #1c6b2a; }
+  .example-box.bad .ex-label { color: #a8553c; }
+  .score-note { font-size: 11.5px; color: var(--grey-700); margin-top: 5px; padding-top: 5px; border-top: 1px solid var(--grey-200); line-height: 1.32; }
+
+  .callout { background: #eef3ff; border-left: 4px solid var(--blue); padding: 8px 12px; font-size: 13px; color: var(--navy); flex-shrink: 0; line-height: 1.35; display: flex; gap: 8px; align-items: flex-start; }
+  .callout.teal { background: #e6f9f8; border-left-color: var(--teal); }
+  .callout.amber { background: #fff8e1; border-left-color: var(--amber); }
+
+  .band { background: var(--navy); color: #fff; padding: 7px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 7px; flex-shrink: 0; display: flex; align-items: center; gap: 7px; }
+  .band.teal { background: var(--teal); }
+  .band.blue { background: var(--blue); }
+
+  .impact-card { border: 1px solid var(--grey-200); border-top: 4px solid var(--blue); padding: 10px 12px; margin-bottom: 7px; background: #fff; }
+  .impact-card.teal { border-top-color: var(--teal); }
+  .impact-card .ic-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 7px; display: flex; align-items: center; gap: 8px; }
+  .impact-card .ic-title span.sub { font-size: 13px; font-weight: 400; color: var(--grey-700); font-style: italic; }
+  .impact-item { display: flex; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--grey-100); align-items: flex-start; }
+  .impact-item:last-child { border-bottom: none; }
+  .impact-item .phrase { font-size: 13px; font-weight: 700; color: var(--navy); min-width: 118px; line-height: 1.3; }
+  .impact-item .detail { font-size: 13px; color: var(--grey-700); line-height: 1.35; flex: 1; }
+
+  .matrix { display: grid; grid-template-columns: 68px 1fr 1fr; grid-template-rows: 24px 1fr 1fr 24px; gap: 3px; flex: 1; min-height: 0; }
+  .matrix .lbl { display: flex; align-items: center; justify-content: center; font-size: 9.5px; color: var(--grey-700); text-transform: uppercase; letter-spacing: .8px; font-weight: 600; }
+  .matrix .y-lbl { writing-mode: vertical-rl; transform: rotate(180deg); grid-row: 2/4; grid-column: 1; background: var(--grey-100); font-size: 9px; }
+  .matrix .x-lbl { grid-row: 4; grid-column: 2/4; background: var(--grey-100); text-align: center; line-height: 24px; font-size: 9px; }
+  .matrix .q { padding: 9px 11px; border: 1px solid var(--grey-200); font-size: 12.5px; line-height: 1.32; position: relative; }
+  .matrix .q h6 { font-family: var(--serif); font-size: 13px; color: var(--navy); margin-bottom: 3px; }
+  .matrix .q small { display: block; font-size: 9px; color: var(--grey-500); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; font-weight: 600; }
+  .matrix .q.q1 { background: #deffe2; }
+  .matrix .q.q2 { background: #e6f4ff; }
+  .matrix .q.q3 { background: #fff6dc; }
+  .matrix .q.q4 { background: var(--grey-100); }
+  .matrix .q.q1 h6 { color: #1c6b2a; }
+  .matrix .q.q2 h6 { color: #0a4d8c; }
+  .matrix .q.q3 h6 { color: #8a6310; }
+
+  /* Page 3 — left wide, right tight */
+  .p3-layout { display: grid; grid-template-columns: 1.35fr 0.65fr; gap: 14px; flex: 1; min-height: 0; }
+  table.mck { width: 100%; border-collapse: collapse; font-size: 12.5px; background: #fff; }
+  table.mck thead th { background: var(--navy); color: #fff; text-align: left; padding: 7px 9px; font-weight: 600; font-size: 11.5px; }
+  table.mck tbody td { padding: 6px 9px; border-bottom: 1px solid var(--grey-200); vertical-align: top; }
+  table.mck tbody tr:nth-child(even) td { background: var(--grey-100); }
+  table.mck td.lead { font-weight: 600; color: var(--navy); }
+  table.compact td, table.compact th { padding: 5px 8px; font-size: 12px; }
+
+  .screen-table { margin-top: 10px; }
+  .screen-table td.center { text-align: center; }
+  .bar-cell { min-width: 80px; }
+  .score-bar { height: 8px; background: var(--grey-200); border-radius: 4px; overflow: hidden; margin-top: 3px; }
+  .score-bar-fill { height: 100%; border-radius: 4px; }
+  .score-bar-fill.high { background: var(--teal); width: 100%; }
+  .score-bar-fill.mid { background: var(--amber); width: 83%; }
+  .score-bar-fill.low { background: var(--coral); width: 33%; }
+
+  .p3-right { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .funnel-compact { display: flex; flex-direction: column; gap: 2px; }
+  .funnel-step { text-align: center; padding: 7px 6px; color: #fff; font-weight: 600; font-size: 11px; line-height: 1.25; border-radius: 3px; }
+  .funnel-step .fs-sub { font-weight: 400; font-size: 9px; opacity: .92; display: block; }
+  .funnel-step.l0 { background: var(--grey-500); }
+  .funnel-step.l1 { background: var(--blue); }
+  .funnel-step.l2 { background: var(--teal); }
+  .funnel-step.l3 { background: var(--amber); color: var(--navy); }
+  .funnel-arrow { text-align: center; color: var(--grey-500); font-size: 11px; line-height: 1; }
+
+  .gate-box { background: var(--navy); color: #fff; padding: 10px 12px; border-radius: 5px; text-align: center; }
+  .gate-box .gate-num { font-family: var(--serif); font-size: 32px; font-weight: 600; color: var(--amber); line-height: 1; }
+  .gate-box p { font-size: 11.5px; line-height: 1.35; margin-top: 4px; }
+
+  .mini-list { list-style: none; padding: 0; }
+  .mini-list li { font-size: 12px; color: var(--grey-700); padding: 3px 0; line-height: 1.32; display: flex; gap: 6px; align-items: flex-start; }
+  .mini-list li svg { flex-shrink: 0; margin-top: 1px; }
+
+  .chip { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+  .chip.yes { background: #defcfa; color: #007a76; }
+  .chip.no { background: #fde2d8; color: #a8553c; }
+
+  /* Pages 4–5 — larger type */
+  .col-card {
+    background: #fff; border: 1px solid var(--grey-200); border-top: 5px solid var(--blue);
+    padding: 12px 11px; line-height: 1.4; overflow: hidden; display: flex; flex-direction: column;
+  }
+  .col-card.teal { border-top-color: var(--teal); }
+  .col-card.amber { border-top-color: var(--amber); }
+  .col-card.coral { border-top-color: var(--coral); }
+  .col-card.deep { border-top-color: var(--deep); }
+  .col-card h4 { font-family: var(--serif); font-size: 15px; color: var(--navy); display: flex; align-items: center; gap: 7px; margin-bottom: 2px; }
+  .col-card .role { font-size: 11px; color: var(--blue); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px; }
+  .col-card h6 { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--grey-700); margin: 7px 0 4px; border-bottom: 1px dotted var(--grey-300); padding-bottom: 2px; }
+  .col-card ul { list-style: none; padding: 0; }
+  .col-card li { padding: 2px 0 2px 10px; position: relative; font-size: 13px; color: var(--grey-700); }
+  .col-card li::before { content: ""; position: absolute; left: 0; top: 7px; width: 4px; height: 4px; background: var(--blue); border-radius: 50%; }
+  .col-card .ex-wf { font-size: 12.5px; color: var(--navy); background: var(--grey-100); padding: 6px 8px; border-radius: 4px; margin-top: auto; line-height: 1.35; font-style: italic; }
+
+  .mode-panel {
+    border: 1px solid var(--grey-200); padding: 14px; border-radius: 0 0 6px 6px;
+    background: linear-gradient(180deg, #f7f9fc 0%, #fff 100%); display: flex; flex-direction: column;
+  }
+  .mode-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid var(--grey-200); }
+  .mode-head h5 { font-family: var(--serif); font-size: 18px; color: var(--navy); margin: 0; }
+  .mode-head .mode-sub { font-size: 13px; color: var(--grey-700); margin: 0; }
+  .mode-panel .section-label { font-size: 13px; font-weight: 700; color: var(--navy); margin: 8px 0 5px; }
+  .mode-panel .ex-wf { font-size: 13px; background: var(--grey-100); padding: 8px 10px; border-radius: 4px; margin-top: auto; line-height: 1.35; font-style: italic; color: var(--navy); }
+  ul.plain { list-style: none; padding: 0; }
+  ul.plain li { padding: 3px 0; font-size: 14px; color: var(--grey-700); line-height: 1.35; }
+  ul.plain li::before { content: "→ "; color: var(--blue); font-weight: 600; }
+
+  .slide.cover { justify-content: flex-end; background: linear-gradient(135deg, var(--navy) 0%, #082943 60%, #0d3d5e 100%); color: #fff; }
+  .cover .eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); font-weight: 600; margin-bottom: 14px; }
+  .cover h1 { font-family: var(--serif); font-size: 50px; line-height: 1.1; font-weight: 400; margin-bottom: 14px; }
+  .cover .lede { font-size: 16px; line-height: 1.5; color: #dde3ea; max-width: 740px; font-weight: 300; }
+  .cover .mck-mark { position: absolute; top: 40px; right: 60px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+  .cover-deco { position: absolute; top: 80px; right: 60px; opacity: .12; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-brand">Agentic Playbook · Simplified</span>
+  <a href="#s01">Cover</a>
+  <a href="#s1">1 · PRS &amp; ORS</a>
+  <a href="#s2">2 · Roadmap &amp; Impact</a>
+  <a href="#s3">3 · Workflow Filter</a>
+  <a href="#s4">4 · Agent Types</a>
+  <a href="#s5">5 · Human–Agent</a>
+  <a href="./agentic-playbook-interactive.html">Full playbook →</a>
+</nav>
+
+<main class="stage">
+
+<section class="slide cover" id="s01">
+  <svg class="cover-deco" width="200" height="200" viewBox="0 0 200 200" fill="none"><circle cx="100" cy="100" r="80" stroke="#2251ff" stroke-width="2"/><circle cx="100" cy="100" r="50" stroke="#00a9a5" stroke-width="2"/><circle cx="100" cy="100" r="20" fill="#2251ff"/></svg>
+  <div class="mck-mark">McKinsey &amp; Company</div>
+  <div class="eyebrow">Operations Practice · Agentic Delivery</div>
+  <h1>Agentic Playbook<br/><em style="font-style:italic;color:#a9c8ff;">Simplified Reference</em></h1>
+  <p class="lede">Five frameworks for prioritizing, filtering, and designing agentic workflows — illustrated with manufacturing &amp; ODM operating examples.</p>
+  <div class="slide-footer" style="border-top-color:rgba(255,255,255,.2);color:#a9c8ff;background:transparent;"><span>Client-ready · Confidential</span><span class="brand" style="color:#fff;">McKinsey &amp; Company</span></div>
+</section>
+
+<!-- PAGE 1 — fixed bottom clip -->
+<section class="slide" id="s1">
+  <div class="slide-kicker"><span class="tag">Page 1 · Impact sizing</span><span class="phase">Process &amp; Organization Readiness</span></div>
+  <h2 class="action-title">Before investing in agents, answer two questions — <b>"can we verify the output?"</b> and <b>"is the organization ready?"</b></h2>
+  <p class="sub-title">PRS and ORS score each workflow on evidence before design spend is committed · Score 0.0–2.0 per axis · threshold <b>1.2</b> splits High/Low · PRS × ORS → Page 2</p>
+
+  <div class="slide-body">
+    <div class="row">
+      <div class="panel tint p1-panel">
+        <div class="score-header">
+          <span class="ico ico-lg blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg></span>
+          <div><span class="prs-big" style="color:var(--blue);">PRS</span> <span class="score-label">Process Readiness</span></div>
+        </div>
+        <p class="tagline">"Can we define 'correct' — and verify without an expert every time?"</p>
+        <div class="dim-row"><span class="ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span><div class="dim-text"><div class="name">Output structure</div><div class="desc">Fixed schema vs. free text — BOM line items and PO qty fields score high; NPI design notes score low.</div></div></div>
+        <div class="dim-row"><span class="ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><div class="dim-text"><div class="name">Correctness verifiability</div><div class="desc">System pass/fail vs. expert judgment — component qty vs. MRP is rule-checkable; design intent needs a human eye.</div></div></div>
+        <div class="dim-row"><span class="ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M4 20L21 3"/></svg></span><div class="dim-text"><div class="name">Variance tolerance</div><div class="desc">Multiple valid answers OK — alternate approved suppliers fine; safety-critical spec deviations are not.</div></div></div>
+        <div class="dim-row"><span class="ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></span><div class="dim-text"><div class="name">Ground truth availability</div><div class="desc">Historically approved examples exist — years of matched PO records score high; new prototype workflows score low.</div></div></div>
+        <div class="example-strip">
+          <div class="example-box good"><span class="ex-label">High</span><span>Supplier PO 3-way match — ERP qty ties to GRN; 50k+ records; pass/fail is binary.</span></div>
+          <div class="example-box bad"><span class="ex-label">Low</span><span>OEM co-design brief review — "meets industrial-design intent?" — subjective; no agreement.</span></div>
+        </div>
+      </div>
+
+      <div class="panel tint p1-panel teal-border" style="border-top-color:var(--teal);">
+        <div class="score-header">
+          <span class="ico ico-lg teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></span>
+          <div><span class="prs-big" style="color:var(--teal);">ORS</span> <span class="score-label">Organization Readiness</span></div>
+        </div>
+        <p class="tagline teal">"Is the organization ready to adopt and sustain this change?"</p>
+        <div class="dim-row"><span class="ico teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg></span><div class="dim-text"><div class="name">Sponsor authority</div><div class="desc">Mandating exec with budget — plant VP with headcount authority scores high; nominal coordinator scores low.</div></div></div>
+        <div class="dim-row"><span class="ico teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><div class="dim-text"><div class="name">Team receptivity</div><div class="desc">Will frontline teams use it — line leaders requesting SMT triage automation score high; fear of headcount cuts scores low.</div></div></div>
+        <div class="dim-row"><span class="ico teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><div class="dim-text"><div class="name">Integration complexity</div><div class="desc">Systems landscape cleanliness — one MES + SAP with APIs scores high; five legacy systems and spreadsheets score low.</div></div></div>
+        <div class="dim-row"><span class="ico teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></span><div class="dim-text"><div class="name">Change track record</div><div class="desc">Prior automation success — recent RPA win on IQC scoring scores high; stalled MES rollout scores low.</div></div></div>
+        <div class="example-strip">
+          <div class="example-box good"><span class="ex-label">High</span><span>SMT yield exception routing — VP Ops sponsored, MES APIs live, line leaders requesting automation.</span></div>
+          <div class="example-box bad"><span class="ex-label">Low</span><span>Cross-site component reallocation — six legacy systems, no single owner, prior MES project stalled.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer"><span>Agentic Workflow Delivery Playbook — simplified</span><span class="pg">1</span><span class="brand">McKinsey &amp; Company</span></div>
+</section>
+
+<!-- PAGE 2 -->
+<section class="slide" id="s2">
+  <div class="slide-kicker"><span class="tag">Page 2 · Impact sizing &amp; roadmap</span><span class="phase">Value dimensions &amp; 2×2 prioritization</span></div>
+  <h2 class="action-title">Assess <b>business value and agentic fit</b>, then place each workflow on the <b>PRS × ORS matrix</b> to sequence the roadmap</h2>
+  <p class="sub-title">Left: what the workflow is worth and whether an agent is the right tool · Right: quadrant sets wave timing</p>
+
+  <div class="slide-body">
+    <div class="row">
+      <div style="flex:1.08;display:flex;flex-direction:column;min-height:0;">
+        <div class="band blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> How we size impact</div>
+        <div class="impact-card">
+          <div class="ic-title"><span class="ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></span> ① Business Value <span class="sub">— "If we win, what's it worth?"</span></div>
+          <div class="impact-item"><div class="phrase">Cost savings<br><small style="font-weight:400;color:var(--grey-500)">Labor · errors · penalties</small></div><div class="detail">FTE hours removed, rework cost avoided, supplier penalty exposure reduced.</div></div>
+          <div class="impact-item"><div class="phrase">Quality uplift<br><small style="font-weight:400;color:var(--grey-500)">Defect · rework · scrap</small></div><div class="detail">Reduction in mis-picks, wrong-component installs, and IQC escapes.</div></div>
+          <div class="impact-item"><div class="phrase">Speed gain<br><small style="font-weight:400;color:var(--grey-500)">Cycle · queue · lead time</small></div><div class="detail">Hours shaved from NPI sourcing, RFQ turnaround, or shortage-allocation queue.</div></div>
+          <div class="impact-item"><div class="phrase">Strategic lift<br><small style="font-weight:400;color:var(--grey-500)">CEO · CFO · board narrative</small></div><div class="detail">How visibly the workflow advances a stated corporate priority.</div></div>
+        </div>
+        <div class="impact-card teal">
+          <div class="ic-title"><span class="ico teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 014 4v2h2a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8a2 2 0 012-2h2V6a4 4 0 014-4z"/></svg></span> ② Agentic Fit <span class="sub">— "Is an agent the right tool?"</span></div>
+          <div class="impact-item"><div class="phrase">Binary routing<br><small style="font-weight:400;color:var(--grey-500)">Yes/no · single rule</small></div><div class="detail"><i>"If lead time &gt; 14 days → escalate to commodity manager"</i> — simple condition; RPA may suffice.</div></div>
+          <div class="impact-item"><div class="phrase">Multi-path choice<br><small style="font-weight:400;color:var(--grey-500)">Several options · factors</small></div><div class="detail"><i>"Based on customer tier, margin, inventory → pick from 5 allocation options"</i> — agent earns its keep.</div></div>
+          <div class="impact-item"><div class="phrase">Judgment call<br><small style="font-weight:400;color:var(--grey-500)">Trade-offs · context</small></div><div class="detail"><i>"Evaluate supplier quote across cost, quality, geopolitical risk → recommend action"</i> — high agentic fit.</div></div>
+          <p style="font-size:12.5px;margin-top:5px;color:var(--grey-700);"><b>Rule of thumb ·</b> Mostly execution → RPA likely cheaper · Decision-heavy → agent is the right investment.</p>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+        <div class="band teal"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> 2×2 prioritization matrix</div>
+        <div class="matrix">
+          <div></div><div class="lbl">Low PRS</div><div class="lbl">High PRS</div>
+          <div class="y-lbl">High ORS</div>
+          <div class="q q3"><small>Q3 · Invest &amp; Prove</small><h6>Low PRS · High ORS</h6>Eager team, hard to verify — e.g. NPI sourcing recommendations<br><b>Action:</b> HITL · Guardian · M3–6</div>
+          <div class="q q1"><small>Q1 · Quick Win</small><h6>High PRS · High ORS</h6>Verifiable + ready — e.g. supplier PO 3-way match<br><b>Action:</b> Fast-track · Wave 1 · M1–3</div>
+          <div class="y-lbl" style="grid-row:3"></div>
+          <div class="q q4"><small>Q4 · Defer</small><h6>Low PRS · Low ORS</h6>Not yet viable — e.g. cross-site reallocation<br><b>Action:</b> Document gaps · M9–18</div>
+          <div class="q q2"><small>Q2 · Sponsor &amp; Align</small><h6>High PRS · Low ORS</h6>Technical OK, org not ready — e.g. IQC auto-scoring<br><b>Action:</b> Change-mgmt · Wave 2 · M4–9</div>
+          <div class="x-lbl">Process Readiness Score (PRS) →</div>
+        </div>
+        <div class="callout teal" style="margin-top:7px;"><span class="ico teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><span><b>Roadmap ·</b> Q1 → Wave 1 · Q2/Q3 → Wave 2 after pre-work · Q4 → Wave 3 re-screen.</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Agentic Workflow Delivery Playbook — simplified</span><span class="pg">2</span><span class="brand">McKinsey &amp; Company</span></div>
+</section>
+
+<!-- PAGE 3 — relayout: left big, right tight -->
+<section class="slide" id="s3">
+  <div class="slide-kicker"><span class="tag">Page 3 · Impact sizing</span><span class="phase">Binary readiness screen</span></div>
+  <h2 class="action-title">Six binary criteria — <b>5-of-6 Yes required</b> — filter out workflows that will fail before scoring begins</h2>
+  <p class="sub-title">Layer 1 funnel · Day 1 · from ~10–20 candidates to 6–10 survivors</p>
+
+  <div class="slide-body">
+    <div class="p3-layout">
+      <!-- LEFT — criteria table + sample screen -->
+      <div>
+        <div class="band blue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Six binary criteria</div>
+        <table class="mck compact">
+          <thead><tr><th>#</th><th>Criterion</th><th>Pass test</th><th>Why it matters</th></tr></thead>
+          <tbody>
+            <tr><td class="lead">C1</td><td class="lead">Documentability</td><td>Walkable &lt;2 hr OR SOP &lt;12 mo, ≥80% logic</td><td>Tribal knowledge → Design overrun</td></tr>
+            <tr><td class="lead">C2</td><td class="lead">Data accessibility</td><td>SAP/MES API, DB, or structured export</td><td>Paper/email-only → digitization first</td></tr>
+            <tr><td class="lead">C3</td><td class="lead">Volume</td><td>&gt;50/mo OR &gt;8 hr/run + high error cost</td><td>Low volume → insufficient ROI</td></tr>
+            <tr><td class="lead">C4</td><td class="lead">Process owner</td><td>Named owner · 4 hr/wk · 48-hr SLA</td><td>No owner → adoption fails</td></tr>
+            <tr><td class="lead">C5</td><td class="lead">Definable output</td><td>Rule-checkable OR ≥100 golden examples</td><td>Untestable MVP</td></tr>
+            <tr><td class="lead">C6</td><td class="lead">Process stability</td><td>No major change in next 6 months</td><td>Moving target invalidates build</td></tr>
+          </tbody>
+        </table>
+
+        <div class="band blue screen-table" style="margin-top:10px;margin-bottom:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg> Sample screening results</div>
+        <table class="mck compact screen-table" style="margin-top:0;">
+          <thead><tr><th>Candidate workflow</th><th class="center">Score</th><th>Readiness</th><th class="center">Decision</th></tr></thead>
+          <tbody>
+            <tr><td class="lead">Supplier PO 3-way match</td><td class="center"><b>6/6</b></td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill high"></div></div></td><td class="center"><span class="chip yes">Pass</span></td></tr>
+            <tr><td class="lead">BOM shortage allocation</td><td class="center"><b>6/6</b></td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill high"></div></div></td><td class="center"><span class="chip yes">Pass</span></td></tr>
+            <tr><td class="lead">NPI component sourcing</td><td class="center"><b>5/6</b></td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill mid"></div></div></td><td class="center"><span class="chip yes">Pass*</span></td></tr>
+            <tr><td class="lead">OEM design brief review</td><td class="center"><b>2/6</b></td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill low"></div></div></td><td class="center"><span class="chip no">Fail</span></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:11px;color:var(--grey-500);margin-top:5px;font-style:italic;">* One exception allowed with documented mitigation — e.g. export-control scope excluded from agent boundary.</p>
+      </div>
+
+      <!-- RIGHT — compact funnel + gate + interview -->
+      <div class="p3-right">
+        <div class="band teal" style="margin-bottom:6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12H18L15 21L9 3L6 12H2"/></svg> Funnel · Day 1</div>
+        <div class="funnel-compact">
+          <div class="funnel-step l0">Longlist<span class="fs-sub">~10–20 workflows</span></div>
+          <div class="funnel-arrow">▼</div>
+          <div class="funnel-step l1">Binary screen<span class="fs-sub">6 criteria · today</span></div>
+          <div class="funnel-arrow">▼</div>
+          <div class="funnel-step l2">PRS × ORS<span class="fs-sub">Days 2–3</span></div>
+          <div class="funnel-arrow">▼</div>
+          <div class="funnel-step l3">Rank survivors<span class="fs-sub">Days 4–5</span></div>
+        </div>
+
+        <div class="gate-box">
+          <div class="gate-num">5 / 6</div>
+          <p><b>Pass threshold</b> to advance to PRS × ORS scoring</p>
+        </div>
+
+        <div class="panel tint" style="padding:9px 10px;flex:1;">
+          <h5 style="font-size:13px;margin-bottom:6px;">Interview · 30 min</h5>
+          <ul class="mini-list">
+            <li><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span><b>Open 5'</b> — Triggers &amp; final output</span></li>
+            <li><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg><span><b>Probe 20'</b> — Each criterion + evidence</span></li>
+            <li><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span><b>Close 5'</b> — Changes in 6 months?</span></li>
+          </ul>
+        </div>
+
+        <div class="callout amber" style="margin:0;padding:7px 10px;font-size:11.5px;">
+          <b>Edge case ·</b> &lt;50×/mo but 8+ hr/run + high error cost may pass with ROI math documented.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Agentic Workflow Delivery Playbook — simplified</span><span class="pg">3</span><span class="brand">McKinsey &amp; Company</span></div>
+</section>
+
+<!-- PAGE 4 — larger fonts, generic workflow examples -->
+<section class="slide" id="s4">
+  <div class="slide-kicker"><span class="tag">Page 4 · Design</span><span class="phase">Five agent archetypes</span></div>
+  <h2 class="action-title">Classify every workflow step as one of <b>five agent archetypes</b> — architecture becomes a classification exercise</h2>
+  <p class="sub-title">Mutually exclusive · collectively exhaustive · each type has a clear selection trigger</p>
+
+  <div class="slide-body">
+    <div class="grid-5">
+      <div class="col-card deep">
+        <h4><span class="ico deep" style="width:24px;height:24px;border-radius:5px;background:#e8eef5;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0a3d62" stroke-width="2"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="M12 8v4"/></svg></span> Orchestrator</h4>
+        <div class="role">Coordinator</div>
+        <h6>Core function</h6><ul><li>Decomposes work into sub-tasks</li><li>Routes tasks to agents</li><li>Maintains workflow state</li></ul>
+        <h6>When to use</h6><ul><li>Step coordinates multiple sub-tasks or agents</li></ul>
+        <h6>Tools wired</h6><ul><li>Task queue · routing rules · state store</li></ul>
+        <div class="ex-wf">e.g. NPI intake router — triages cases to specialist agents</div>
+      </div>
+      <div class="col-card">
+        <h4><span class="ico blue" style="width:24px;height:24px;border-radius:5px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span> Executor</h4>
+        <div class="role">Doer</div>
+        <h6>Core function</h6><ul><li>Performs defined operations</li><li>Calls APIs and system actions</li><li>Writes records</li></ul>
+        <h6>When to use</h6><ul><li>Well-defined action with clear I/O</li></ul>
+        <h6>Tools wired</h6><ul><li>ERP/MES APIs · messaging · file writers</li></ul>
+        <div class="ex-wf">e.g. Invoice posting agent — matches PO/GR and posts to ledger</div>
+      </div>
+      <div class="col-card teal">
+        <h4><span class="ico teal" style="width:24px;height:24px;border-radius:5px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#007a76" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span> Analyst</h4>
+        <div class="role">Reasoner</div>
+        <h6>Core function</h6><ul><li>Synthesizes multiple inputs</li><li>Makes recommendations</li><li>Compares against criteria</li></ul>
+        <h6>When to use</h6><ul><li>Reasoning or trade-offs over inputs</li></ul>
+        <h6>Tools wired</h6><ul><li>Calculators · scoring models · LLM reasoning</li></ul>
+        <div class="ex-wf">e.g. Component shortage analyst — recommends allocation across plants</div>
+      </div>
+      <div class="col-card amber">
+        <h4><span class="ico amber" style="width:24px;height:24px;border-radius:5px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a6310" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span> Retriever</h4>
+        <div class="role">Knowledge gatherer</div>
+        <h6>Core function</h6><ul><li>Finds relevant context</li><li>Surfaces evidence</li><li>Ranks by relevance</li></ul>
+        <h6>When to use</h6><ul><li>Step needs to find information first</li></ul>
+        <h6>Tools wired</h6><ul><li>RAG over docs · vector search · SQL</li></ul>
+        <div class="ex-wf">e.g. Approved vendor list lookup — finds applicable sourcing rules</div>
+      </div>
+      <div class="col-card coral">
+        <h4><span class="ico" style="width:24px;height:24px;border-radius:5px;background:#fde2d8;color:#a8553c;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a8553c" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Evaluator</h4>
+        <div class="role">Guardrail</div>
+        <h6>Core function</h6><ul><li>Validates agent outputs</li><li>Enforces quality &amp; compliance</li><li>Flags exceptions</li></ul>
+        <h6>When to use</h6><ul><li>Quality or compliance judgment required</li></ul>
+        <h6>Tools wired</h6><ul><li>Rule engines · LLM-as-judge · HITL hooks</li></ul>
+        <div class="ex-wf">e.g. Export-control reviewer — validates disposition before closure</div>
+      </div>
+    </div>
+    <div class="callout teal" style="margin-top:10px;">
+      <span class="ico teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+      <span><b>Classify ·</b> Need info → Retriever · Need reasoning → Analyst · Need validation → Evaluator · Coordinate → Orchestrator · Else → Executor. &nbsp;|&nbsp; <b>Start simple ·</b> Test one Executor + tools before composing multiple types.</span>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Agentic Workflow Delivery Playbook — simplified</span><span class="pg">4</span><span class="brand">McKinsey &amp; Company</span></div>
+</section>
+
+<!-- PAGE 5 — larger fonts, generic examples -->
+<section class="slide" id="s5">
+  <div class="slide-kicker"><span class="tag">Page 5 · Design</span><span class="phase">Three Agent–Human interaction modes</span></div>
+  <h2 class="action-title">Assign each step a mode — <b>Autopilot · Co-Pilot · Guardian</b> — based on <b>worst plausible failure severity</b></h2>
+  <p class="sub-title">Trust contract between agent and employee · selection is risk-based, not preference-based</p>
+
+  <div class="slide-body">
+    <div class="grid-3">
+      <div class="mode-panel" style="border-top:5px solid var(--teal);">
+        <div class="mode-head">
+          <span class="ico ico-lg teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+          <div><h5>Autopilot</h5><p class="mode-sub">Full autonomy — execute and log</p></div>
+        </div>
+        <p class="section-label">When to choose</p>
+        <ul class="plain"><li>Low-risk, high-volume, reversible</li><li>Verifiable by post-hoc sampling</li><li>Recovery cost &lt; review cost</li></ul>
+        <p class="section-label">Design implications</p>
+        <ul class="plain"><li>Comprehensive audit trail</li><li>5–10% post-hoc sampling</li><li>Anomaly detection → auto-escalation</li></ul>
+        <div class="ex-wf" style="background:#defcfa;">e.g. PO 3-way match within tolerance — auto-post, sample 5% weekly</div>
+      </div>
+      <div class="mode-panel" style="border-top:5px solid var(--blue);">
+        <div class="mode-head">
+          <span class="ico ico-lg blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></span>
+          <div><h5>Co-Pilot</h5><p class="mode-sub">Shared — agent proposes, human refines</p></div>
+        </div>
+        <p class="section-label">When to choose</p>
+        <ul class="plain"><li>Medium-risk, judgment-dependent</li><li>Benefits from human refinement</li><li>Inline review volume manageable</li></ul>
+        <p class="section-label">Design implications</p>
+        <ul class="plain"><li>Draft + diff UI for reviewer</li><li>Feedback loop captures edits</li><li>Time-out → escalate or revert</li></ul>
+        <div class="ex-wf" style="background:#eef3ff;">e.g. Shortage allocation draft — planner edits before ERP update</div>
+      </div>
+      <div class="mode-panel" style="border-top:5px solid var(--coral);">
+        <div class="mode-head">
+          <span class="ico" style="width:36px;height:36px;border-radius:8px;background:#fde2d8;color:#a8553c;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+          <div><h5>Guardian</h5><p class="mode-sub">Limited — agent prepares, human decides</p></div>
+        </div>
+        <p class="section-label">When to choose</p>
+        <ul class="plain"><li>High-risk or irreversible decisions</li><li>Regulated or audit-critical outputs</li><li>Error cost &gt;&gt; review cost</li></ul>
+        <p class="section-label">Design implications</p>
+        <ul class="plain"><li>Agent assembles evidence, never acts</li><li>Decision UI with explainability</li><li>Human signature on every case</li></ul>
+        <div class="ex-wf" style="background:#fde2d8;">e.g. Export-control disposition — compliance officer approves every case</div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:10px;">
+      <span class="ico blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span>
+      <span><b>Selection rule ·</b> "If the agent gets this wrong, what's the worst outcome?" — Reversible/cheap → Autopilot · Reworkable → Co-Pilot · Irreversible/regulated → Guardian.</span>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Agentic Workflow Delivery Playbook — simplified</span><span class="pg">5</span><span class="brand">McKinsey &amp; Company</span></div>
+</section>
+
+</main>
+</body>
+</html>

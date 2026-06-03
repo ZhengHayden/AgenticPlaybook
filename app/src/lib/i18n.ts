@@ -122,7 +122,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
   en: {
     app: {
       name: "Agentic Workflow Playbook",
-      tagline: "Impact Sizing → Design → MVP → Production",
+      tagline: "Roadmap Prioritization → Design → MVP → Production",
     },
     nav: {
       projects: "Projects",
@@ -156,7 +156,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       loading: "Loading…",
     },
     phases: {
-      impactSizing: "Impact Sizing",
+      impactSizing: "Roadmap Prioritization",
       design: "Design",
       mvp: "MVP",
       production: "Production",
@@ -177,11 +177,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
       nameLabel: "Project name",
     },
     impactSizing: {
-      title: "Impact Sizing",
+      title: "Roadmap Prioritization",
       candidates: "Candidates",
-      screen: "Screen",
-      funnel: "Funnel",
-      scoring: "Scoring",
+      screen: "Readiness Check",
+      funnel: "Prioritization",
+      scoring: "Impact Sizing and Risk Evaluation",
       portfolio: "Portfolio",
       gate: "Gate",
       addCandidate: "Add Candidate",
@@ -239,7 +239,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
   zh: {
     app: {
       name: "Agentic 工作流剧本",
-      tagline: "影响评估 → 设计 → MVP → 生产",
+      tagline: "路线图优先级 → 设计 → MVP → 生产",
     },
     nav: {
       projects: "项目",
@@ -273,7 +273,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       loading: "加载中…",
     },
     phases: {
-      impactSizing: "影响评估",
+      impactSizing: "路线图优先级",
       design: "设计",
       mvp: "MVP",
       production: "生产",
@@ -294,11 +294,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
       nameLabel: "项目名称",
     },
     impactSizing: {
-      title: "影响评估",
+      title: "路线图优先级",
       candidates: "候选流程",
-      screen: "初筛",
-      funnel: "漏斗",
-      scoring: "评分",
+      screen: "准备度检查",
+      funnel: "优先级排序",
+      scoring: "影响评估与风险评估",
       portfolio: "组合",
       gate: "决策门",
       addCandidate: "添加候选",

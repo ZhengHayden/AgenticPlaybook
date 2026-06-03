@@ -2,68 +2,177 @@
 
 import { useState } from "react";
 import { useLocale } from "@/lib/locale-context";
-import type { WorkflowStep } from "@/content/sample-data";
+import { useWorkflowSave } from "@/lib/use-workflow-save";
+import type { Workflow, WorkflowCanvas } from "@/content/sample-data";
 import { a2aPatterns, type A2APatternId } from "@/content/a2a-patterns";
-import { archetypes } from "@/content/archetypes";
-import { ArrowRight } from "lucide-react";
+import {
+  adviseOrchestration,
+  COORDINATION_CONCERNS,
+  type Fit,
+} from "@/content/orchestration-advisor";
+import { normalizeCanvas } from "@/content/canvas-layout";
+import { Lightbulb } from "lucide-react";
+import { FlowCanvas } from "./flow-canvas";
 
 interface OrchestrationPickerProps {
-  steps: ReadonlyArray<WorkflowStep>;
-  initialPattern?: A2APatternId;
+  projectId: string;
+  workflows: ReadonlyArray<Workflow>;
+  workflow: Workflow;
 }
 
-export function OrchestrationPicker({ steps, initialPattern }: OrchestrationPickerProps) {
+const fitBadge: Record<Fit, string> = {
+  recommended: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  good: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
+  poor: "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400",
+};
+
+const fitLabel: Record<Fit, { en: string; zh: string }> = {
+  recommended: { en: "Recommended", zh: "推荐" },
+  good: { en: "Good fit", zh: "适合" },
+  poor: { en: "Weak fit", zh: "欠佳" },
+};
+
+export function OrchestrationPicker({ projectId, workflows, workflow }: OrchestrationPickerProps) {
   const { locale } = useLocale();
-  const [pattern, setPattern] = useState<A2APatternId>(initialPattern ?? "pipeline");
-  const selected = a2aPatterns.find((p) => p.id === pattern);
+  const { status, error, saveWorkflow } = useWorkflowSave(projectId, workflows, workflow.id);
+  const [pattern, setPattern] = useState<A2APatternId | undefined>(workflow.a2aPattern);
+  const [canvas, setCanvas] = useState<WorkflowCanvas>(() => normalizeCanvas(workflow));
+  const [dirty, setDirty] = useState(false);
+
+  const advice = adviseOrchestration(workflow.steps);
+  const fitOf = (id: A2APatternId): Fit =>
+    advice.fits.find((f) => f.pattern === id)?.fit ?? "poor";
+
+  const choose = (id: A2APatternId) => {
+    setPattern(id);
+    setDirty(true);
+  };
+
+  const onCanvasChange = (next: WorkflowCanvas) => {
+    setCanvas(next);
+    setDirty(true);
+  };
+
+  const onSave = async () => {
+    await saveWorkflow({ a2aPattern: pattern, canvas });
+    setDirty(false);
+  };
+
+  const saveLabel =
+    status === "saving"
+      ? locale === "en" ? "Saving…" : "保存中…"
+      : status === "saved" && !dirty
+        ? locale === "en" ? "Saved ✓" : "已保存 ✓"
+        : locale === "en" ? "Save" : "保存";
+
+  const selected = pattern ? a2aPatterns.find((p) => p.id === pattern) : undefined;
+  const concerns = pattern ? COORDINATION_CONCERNS[pattern] : [];
+  const en = locale === "en";
 
   return (
     <div className="space-y-4">
-      <div>
+      <div className="flex items-center justify-between">
         <h2 className="text-base font-semibold">
-          {locale === "en" ? "Agent-to-Agent Orchestration Pattern" : "智能体之间编排模式"}
+          {en ? "Agent-to-Agent Orchestration Pattern" : "智能体之间编排模式"}
         </h2>
+        <button
+          type="button"
+          onClick={onSave}
+          disabled={status === "saving" || !dirty}
+          className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
+        >
+          {saveLabel}
+        </button>
       </div>
 
+      {error && (
+        <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+          {error}
+        </p>
+      )}
+
+      {advice.recommended && (
+        <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/50 dark:bg-emerald-950/30">
+          <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+          <div className="flex-1">
+            <p className="text-sm">
+              <span className="font-semibold">{en ? "Suggested: " : "建议:"}</span>
+              {a2aPatterns.find((p) => p.id === advice.recommended)?.[locale].name}
+              {advice.recommendedReason && (
+                <span className="text-zinc-600 dark:text-zinc-400"> — {advice.recommendedReason[locale]}</span>
+              )}
+            </p>
+            {advice.recommended !== pattern && (
+              <button
+                type="button"
+                onClick={() => choose(advice.recommended as A2APatternId)}
+                className="mt-1.5 rounded-md border border-emerald-300 bg-white px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-zinc-900 dark:text-emerald-300"
+              >
+                {en ? "Apply suggestion" : "采用建议"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
-        {a2aPatterns.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => setPattern(p.id)}
-            className={
-              p.id === pattern
-                ? "rounded-xl border border-indigo-300 bg-indigo-50 p-3 text-left ring-2 ring-indigo-200 dark:border-indigo-700 dark:bg-indigo-950/30 dark:ring-indigo-900"
-                : "rounded-xl border border-zinc-200 bg-white p-3 text-left hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900"
-            }
-          >
-            <div className="text-sm font-semibold">{p[locale].name}</div>
-            <p className="mt-1 text-xs text-zinc-500">{p[locale].description}</p>
-          </button>
-        ))}
+        {a2aPatterns.map((p) => {
+          const fit = fitOf(p.id);
+          return (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => choose(p.id)}
+              className={
+                p.id === pattern
+                  ? "rounded-xl border border-indigo-300 bg-indigo-50 p-3 text-left ring-2 ring-indigo-200 dark:border-indigo-700 dark:bg-indigo-950/30 dark:ring-indigo-900"
+                  : "rounded-xl border border-zinc-200 bg-white p-3 text-left hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900"
+              }
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm font-semibold">{p[locale].name}</span>
+                <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold ${fitBadge[fit]}`}>
+                  {fitLabel[fit][locale]}
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-zinc-500">{p[locale].description}</p>
+            </button>
+          );
+        })}
       </div>
 
       {selected && (
         <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
           <h3 className="text-sm font-semibold">
-            {locale === "en" ? "Why" : "为什么"} {selected[locale].name}?
+            {en ? "Why" : "为什么"} {selected[locale].name}?
           </h3>
           <p className="mt-1 text-xs text-zinc-500">{selected[locale].useWhen}</p>
 
-          <div className="mt-4 flex flex-wrap items-center gap-2 rounded-md bg-zinc-50 p-4 dark:bg-zinc-950">
-            {steps.map((step, idx) => {
-              const archetype = step.archetype ? archetypes.find((a) => a.id === step.archetype) : undefined;
-              return (
-                <div key={step.id} className="flex items-center gap-2">
-                  <div className="rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs dark:border-zinc-700 dark:bg-zinc-900">
-                    {archetype && <span className="mr-1">{archetype.icon}</span>}
-                    <span className="font-medium">{archetype ? archetype[locale].name : "?"}</span>
-                    <span className="ml-1 text-zinc-400">· {locale === "en" ? "Step" : "步骤"} {step.seq}</span>
-                  </div>
-                  {idx < steps.length - 1 && <ArrowRight className="h-3.5 w-3.5 text-zinc-400" />}
-                </div>
-              );
-            })}
+          <div className="mt-4 flex items-center justify-between">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              {en ? "Orchestration canvas" : "编排画布"}
+            </h4>
           </div>
+          <div className="mt-2">
+            <FlowCanvas
+              steps={workflow.steps}
+              canvas={canvas}
+              locale={locale}
+              onChange={onCanvasChange}
+            />
+          </div>
+
+          <h4 className="mt-4 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            {en ? "Coordination considerations" : "编排注意事项"}
+          </h4>
+          <ul className="mt-2 space-y-1">
+            {concerns.map((c, i) => (
+              <li key={i} className="flex gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+                <span className="text-zinc-400">•</span>
+                {c[locale]}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

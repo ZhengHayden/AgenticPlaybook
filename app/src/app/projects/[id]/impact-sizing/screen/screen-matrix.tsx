@@ -2,18 +2,24 @@
 
 import { Fragment, useState } from "react";
 import { useLocale } from "@/lib/locale-context";
-import type { Candidate, ScreenAnswer } from "@/content/sample-data";
+import { useProjectSave } from "@/lib/use-project-save";
+import { uploadSop, requestUnderstanding } from "@/lib/api-client";
+import type { Candidate, ScreenAnswer, SopFileRef } from "@/content/sample-data";
+import type { ReadinessSuggestions } from "@/lib/understanding-agent";
 import { screenCriteria, SCREEN_PASS_THRESHOLD, SCREEN_TOTAL, type ScreenCriterionId } from "@/content/binary-screen";
 import { ToolDrawer } from "@/components/tool-drawer";
 import { InlineAnchor } from "@/components/inline-anchor";
-import { ChevronDown, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronDown, ChevronRight, Sparkles, FileText, Upload, X } from "lucide-react";
 
 interface ScreenMatrixProps {
+  projectId: string;
   candidates: ReadonlyArray<Candidate>;
 }
 
-export function ScreenMatrix({ candidates }: ScreenMatrixProps) {
+export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
   const { locale } = useLocale();
+  const { status, error, save } = useProjectSave(projectId);
+  const [dirty, setDirty] = useState(false);
   const [answers, setAnswers] = useState<Record<string, Record<ScreenCriterionId, ScreenAnswer>>>(() => {
     const out: Record<string, Record<ScreenCriterionId, ScreenAnswer>> = {};
     candidates.forEach((c) => {
@@ -22,6 +28,24 @@ export function ScreenMatrix({ candidates }: ScreenMatrixProps) {
     return out;
   });
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [sopByCandidate, setSopByCandidate] = useState<Record<string, SopFileRef | undefined>>(() => {
+    const out: Record<string, SopFileRef | undefined> = {};
+    candidates.forEach((c) => {
+      out[c.id] = c.sopFile;
+    });
+    return out;
+  });
+
+  /** Merge current screen answers + SOP refs back onto the candidates (immutably). */
+  const buildMerged = (
+    answersSnap: Record<string, Record<ScreenCriterionId, ScreenAnswer>>,
+    sopsSnap: Record<string, SopFileRef | undefined>,
+  ): Candidate[] =>
+    candidates.map((c) => {
+      const { sopFile: _prev, ...rest } = c;
+      const sop = sopsSnap[c.id];
+      return { ...rest, screen: answersSnap[c.id] ?? c.screen, ...(sop ? { sopFile: sop } : {}) };
+    });
 
   const toggleYes = (candidateId: string, key: ScreenCriterionId) => {
     setAnswers((prev) => ({
@@ -31,6 +55,7 @@ export function ScreenMatrix({ candidates }: ScreenMatrixProps) {
         [key]: { ...prev[candidateId][key], yes: !prev[candidateId][key].yes },
       },
     }));
+    setDirty(true);
   };
 
   const updateField = (
@@ -45,7 +70,54 @@ export function ScreenMatrix({ candidates }: ScreenMatrixProps) {
         [key]: { ...prev[candidateId][key], ...patch },
       },
     }));
+    setDirty(true);
   };
+
+  const onSave = async () => {
+    await save({ candidates: buildMerged(answers, sopByCandidate) });
+    setDirty(false);
+  };
+
+  /** Persist a SOP upload/removal immediately so the stored file is never orphaned. */
+  const onSopChange = async (candidateId: string, ref: SopFileRef | undefined) => {
+    const nextSops = { ...sopByCandidate, [candidateId]: ref };
+    setSopByCandidate(nextSops);
+    await save({ candidates: buildMerged(answers, nextSops) });
+    setDirty(false);
+  };
+
+  /** Apply grounded agent suggestions to local answers; null dimensions are left untouched. */
+  const applySuggestions = (candidateId: string, suggestions: ReadinessSuggestions) => {
+    setAnswers((prev) => {
+      const cur = prev[candidateId];
+      const next = { ...cur };
+      for (const cr of screenCriteria) {
+        const s = suggestions[cr.id];
+        if (!s || s.yes === null) continue;
+        next[cr.id] = {
+          ...cur[cr.id],
+          yes: s.yes,
+          ...(s.evidence ? { evidence: s.evidence } : {}),
+          ...(s.factValue ? { factValue: s.factValue } : {}),
+        };
+      }
+      return { ...prev, [candidateId]: next };
+    });
+    setDirty(true);
+  };
+
+  const saveLabel =
+    status === "saving"
+      ? locale === "en"
+        ? "Saving…"
+        : "保存中…"
+      : status === "saved" && !dirty
+        ? locale === "en"
+          ? "Saved ✓"
+          : "已保存 ✓"
+        : locale === "en"
+          ? "Save"
+          : "保存";
 
   const scoreFor = (candidateId: string): number =>
     screenCriteria.reduce((sum, cr) => sum + (answers[candidateId][cr.id].yes ? 1 : 0), 0);
@@ -65,18 +137,34 @@ export function ScreenMatrix({ candidates }: ScreenMatrixProps) {
               : `6 项二元判断 · 通过门槛: ${SCREEN_TOTAL} 项中 ≥${SCREEN_PASS_THRESHOLD} 项 Yes(可有 1 项例外,需附缓解方案)`}
           </p>
         </div>
-        <ToolDrawer
-          buttonLabel={locale === "en" ? "Tool Reference" : "工具参考"}
-          title={locale === "en" ? "Binary Readiness Screen Guide" : "二元准备度筛选指南"}
-          subtitle={
-            locale === "en"
-              ? "Detailed criteria definitions, pass/fail examples, interview protocol."
-              : "详细判定定义、Pass/Fail 样例、访谈协议。"
-          }
-        >
-          <ScreenToolReference />
-        </ToolDrawer>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onSave}
+            disabled={status === "saving" || !dirty}
+            className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
+          >
+            {saveLabel}
+          </button>
+          <ToolDrawer
+            buttonLabel={locale === "en" ? "Tool Reference" : "工具参考"}
+            title={locale === "en" ? "Binary Readiness Screen Guide" : "二元准备度筛选指南"}
+            subtitle={
+              locale === "en"
+                ? "Detailed criteria definitions, pass/fail examples, interview protocol."
+                : "详细判定定义、Pass/Fail 样例、访谈协议。"
+            }
+          >
+            <ScreenToolReference />
+          </ToolDrawer>
+        </div>
       </header>
+
+      {error && (
+        <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+          {error}
+        </p>
+      )}
 
       <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
         <table className="w-full min-w-[720px] text-sm">
@@ -170,9 +258,13 @@ export function ScreenMatrix({ candidates }: ScreenMatrixProps) {
                       <td></td>
                       <td colSpan={screenCriteria.length + 3} className="px-3 py-4">
                         <EvidencePanel
+                          projectId={projectId}
                           candidate={c}
                           answers={answers[c.id]}
+                          sopFile={sopByCandidate[c.id]}
                           onUpdate={(key, patch) => updateField(c.id, key, patch)}
+                          onSopChange={(ref) => onSopChange(c.id, ref)}
+                          onApplySuggestions={(s) => applySuggestions(c.id, s)}
                         />
                       </td>
                     </tr>
@@ -196,27 +288,167 @@ export function ScreenMatrix({ candidates }: ScreenMatrixProps) {
 }
 
 interface EvidencePanelProps {
+  projectId: string;
   candidate: Candidate;
   answers: Record<ScreenCriterionId, ScreenAnswer>;
+  sopFile: SopFileRef | undefined;
   onUpdate: (key: ScreenCriterionId, patch: Partial<ScreenAnswer>) => void;
+  onSopChange: (ref: SopFileRef | undefined) => Promise<void>;
+  onApplySuggestions: (suggestions: ReadinessSuggestions) => void;
 }
 
-function EvidencePanel({ candidate, answers, onUpdate }: EvidencePanelProps) {
+function EvidencePanel({
+  projectId,
+  candidate,
+  answers,
+  sopFile,
+  onUpdate,
+  onSopChange,
+  onApplySuggestions,
+}: EvidencePanelProps) {
   const { locale } = useLocale();
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [agentLoading, setAgentLoading] = useState(false);
+  const [agentError, setAgentError] = useState<string | null>(null);
+  const [notStated, setNotStated] = useState<ReadonlyArray<ScreenCriterionId>>([]);
+
+  const onFileSelected = async (file: File | undefined) => {
+    if (!file) return;
+    setUploadError(null);
+    setUploading(true);
+    try {
+      const ref = await uploadSop(projectId, file);
+      await onSopChange(ref);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onRemoveSop = async () => {
+    setUploadError(null);
+    try {
+      await onSopChange(undefined);
+      setNotStated([]);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Remove failed");
+    }
+  };
+
+  const onRunAgent = async () => {
+    if (!sopFile) return;
+    setAgentError(null);
+    setAgentLoading(true);
+    try {
+      const result = await requestUnderstanding(projectId, candidate.id);
+      onApplySuggestions(result.suggestions);
+      setNotStated(result.notStated);
+    } catch (error) {
+      setAgentError(error instanceof Error ? error.message : "Agent failed");
+    } finally {
+      setAgentLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
           {locale === "en" ? `Evidence — ${candidate.name}` : `证据 — ${candidate.name}`}
         </h3>
-        <button type="button" className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
-          <Sparkles className="h-3.5 w-3.5" />{" "}
-          {locale === "en" ? "Draft from description" : "基于描述起草"}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {sopFile ? (
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-900">
+              <FileText className="h-3.5 w-3.5 text-zinc-400" />
+              <a
+                href={`/api/projects/${projectId}/sop/${sopFile.storedName}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="max-w-[12rem] truncate text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+                title={sopFile.filename}
+              >
+                {sopFile.filename}
+              </a>
+              <button
+                type="button"
+                onClick={onRemoveSop}
+                className="text-zinc-400 hover:text-rose-600"
+                aria-label={locale === "en" ? "Remove SOP" : "移除 SOP"}
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </span>
+          ) : (
+            <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+              <Upload className="h-3.5 w-3.5" />
+              {uploading
+                ? locale === "en"
+                  ? "Uploading…"
+                  : "上传中…"
+                : locale === "en"
+                  ? "Upload SOP (PDF)"
+                  : "上传 SOP(PDF)"}
+              <input
+                type="file"
+                accept="application/pdf,.pdf"
+                className="hidden"
+                disabled={uploading}
+                onChange={(e) => {
+                  void onFileSelected(e.target.files?.[0]);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          )}
+          <button
+            type="button"
+            onClick={onRunAgent}
+            disabled={!sopFile || agentLoading}
+            title={
+              sopFile
+                ? undefined
+                : locale === "en"
+                  ? "Upload a SOP first"
+                  : "请先上传 SOP"
+            }
+            className="inline-flex items-center gap-1 rounded-md border border-indigo-200 px-2 py-1 text-xs text-indigo-600 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-indigo-900/50 dark:text-indigo-400 dark:hover:bg-indigo-950/30"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            {agentLoading
+              ? locale === "en"
+                ? "Reading SOP…"
+                : "读取 SOP…"
+              : locale === "en"
+                ? "Run Understanding Agent"
+                : "运行流程理解智能体"}
+          </button>
+        </div>
       </div>
+
+      {uploadError && (
+        <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+          {uploadError}
+        </p>
+      )}
+      {agentError && (
+        <p className="rounded-md border border-amber-200 bg-amber-50 p-2 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200">
+          {agentError}
+        </p>
+      )}
+      {notStated.length > 0 && (
+        <p className="text-xs text-zinc-500">
+          {locale === "en"
+            ? "Dimensions left blank were not stated in the SOP — review and fill them in manually."
+            : "留空的维度在 SOP 中未提及 — 请人工复核并填写。"}
+        </p>
+      )}
+
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
         {screenCriteria.map((cr) => {
           const a = answers[cr.id];
+          const isNotStated = notStated.includes(cr.id);
           return (
             <div
               key={cr.id}
@@ -227,17 +459,24 @@ function EvidencePanel({ candidate, answers, onUpdate }: EvidencePanelProps) {
                   : "border-rose-200 bg-rose-50/40 dark:border-rose-900/40 dark:bg-rose-950/20")
               }
             >
-              <div className="mb-1 flex items-center justify-between text-xs">
+              <div className="mb-1 flex items-center justify-between gap-2 text-xs">
                 <span className="font-semibold">{cr.shortLabel[locale]}</span>
-                <span
-                  className={
-                    a.yes
-                      ? "rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
-                      : "rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"
-                  }
-                >
-                  {a.yes ? "Yes" : "No"}
-                </span>
+                <div className="flex items-center gap-1">
+                  {isNotStated && (
+                    <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                      {locale === "en" ? "not stated in SOP" : "SOP 未提及"}
+                    </span>
+                  )}
+                  <span
+                    className={
+                      a.yes
+                        ? "rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                        : "rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"
+                    }
+                  >
+                    {a.yes ? "Yes" : "No"}
+                  </span>
+                </div>
               </div>
               {cr.factField && (
                 <label className="block text-xs">

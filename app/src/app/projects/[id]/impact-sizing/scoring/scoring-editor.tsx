@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLocale } from "@/lib/locale-context";
+import { useProjectSave } from "@/lib/use-project-save";
 import type { Candidate, VmScores, DdiCounts, RiskAssessment } from "@/content/sample-data";
 import {
   vmDimensions,
@@ -24,7 +25,11 @@ import {
 import { ToolDrawer } from "@/components/tool-drawer";
 
 interface ScoringEditorProps {
+  projectId: string;
+  /** Eligible candidates shown in the editor (Quick Win / Sponsor & Align / Invest & Prove). */
   candidates: ReadonlyArray<Candidate>;
+  /** The project's full candidate list — edits are merged into this on save. */
+  allCandidates: ReadonlyArray<Candidate>;
 }
 
 interface CandidateScoringState {
@@ -35,9 +40,11 @@ interface CandidateScoringState {
   notes: string;
 }
 
-export function ScoringEditor({ candidates }: ScoringEditorProps) {
+export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringEditorProps) {
   const { locale } = useLocale();
+  const { status, error, save } = useProjectSave(projectId);
   const [activeIdx, setActiveIdx] = useState(0);
+  const [dirty, setDirty] = useState(false);
   const [state, setState] = useState<Record<string, CandidateScoringState>>(() => {
     const out: Record<string, CandidateScoringState> = {};
     candidates.forEach((c) => {
@@ -67,7 +74,40 @@ export function ScoringEditor({ candidates }: ScoringEditorProps) {
 
   const update = (patch: Partial<CandidateScoringState>) => {
     setState((prev) => ({ ...prev, [candidate.id]: { ...prev[candidate.id], ...patch } }));
+    setDirty(true);
   };
+
+  // Merge edited scoring state back into the full candidate list so unedited /
+  // non-eligible candidates are preserved, then persist.
+  const onSave = async () => {
+    const merged = allCandidates.map((c) => {
+      const edited = state[c.id];
+      if (!edited) return c;
+      return {
+        ...c,
+        vm: edited.vm,
+        ddi: edited.ddi,
+        totalSteps: edited.totalSteps,
+        risk: edited.risk,
+        scoringNotes: edited.notes,
+      };
+    });
+    await save({ candidates: merged });
+    setDirty(false);
+  };
+
+  const saveLabel =
+    status === "saving"
+      ? locale === "en"
+        ? "Saving…"
+        : "保存中…"
+      : status === "saved" && !dirty
+        ? locale === "en"
+          ? "Saved ✓"
+          : "已保存 ✓"
+        : locale === "en"
+          ? "Save"
+          : "保存";
 
   const setVm = (id: VmDimensionId, score: 1 | 2 | 3 | 4 | 5) => {
     update({ vm: { ...s.vm, [id]: score } });
@@ -111,18 +151,34 @@ export function ScoringEditor({ candidates }: ScoringEditorProps) {
               : "仅 Quick Win / Sponsor & Align / Invest & Prove 候选。"}
           </p>
         </div>
-        <ToolDrawer
-          buttonLabel={locale === "en" ? "Tool Reference" : "工具参考"}
-          title={locale === "en" ? "Detailed Scoring Guide" : "详细评分指南"}
-          subtitle={
-            locale === "en"
-              ? "VM anchors, DDI calculation, risk categories, formula reference."
-              : "VM 锚点、DDI 计算、风险分类、公式参考。"
-          }
-        >
-          <ScoringToolReference />
-        </ToolDrawer>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onSave}
+            disabled={status === "saving" || !dirty}
+            className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
+          >
+            {saveLabel}
+          </button>
+          <ToolDrawer
+            buttonLabel={locale === "en" ? "Tool Reference" : "工具参考"}
+            title={locale === "en" ? "Detailed Scoring Guide" : "详细评分指南"}
+            subtitle={
+              locale === "en"
+                ? "VM anchors, DDI calculation, risk categories, formula reference."
+                : "VM 锚点、DDI 计算、风险分类、公式参考。"
+            }
+          >
+            <ScoringToolReference />
+          </ToolDrawer>
+        </div>
       </header>
+
+      {error && (
+        <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+          {error}
+        </p>
+      )}
 
       {/* candidate switcher */}
       <div className="flex flex-wrap gap-1">

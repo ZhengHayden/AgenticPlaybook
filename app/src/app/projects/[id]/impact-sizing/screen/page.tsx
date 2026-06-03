@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProject } from "@/content/sample-data";
+import { getProject } from "@/db/projects-repo";
 import { ScreenMatrix } from "./screen-matrix";
 
 interface ScreenPageProps {
@@ -8,7 +8,7 @@ interface ScreenPageProps {
 
 export default async function ScreenPage({ params }: ScreenPageProps) {
   const { id } = await params;
-  const project = getProject(id);
+  const project = await getProject(id);
   if (!project) notFound();
-  return <ScreenMatrix candidates={project.candidates} />;
+  return <ScreenMatrix projectId={project.id} candidates={project.candidates} />;
 }

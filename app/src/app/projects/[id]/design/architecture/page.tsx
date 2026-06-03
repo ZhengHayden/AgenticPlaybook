@@ -1,14 +1,18 @@
-import { notFound } from "next/navigation";
-import { getProject } from "@/content/sample-data";
-import { ArchitectureDoc } from "./architecture-doc";
+import { redirect } from "next/navigation";
 
 interface ArchitecturePageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ w?: string }>;
 }
 
-export default async function ArchitecturePage({ params }: ArchitecturePageProps) {
+/**
+ * The Architecture tab is hidden from the Design phase. Any direct or
+ * bookmarked navigation is redirected back to the Workflow tab, preserving the
+ * selected workflow (`?w`).
+ */
+export default async function ArchitecturePage({ params, searchParams }: ArchitecturePageProps) {
   const { id } = await params;
-  const project = getProject(id);
-  if (!project) notFound();
-  return <ArchitectureDoc project={project} />;
+  const { w } = await searchParams;
+  const query = w ? `?w=${w}` : "";
+  redirect(`/projects/${id}/design/workflow${query}`);
 }

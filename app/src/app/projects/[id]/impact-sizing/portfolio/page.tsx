@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProject } from "@/content/sample-data";
+import { getProject } from "@/db/projects-repo";
 import { PortfolioView } from "./portfolio-view";
 
 interface PortfolioPageProps {
@@ -8,7 +8,7 @@ interface PortfolioPageProps {
 
 export default async function PortfolioPage({ params }: PortfolioPageProps) {
   const { id } = await params;
-  const project = getProject(id);
+  const project = await getProject(id);
   if (!project) notFound();
-  return <PortfolioView candidates={project.candidates} />;
+  return <PortfolioView projectId={project.id} candidates={project.candidates} />;
 }

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProject } from "@/content/sample-data";
+import { getProject } from "@/db/projects-repo";
 import { CandidatesTable } from "./candidates-table";
 
 interface CandidatesPageProps {
@@ -8,7 +8,7 @@ interface CandidatesPageProps {
 
 export default async function CandidatesPage({ params }: CandidatesPageProps) {
   const { id } = await params;
-  const project = getProject(id);
+  const project = await getProject(id);
   if (!project) notFound();
-  return <CandidatesTable candidates={project.candidates} />;
+  return <CandidatesTable projectId={project.id} candidates={project.candidates} />;
 }
