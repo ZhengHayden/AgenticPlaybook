@@ -46,3 +46,6 @@ next-env.d.ts
 *.db
 *.db-shm
 *.db-wal
+
+# database export bundles (contain project data — moved out-of-band, not committed)
+/exports/

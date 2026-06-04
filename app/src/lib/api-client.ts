@@ -2,6 +2,16 @@ import type { Project, SopFileRef } from "@/content/sample-data";
 import type { ApiResponse } from "@/lib/api-response";
 import type { CreateProjectInput, ProjectPatchInput } from "@/db/validation";
 import type { UnderstandingResult } from "@/lib/understanding-agent";
+import type { ScanManifest, ScanModel } from "@/lib/scan/types";
+
+/** Everything a scan needs: the company identity plus the three source files. */
+export interface ScanUpload {
+  company: string;
+  sector: string;
+  laborRate: File;
+  headcount: File;
+  automation: File;
+}
 
 /**
  * Thin typed fetch wrappers around the /api/projects endpoints, for use from
@@ -46,6 +56,30 @@ export async function uploadSop(projectId: string, file: File): Promise<SopFileR
   form.append("file", file);
   const res = await fetch(`/api/projects/${projectId}/sop`, { method: "POST", body: form });
   return parse<SopFileRef>(res);
+}
+
+/** Fetch a company's computed Opportunity Scan, or null when none has run yet. */
+export async function fetchScan(companyKey: string): Promise<ScanModel | null> {
+  const res = await fetch(`/api/scan?company=${encodeURIComponent(companyKey)}`, { method: "GET" });
+  return parse<ScanModel | null>(res);
+}
+
+/** List every company that has an Opportunity Scan (for the `/scan` index). */
+export async function fetchScanIndex(): Promise<ScanManifest[]> {
+  const res = await fetch("/api/scan", { method: "GET" });
+  return parse<ScanManifest[]>(res);
+}
+
+/** Upload company identity + the three source files and compute a fresh scan model. */
+export async function computeScan(upload: ScanUpload): Promise<ScanModel> {
+  const form = new FormData();
+  form.append("company", upload.company);
+  form.append("sector", upload.sector);
+  form.append("laborRate", upload.laborRate);
+  form.append("headcount", upload.headcount);
+  form.append("automation", upload.automation);
+  const res = await fetch("/api/scan", { method: "POST", body: form });
+  return parse<ScanModel>(res);
 }
 
 /** Run the Understanding Agent over a candidate's uploaded SOP. */

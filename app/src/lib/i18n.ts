@@ -9,6 +9,7 @@ export type Dictionary = {
     projects: string;
     knowledge: string;
     settings: string;
+    scan: string;
   };
   common: {
     new: string;
@@ -45,6 +46,7 @@ export type Dictionary = {
   };
   project: {
     overview: string;
+    opportunity: string;
     progress: string;
     team: string;
     activity: string;
@@ -115,6 +117,74 @@ export type Dictionary = {
     model: string;
     saveKey: string;
   };
+  scan: {
+    title: string;
+    subtitle: string;
+    uploadLabor: string;
+    uploadHc: string;
+    uploadAutomation: string;
+    uploadLaborHint: string;
+    uploadHcHint: string;
+    uploadAutomationHint: string;
+    compute: string;
+    computing: string;
+    recompute: string;
+    empty: string;
+    generatedAt: string;
+    modeUsd: string;
+    modeFte: string;
+    modeBaseline: string;
+    modeUsdLabel: string;
+    modeFteLabel: string;
+    modeBaselineLabel: string;
+    total: string;
+    function: string;
+    legendLow: string;
+    legendHigh: string;
+    warnings: string;
+    clickHint: string;
+    currentActivities: string;
+    futureActivities: string;
+    freedCapacity: string;
+    keyTakeaways: string;
+    activityLegend: string;
+    largestDrop: string;
+    automationRatio: string;
+    noInsight: string;
+    close: string;
+    // Opportunity Scanning wizard + dashboard
+    wizardTitle: string;
+    stepIdentity: string;
+    stepUpload: string;
+    companyName: string;
+    companyNameHint: string;
+    sector: string;
+    sectorSelect: string;
+    sectorOther: string;
+    sectorOtherHint: string;
+    startScan: string;
+    launchScan: string;
+    dataSummary: string;
+    runScan: string;
+    linkedToClient: string;
+    kpiBaselineHc: string;
+    kpiFunctions: string;
+    kpiBgs: string;
+    kpiReleasedFte: string;
+    kpiUsdReleased: string;
+    kpiAvgReleased: string;
+    hcByBg: string;
+    hcByFunction: string;
+    coverage: string;
+    functionsWithInsight: string;
+    indexTitle: string;
+    indexSubtitle: string;
+    newScan: string;
+    noScans: string;
+    openDashboard: string;
+    noScanYet: string;
+    noScanYetHint: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -127,6 +197,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       projects: "Projects",
       knowledge: "Knowledge",
       settings: "Settings",
+      scan: "Scan",
     },
     common: {
       new: "New",
@@ -163,6 +234,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     project: {
       overview: "Overview",
+      opportunity: "Opportunity Scan",
       progress: "Phase Progress",
       team: "Team",
       activity: "Recent Activity",
@@ -233,6 +305,73 @@ export const dictionaries: Record<Locale, Dictionary> = {
       model: "Model",
       saveKey: "Save",
     },
+    scan: {
+      title: "Top-Down Automation Scan",
+      subtitle: "Where agentic automation frees the most labor capacity, by Function × Business Group.",
+      uploadLabor: "Labor rate",
+      uploadHc: "Headcount distribution",
+      uploadAutomation: "Automation potential",
+      uploadLaborHint: ".xlsx — Function, Job Level, Salary (USD)",
+      uploadHcHint: ".xlsx — BG, Function, Job Level, FTE",
+      uploadAutomationHint: ".md — per-function work-content breakdown",
+      compute: "Compute scan",
+      computing: "Computing…",
+      recompute: "Re-upload & recompute",
+      empty: "Upload the three source files to generate the automation-impact heatmap.",
+      generatedAt: "Generated",
+      modeUsd: "USD released",
+      modeFte: "Released FTE",
+      modeBaseline: "Baseline HC",
+      modeUsdLabel: "Annual labor cost released",
+      modeFteLabel: "Released capacity (FTE-equivalent)",
+      modeBaselineLabel: "Baseline headcount",
+      total: "Total",
+      function: "Function",
+      legendLow: "Low",
+      legendHigh: "High",
+      warnings: "Data notes",
+      clickHint: "Click any cell to see the work-content shift for that function.",
+      currentActivities: "Current activities",
+      futureActivities: "Future activities",
+      freedCapacity: "Freed-up capacity",
+      keyTakeaways: "Key takeaways",
+      activityLegend: "Activity categories",
+      largestDrop: "Largest reduction",
+      automationRatio: "Automation ratio",
+      noInsight: "No qualitative insight provided for this function.",
+      close: "Close",
+      wizardTitle: "Opportunity Scan",
+      stepIdentity: "Company & sector",
+      stepUpload: "Upload data",
+      companyName: "Company name",
+      companyNameHint: "Used to link this scan to the client across projects.",
+      sector: "Industry sector",
+      sectorSelect: "Select a sector…",
+      sectorOther: "Other (specify)",
+      sectorOtherHint: "Enter a custom sector",
+      startScan: "Start Opportunity Scan",
+      launchScan: "Run scan",
+      dataSummary: "Data summary",
+      runScan: "Plot opportunity heatmap",
+      linkedToClient: "Linked to client",
+      kpiBaselineHc: "Baseline headcount",
+      kpiFunctions: "Functions",
+      kpiBgs: "Business groups",
+      kpiReleasedFte: "Released FTE",
+      kpiUsdReleased: "USD released",
+      kpiAvgReleased: "Avg released ratio",
+      hcByBg: "Headcount by business group",
+      hcByFunction: "Headcount by function",
+      coverage: "Automation coverage",
+      functionsWithInsight: "functions with a key insight",
+      indexTitle: "Opportunity Scans",
+      indexSubtitle: "Automation-impact scans by company. Open one to view its heatmap and drill-downs.",
+      newScan: "New scan",
+      noScans: "No scans yet. Start one from a project or with “New scan”.",
+      openDashboard: "Open dashboard",
+      noScanYet: "No Opportunity Scan for this client yet.",
+      noScanYetHint: "Upload the workforce and automation data to size the opportunity.",
+    },
   },
   zh: {
     app: {
@@ -243,6 +382,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       projects: "项目",
       knowledge: "知识库",
       settings: "设置",
+      scan: "扫描",
     },
     common: {
       new: "新建",
@@ -279,6 +419,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     project: {
       overview: "概览",
+      opportunity: "机会扫描",
       progress: "阶段进度",
       team: "团队",
       activity: "最近活动",
@@ -348,6 +489,73 @@ export const dictionaries: Record<Locale, Dictionary> = {
       apiKey: "API 密钥",
       model: "模型名称",
       saveKey: "保存",
+    },
+    scan: {
+      title: "自顶向下自动化扫描",
+      subtitle: "按职能 × 业务集团展示智能体自动化释放劳动力产能最多的领域。",
+      uploadLabor: "薪资费率",
+      uploadHc: "人力分布",
+      uploadAutomation: "自动化潜力",
+      uploadLaborHint: ".xlsx — 职能、职级、薪资（美元）",
+      uploadHcHint: ".xlsx — 业务集团、职能、职级、FTE",
+      uploadAutomationHint: ".md — 各职能工作内容拆分",
+      compute: "生成扫描",
+      computing: "计算中…",
+      recompute: "重新上传并计算",
+      empty: "上传三个源文件以生成自动化影响热力图。",
+      generatedAt: "生成于",
+      modeUsd: "释放金额",
+      modeFte: "释放 FTE",
+      modeBaseline: "基线人力",
+      modeUsdLabel: "年度人力成本释放额",
+      modeFteLabel: "释放产能（等效 FTE）",
+      modeBaselineLabel: "基线人数",
+      total: "合计",
+      function: "职能",
+      legendLow: "低",
+      legendHigh: "高",
+      warnings: "数据说明",
+      clickHint: "点击任意单元格查看该职能的工作内容转变。",
+      currentActivities: "当前活动",
+      futureActivities: "未来活动",
+      freedCapacity: "释放产能",
+      keyTakeaways: "关键洞察",
+      activityLegend: "活动类别",
+      largestDrop: "降幅最大",
+      automationRatio: "自动化比例",
+      noInsight: "该职能暂无定性洞察。",
+      close: "关闭",
+      wizardTitle: "机会扫描",
+      stepIdentity: "公司与行业",
+      stepUpload: "上传数据",
+      companyName: "公司名称",
+      companyNameHint: "用于按客户跨项目关联此次扫描。",
+      sector: "行业领域",
+      sectorSelect: "选择行业领域…",
+      sectorOther: "其他（自定义）",
+      sectorOtherHint: "输入自定义行业",
+      startScan: "开始机会扫描",
+      launchScan: "运行扫描",
+      dataSummary: "数据概要",
+      runScan: "绘制机会热力图",
+      linkedToClient: "已关联客户",
+      kpiBaselineHc: "基线人数",
+      kpiFunctions: "职能数",
+      kpiBgs: "业务集团数",
+      kpiReleasedFte: "释放 FTE",
+      kpiUsdReleased: "释放金额",
+      kpiAvgReleased: "平均释放比例",
+      hcByBg: "按业务集团的人数",
+      hcByFunction: "按职能的人数",
+      coverage: "自动化覆盖",
+      functionsWithInsight: "个职能含关键洞察",
+      indexTitle: "机会扫描",
+      indexSubtitle: "按公司汇总的自动化影响扫描。打开任一项查看其热力图与下钻。",
+      newScan: "新建扫描",
+      noScans: "暂无扫描。可从项目中或通过“新建扫描”开始。",
+      openDashboard: "打开仪表盘",
+      noScanYet: "该客户暂无机会扫描。",
+      noScanYetHint: "上传人力与自动化数据以评估机会规模。",
     },
   },
 };

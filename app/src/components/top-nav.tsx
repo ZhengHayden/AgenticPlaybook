@@ -11,6 +11,7 @@ export function TopNav() {
 
   const links = [
     { href: "/projects", label: t.nav.projects },
+    { href: "/scan", label: t.nav.scan },
     { href: "/knowledge", label: t.nav.knowledge },
     { href: "/settings", label: t.nav.settings },
   ];
