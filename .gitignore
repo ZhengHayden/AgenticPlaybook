@@ -41,3 +41,6 @@ next-env.d.ts
 # staticrypt encrypted output (local builds only — CI builds in _site)
 encrypted/
 _site/
+
+# Practice/PS deliverables — kept local, not committed
+Playbook_for_PS/
