@@ -33,3 +33,16 @@ export function levelOrder(levelCode: string): number {
   const match = levelCode.match(/\d+/);
   return match ? Number(match[0]) : Number.MAX_SAFE_INTEGER;
 }
+
+/**
+ * Slugify a company name into a stable storage/url key. Pure (no I/O) so it is
+ * safe to import from client components — the scan store re-exports it for
+ * server callers. e.g. "Acme Corp." → "acme-corp".
+ */
+export function scanCompanyKey(name: string): string {
+  const base = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return base || "company";
+}

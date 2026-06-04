@@ -10,6 +10,7 @@ export type Dictionary = {
     knowledge: string;
     settings: string;
     scan: string;
+    benchmark: string;
   };
   common: {
     new: string;
@@ -162,6 +163,11 @@ export type Dictionary = {
     sectorSelect: string;
     sectorOther: string;
     sectorOtherHint: string;
+    region: string;
+    regionSelect: string;
+    regionOther: string;
+    regionOtherHint: string;
+    uploadOptionalHint: string;
     startScan: string;
     launchScan: string;
     dataSummary: string;
@@ -184,6 +190,60 @@ export type Dictionary = {
     openDashboard: string;
     noScanYet: string;
     noScanYetHint: string;
+    // Edit Data panel
+    editData: string;
+    editDataSubtitle: string;
+    tabLaborRate: string;
+    tabHeadcount: string;
+    tabWorkContent: string;
+    saveRecompute: string;
+    saving: string;
+    loadingInputs: string;
+    noEditableData: string;
+    addWorkContent: string;
+    removeWorkContent: string;
+    categoryName: string;
+    baselinePct: string;
+    targetPct: string;
+    automationRatioLabel: string;
+    releaseRatioLabel: string;
+    insightLabel: string;
+    salaryUsd: string;
+    fte: string;
+    jobGrade: string;
+    bg: string;
+    subtotal: string;
+    grandTotal: string;
+    selectFunction: string;
+    selectGrade: string;
+    breakdownSumHint: string;
+  };
+  benchmark: {
+    title: string;
+    subtitle: string;
+    region: string;
+    sector: string;
+    selectPrompt: string;
+    version: string;
+    shippedDefault: string;
+    laborTab: string;
+    automationTab: string;
+    saveAsVersion: string;
+    versionName: string;
+    versionNamePlaceholder: string;
+    save: string;
+    saving: string;
+    saved: string;
+    upload: string;
+    uploadTitle: string;
+    uploadLaborOptional: string;
+    uploadAutomationOptional: string;
+    uploadHint: string;
+    deleteVersion: string;
+    confirmDelete: string;
+    loadError: string;
+    readOnlyHint: string;
+    noVersions: string;
   };
 };
 
@@ -198,6 +258,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       knowledge: "Knowledge",
       settings: "Settings",
       scan: "Scan",
+      benchmark: "Benchmark",
     },
     common: {
       new: "New",
@@ -349,6 +410,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
       sectorSelect: "Select a sector…",
       sectorOther: "Other (specify)",
       sectorOtherHint: "Enter a custom sector",
+      region: "Region",
+      regionSelect: "Select a region…",
+      regionOther: "Other (specify)",
+      regionOtherHint: "Enter a custom region",
+      uploadOptionalHint: "Leave blank to use the regional benchmark default.",
       startScan: "Start Opportunity Scan",
       launchScan: "Run scan",
       dataSummary: "Data summary",
@@ -371,6 +437,59 @@ export const dictionaries: Record<Locale, Dictionary> = {
       openDashboard: "Open dashboard",
       noScanYet: "No Opportunity Scan for this client yet.",
       noScanYetHint: "Upload the workforce and automation data to size the opportunity.",
+      editData: "Edit data",
+      editDataSubtitle: "Preview and adjust the underlying numbers, then recompute the model.",
+      tabLaborRate: "Labor rate",
+      tabHeadcount: "Headcount",
+      tabWorkContent: "Work content",
+      saveRecompute: "Save & recompute",
+      saving: "Saving…",
+      loadingInputs: "Loading editable data…",
+      noEditableData: "No editable data is available for this scan.",
+      addWorkContent: "Add work content",
+      removeWorkContent: "Remove",
+      categoryName: "Activity category",
+      baselinePct: "Baseline %",
+      targetPct: "Target %",
+      automationRatioLabel: "Automation ratio (0–1)",
+      releaseRatioLabel: "Release ratio (0–1)",
+      insightLabel: "Key insight",
+      salaryUsd: "Salary (USD/yr)",
+      fte: "FTE",
+      jobGrade: "Job grade",
+      bg: "Business group",
+      subtotal: "Subtotal",
+      grandTotal: "Grand total",
+      selectFunction: "Function",
+      selectGrade: "Job grade",
+      breakdownSumHint: "Baseline and target percentages are normalized per grade when plotted.",
+    },
+    benchmark: {
+      title: "Benchmark Setting",
+      subtitle: "Default labor rate and automation potential by region × sector. Edit or upload to save a company-specific version.",
+      region: "Region",
+      sector: "Industry sector",
+      selectPrompt: "Pick a region and sector to load its benchmark.",
+      version: "Version",
+      shippedDefault: "Shipped default (read-only)",
+      laborTab: "Labor rate",
+      automationTab: "Automation potential",
+      saveAsVersion: "Save as version",
+      versionName: "Version name",
+      versionNamePlaceholder: "e.g. FY26 China revision",
+      save: "Save",
+      saving: "Saving…",
+      saved: "Saved",
+      upload: "Upload",
+      uploadTitle: "Upload a benchmark version",
+      uploadLaborOptional: "Labor rate (.xlsx, optional)",
+      uploadAutomationOptional: "Automation potential (.md, optional)",
+      uploadHint: "Provide at least one file. Omitted halves keep the current default.",
+      deleteVersion: "Delete version",
+      confirmDelete: "Delete this version? This cannot be undone.",
+      loadError: "Could not load the benchmark.",
+      readOnlyHint: "The shipped default is read-only. Edits and uploads create a company version.",
+      noVersions: "No saved versions yet.",
     },
   },
   zh: {
@@ -383,6 +502,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       knowledge: "知识库",
       settings: "设置",
       scan: "扫描",
+      benchmark: "基准",
     },
     common: {
       new: "新建",
@@ -534,6 +654,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
       sectorSelect: "选择行业领域…",
       sectorOther: "其他（自定义）",
       sectorOtherHint: "输入自定义行业",
+      region: "地区",
+      regionSelect: "选择地区…",
+      regionOther: "其他（自定义）",
+      regionOtherHint: "输入自定义地区",
+      uploadOptionalHint: "留空则使用该地区的基准默认值。",
       startScan: "开始机会扫描",
       launchScan: "运行扫描",
       dataSummary: "数据概要",
@@ -556,6 +681,59 @@ export const dictionaries: Record<Locale, Dictionary> = {
       openDashboard: "打开仪表盘",
       noScanYet: "该客户暂无机会扫描。",
       noScanYetHint: "上传人力与自动化数据以评估机会规模。",
+      editData: "编辑数据",
+      editDataSubtitle: "预览并调整底层数据，然后重新计算模型。",
+      tabLaborRate: "薪资费率",
+      tabHeadcount: "人力",
+      tabWorkContent: "工作内容",
+      saveRecompute: "保存并重新计算",
+      saving: "保存中…",
+      loadingInputs: "正在加载可编辑数据…",
+      noEditableData: "此次扫描暂无可编辑的数据。",
+      addWorkContent: "新增工作内容",
+      removeWorkContent: "移除",
+      categoryName: "活动类别",
+      baselinePct: "基线 %",
+      targetPct: "目标 %",
+      automationRatioLabel: "自动化比例（0–1）",
+      releaseRatioLabel: "释放比例（0–1）",
+      insightLabel: "关键洞察",
+      salaryUsd: "薪资（美元/年）",
+      fte: "FTE",
+      jobGrade: "职级",
+      bg: "业务集团",
+      subtotal: "小计",
+      grandTotal: "总计",
+      selectFunction: "职能",
+      selectGrade: "职级",
+      breakdownSumHint: "基线与目标百分比在绘图时按职级归一化。",
+    },
+    benchmark: {
+      title: "基准设置",
+      subtitle: "按地区 × 行业的默认薪资费率与自动化潜力。编辑或上传以保存公司专属版本。",
+      region: "地区",
+      sector: "行业领域",
+      selectPrompt: "选择地区与行业以加载其基准。",
+      version: "版本",
+      shippedDefault: "内置默认值（只读）",
+      laborTab: "薪资费率",
+      automationTab: "自动化潜力",
+      saveAsVersion: "另存为版本",
+      versionName: "版本名称",
+      versionNamePlaceholder: "例如:FY26 中国修订版",
+      save: "保存",
+      saving: "保存中…",
+      saved: "已保存",
+      upload: "上传",
+      uploadTitle: "上传基准版本",
+      uploadLaborOptional: "薪资费率（.xlsx，可选）",
+      uploadAutomationOptional: "自动化潜力（.md，可选）",
+      uploadHint: "至少提供一个文件。未提供的部分将保留当前默认值。",
+      deleteVersion: "删除版本",
+      confirmDelete: "确定删除此版本？此操作无法撤销。",
+      loadError: "无法加载基准。",
+      readOnlyHint: "内置默认值为只读。编辑与上传将创建公司版本。",
+      noVersions: "暂无已保存的版本。",
     },
   },
 };

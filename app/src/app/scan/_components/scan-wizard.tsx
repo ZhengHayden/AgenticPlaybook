@@ -5,6 +5,7 @@ import { useLocale } from "@/lib/locale-context";
 import { computeScan } from "@/lib/api-client";
 import type { ScanModel } from "@/lib/scan/types";
 import { INDUSTRY_SECTORS, OTHER_SECTOR } from "@/lib/scan/sectors";
+import { REGIONS, OTHER_REGION } from "@/lib/scan/regions";
 
 interface ScanWizardProps {
   /** Pre-fills the company name (e.g. a project's client). */
@@ -28,6 +29,8 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
   const [company, setCompany] = useState(defaultCompany);
   const [sectorChoice, setSectorChoice] = useState("");
   const [sectorOther, setSectorOther] = useState("");
+  const [regionChoice, setRegionChoice] = useState("");
+  const [regionOther, setRegionOther] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,20 +39,23 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
   const autoRef = useRef<HTMLInputElement>(null);
 
   const sector = sectorChoice === OTHER_SECTOR ? sectorOther.trim() : sectorChoice;
-  const identityValid = company.trim().length > 0 && sector.length > 0;
+  const region = regionChoice === OTHER_REGION ? regionOther.trim() : regionChoice;
+  const identityValid = company.trim().length > 0 && sector.length > 0 && region.length > 0;
 
   const onSubmit = async () => {
-    const laborRate = laborRef.current?.files?.[0];
+    // HC is required; labor & automation are optional — the server seeds them
+    // from the regional benchmark default when omitted.
     const headcount = hcRef.current?.files?.[0];
+    const laborRate = laborRef.current?.files?.[0];
     const automation = autoRef.current?.files?.[0];
-    if (!laborRate || !headcount || !automation) {
+    if (!headcount) {
       setError(t.scan.empty);
       return;
     }
     setBusy(true);
     setError(null);
     try {
-      const model = await computeScan({ company: company.trim(), sector, laborRate, headcount, automation });
+      const model = await computeScan({ company: company.trim(), sector, region, headcount, laborRate, automation });
       onDone(model);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unexpected error");
@@ -118,23 +124,43 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
                 className={inputCls}
               />
             )}
+            <label className={labelCls}>
+              {t.scan.region} *
+              <select value={regionChoice} onChange={(e) => setRegionChoice(e.target.value)} className={inputCls}>
+                <option value="">{t.scan.regionSelect}</option>
+                {REGIONS.map((r) => (
+                  <option key={r.code} value={r.label}>
+                    {r.label}
+                  </option>
+                ))}
+                <option value={OTHER_REGION}>{t.scan.regionOther}</option>
+              </select>
+            </label>
+            {regionChoice === OTHER_REGION && (
+              <input
+                value={regionOther}
+                onChange={(e) => setRegionOther(e.target.value)}
+                placeholder={t.scan.regionOtherHint}
+                className={inputCls}
+              />
+            )}
           </>
         ) : (
           <div className="space-y-3">
             <label className="block">
-              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{t.scan.uploadLabor}</span>
-              <input ref={laborRef} type="file" accept=".xlsx" className={fileInputCls} />
-              <span className="mt-1 block text-[11px] text-zinc-400">{t.scan.uploadLaborHint}</span>
-            </label>
-            <label className="block">
-              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{t.scan.uploadHc}</span>
+              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{t.scan.uploadHc} *</span>
               <input ref={hcRef} type="file" accept=".xlsx" className={fileInputCls} />
               <span className="mt-1 block text-[11px] text-zinc-400">{t.scan.uploadHcHint}</span>
             </label>
             <label className="block">
+              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{t.scan.uploadLabor}</span>
+              <input ref={laborRef} type="file" accept=".xlsx" className={fileInputCls} />
+              <span className="mt-1 block text-[11px] text-zinc-400">{t.scan.uploadOptionalHint}</span>
+            </label>
+            <label className="block">
               <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{t.scan.uploadAutomation}</span>
               <input ref={autoRef} type="file" accept=".md,.markdown,.txt" className={fileInputCls} />
-              <span className="mt-1 block text-[11px] text-zinc-400">{t.scan.uploadAutomationHint}</span>
+              <span className="mt-1 block text-[11px] text-zinc-400">{t.scan.uploadOptionalHint}</span>
             </label>
           </div>
         )}

@@ -85,6 +85,8 @@ export interface ScanModel {
   companyKey: string;
   /** Industry sector code or free-text label chosen in the wizard. */
   sector: string;
+  /** Geographic region label chosen in the wizard; selects benchmark defaults. */
+  region: string;
   /** Ordered function row labels (display casing). */
   functions: { key: string; label: string }[];
   /** Ordered BG column labels. */
@@ -106,5 +108,28 @@ export interface ScanManifest {
   companyKey: string;
   company: string;
   sector: string;
+  region: string;
   generatedAt: string;
+}
+
+/**
+ * The editable input layer that produces a {@link ScanModel}. Persisted next to
+ * `model.json` so the dashboard can preview and edit the underlying numbers and
+ * recompute, without re-uploading the source files.
+ *
+ * Rows are stored already-aggregated — one labor row per (functionKey, levelCode)
+ * with salary averaged, one HC row per (functionKey, bg, levelCode) with FTE
+ * summed — so feeding them back through {@link computeScanModel} round-trips exactly.
+ */
+export interface ScanInputs {
+  company: string;
+  companyKey: string;
+  sector: string;
+  region: string;
+  /** Deduped labor rates: one row per (functionKey, levelCode). */
+  laborRows: LaborRateRow[];
+  /** Aggregated headcount: one row per (functionKey, bg, levelCode). */
+  hcRows: HcRow[];
+  /** Per-function work-content detail (categories, level breakdowns/ratios, insight). */
+  automation: Record<string, FunctionMeta>;
 }

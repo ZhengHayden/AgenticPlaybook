@@ -7,6 +7,7 @@ import { formatValue, totalValue } from "@/lib/scan/format";
 import { DataSummary } from "./data-summary";
 import { Heatmap } from "./heatmap";
 import { FunctionDetailModal } from "./function-detail-modal";
+import { EditDataPanel } from "./edit-data-panel";
 
 interface OpportunityDashboardProps {
   model: ScanModel;
@@ -25,11 +26,13 @@ const MODES: { id: ScanMode; labelKey: "modeUsd" | "modeFte" | "modeBaseline"; d
  * summary (shown first), then the automation-impact heatmap revealed on demand
  * with the USD/FTE/Baseline toggle and the per-function drill-down modal.
  */
-export function OpportunityDashboard({ model, showClientLink = false }: OpportunityDashboardProps) {
+export function OpportunityDashboard({ model: initialModel, showClientLink = false }: OpportunityDashboardProps) {
   const { t } = useLocale();
+  const [model, setModel] = useState<ScanModel>(initialModel);
   const [mode, setMode] = useState<ScanMode>("usd");
   const [selectedFn, setSelectedFn] = useState<string | null>(null);
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
   const selectedMeta = selectedFn ? model.detail[selectedFn] : null;
 
@@ -55,6 +58,16 @@ export function OpportunityDashboard({ model, showClientLink = false }: Opportun
           </span>
         )}
       </header>
+
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => setShowEdit(true)}
+          className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+        >
+          {t.scan.editData}
+        </button>
+      </div>
 
       <DataSummary model={model} />
 
@@ -115,6 +128,14 @@ export function OpportunityDashboard({ model, showClientLink = false }: Opportun
       )}
 
       {selectedMeta && <FunctionDetailModal meta={selectedMeta} onClose={() => setSelectedFn(null)} />}
+
+      {showEdit && (
+        <EditDataPanel
+          companyKey={model.companyKey}
+          onClose={() => setShowEdit(false)}
+          onSaved={(next) => setModel(next)}
+        />
+      )}
     </div>
   );
 }

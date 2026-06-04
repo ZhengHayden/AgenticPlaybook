@@ -28,7 +28,7 @@ export function computeScanModel(
   hcRows: ReadonlyArray<HcRow>,
   automation: Readonly<Record<string, FunctionMeta>>,
   generatedAt: string,
-  identity: { company: string; companyKey: string; sector: string },
+  identity: { company: string; companyKey: string; sector: string; region: string },
 ): ScanModel {
   const avgSalary = buildAverageSalary(laborRows);
   const releasedRatioOf = (fnKey: string, levelCode: string): number | undefined =>
@@ -107,6 +107,7 @@ export function computeScanModel(
     company: identity.company,
     companyKey: identity.companyKey,
     sector: identity.sector,
+    region: identity.region,
     functions,
     bgs,
     cells,

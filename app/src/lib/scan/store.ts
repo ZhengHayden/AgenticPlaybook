@@ -1,6 +1,10 @@
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import type { ScanManifest, ScanModel } from "./types";
+import type { ScanInputs, ScanManifest, ScanModel } from "./types";
+import { scanCompanyKey } from "./normalize";
+
+/** Re-exported from the client-safe `normalize` module for server callers. */
+export { scanCompanyKey };
 
 /**
  * Server-only persistence for Opportunity Scans, partitioned by company. Each
@@ -19,19 +23,6 @@ export const SCAN_ROOT = path.resolve(process.cwd(), "data/scan");
 /** Fixed upload slots — the storage name is never derived from the client filename. */
 export type UploadSlot = "labor_rate" | "hc" | "automation";
 
-/**
- * Canonical company key (slug) used as the storage partition and the
- * project↔scan join key. Mirrors `slugify` in `src/db/projects-repo.ts` so that
- * `scanCompanyKey(project.client)` always resolves to the same folder a scan
- * launched from that project wrote to.
- */
-export function scanCompanyKey(name: string): string {
-  const base = name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return base || "company";
-}
 
 function companyDir(companyKey: string): string {
   return path.join(SCAN_ROOT, companyKey);
@@ -45,6 +36,7 @@ export async function writeScanModel(companyKey: string, model: ScanModel): Prom
     companyKey: model.companyKey,
     company: model.company,
     sector: model.sector,
+    region: model.region,
     generatedAt: model.generatedAt,
   };
   await Promise.all([
@@ -64,6 +56,24 @@ export async function readScanModel(companyKey: string): Promise<ScanModel | nul
   }
 }
 
+/** Persist the editable input layer for a company. */
+export async function writeScanInputs(companyKey: string, inputs: ScanInputs): Promise<void> {
+  const dir = companyDir(companyKey);
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, "inputs.json"), JSON.stringify(inputs, null, 2), "utf8");
+}
+
+/** Read a company's editable input layer, or null when none has been persisted yet. */
+export async function readScanInputs(companyKey: string): Promise<ScanInputs | null> {
+  try {
+    const raw = await readFile(path.join(companyDir(companyKey), "inputs.json"), "utf8");
+    return JSON.parse(raw) as ScanInputs;
+  } catch (error) {
+    if (isNotFound(error)) return null;
+    throw error;
+  }
+}
+
 /** List every company that has a scan, newest first; powers the `/scan` index. */
 export async function listManifests(): Promise<ScanManifest[]> {
   let entries: string[];
@@ -76,13 +86,14 @@ export async function listManifests(): Promise<ScanManifest[]> {
     throw error;
   }
 
-  const manifests = await Promise.all(entries.map(readManifest));
+  const manifests = await Promise.all(entries.map(readScanManifest));
   return manifests
     .filter((m): m is ScanManifest => m !== null)
     .sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
 }
 
-async function readManifest(companyKey: string): Promise<ScanManifest | null> {
+/** Read a company's lightweight manifest, or null when absent. */
+export async function readScanManifest(companyKey: string): Promise<ScanManifest | null> {
   try {
     const raw = await readFile(path.join(companyDir(companyKey), "manifest.json"), "utf8");
     return JSON.parse(raw) as ScanManifest;
@@ -90,6 +101,21 @@ async function readManifest(companyKey: string): Promise<ScanManifest | null> {
     if (isNotFound(error)) return null;
     throw error;
   }
+}
+
+/** Read a previously stored raw upload by slot (any extension), or null when absent. */
+export async function readUpload(companyKey: string, slot: UploadSlot): Promise<Buffer | null> {
+  const uploads = path.join(companyDir(companyKey), "uploads");
+  let files: string[];
+  try {
+    files = await readdir(uploads);
+  } catch (error) {
+    if (isNotFound(error)) return null;
+    throw error;
+  }
+  const match = files.find((f) => f === slot || f.startsWith(`${slot}.`));
+  if (!match) return null;
+  return readFile(path.join(uploads, match));
 }
 
 /** Persist a raw uploaded source file under a company's fixed slot, preserving extension. */

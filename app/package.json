@@ -11,7 +11,8 @@
     "db:studio": "drizzle-kit studio",
     "db:export": "bash scripts/db-export.sh",
     "db:import": "bash scripts/db-import.sh",
-    "scan:verify": "tsx scripts/scan-verify.ts"
+    "scan:verify": "tsx scripts/scan-verify.ts",
+    "benchmark:verify": "tsx scripts/benchmark-verify.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",

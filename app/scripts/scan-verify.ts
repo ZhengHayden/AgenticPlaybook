@@ -13,6 +13,7 @@ import path from "node:path";
 import { parseLaborRate, parseHeadcount } from "../src/lib/scan/parse-xlsx";
 import { parseAutomationMd } from "../src/lib/scan/parse-automation-md";
 import { computeScanModel } from "../src/lib/scan/compute-matrix";
+import { buildScanInputs, recomputeFromInputs } from "../src/lib/scan/inputs";
 
 const DATA_DIR = path.resolve(process.cwd(), "data");
 const LABOR_FILE = "Labor_rate.xlsx";
@@ -49,6 +50,7 @@ function main(): void {
     company: "Sample Co",
     companyKey: "sample-co",
     sector: "GEM (Global Energy & Materials)",
+    region: "North America",
   });
 
   // ---- Assertions -----------------------------------------------------------
@@ -75,6 +77,30 @@ function main(): void {
   assert(
     functionsWithLevels.length === model.functions.length,
     `every function has parsed breakdown rows (${functionsWithLevels.length}/${model.functions.length})`,
+  );
+
+  // ---- Round-trip: build editable inputs, recompute, reproduce the totals ---
+  // Guards the aggregate-and-recompute path the Edit Data panel relies on: the
+  // deduped/aggregated inputs must fold back into the same model totals.
+  const identity = { company: "Sample Co", companyKey: "sample-co", sector: model.sector, region: model.region };
+  const inputs = buildScanInputs(laborRows, hcRows, automation, identity);
+  const roundTrip = recomputeFromInputs(inputs, model.generatedAt);
+  const close = (a: number, b: number): boolean => Math.abs(a - b) <= Math.max(1, Math.abs(b)) * 1e-6;
+  assert(
+    close(roundTrip.totals.usdReleased, model.totals.usdReleased),
+    `round-trip USD released matches (${fmtUsd(roundTrip.totals.usdReleased)})`,
+  );
+  assert(
+    close(roundTrip.totals.fteReleased, model.totals.fteReleased),
+    `round-trip released FTE matches (${roundTrip.totals.fteReleased.toFixed(2)})`,
+  );
+  assert(
+    close(roundTrip.totals.baselineHc, model.totals.baselineHc),
+    `round-trip baseline HC matches (${roundTrip.totals.baselineHc.toFixed(2)})`,
+  );
+  assert(
+    roundTrip.cells.length === model.cells.length && roundTrip.functions.length === model.functions.length,
+    `round-trip grid shape matches (${roundTrip.cells.length} cells, ${roundTrip.functions.length} functions)`,
   );
 
   // ---- Top cells ------------------------------------------------------------
