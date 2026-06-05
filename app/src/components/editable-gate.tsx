@@ -59,21 +59,21 @@ export function EditableGate({ title, initialCriteria, defaults }: EditableGateP
         <h2 className="text-base font-semibold">{title}</h2>
         <button
           onClick={resetToDefaults}
-          className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 py-1 text-xs hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
         >
           <RotateCcw className="h-3.5 w-3.5" /> {locale === "en" ? "Reset to defaults" : "恢复默认"}
         </button>
       </div>
 
-      <ul className="space-y-2 rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <ul className="space-y-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         {criteria.map((c) => (
-          <li key={c.id} className="flex items-start gap-3 rounded-md p-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+          <li key={c.id} className="flex items-start gap-3 rounded-md p-2 hover:bg-slate-50 dark:hover:bg-slate-800/50">
             <button
               onClick={() => togglePass(c.id)}
               className={
                 c.passed
                   ? "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 border-emerald-500 bg-emerald-500 text-white"
-                  : "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 border-zinc-300 dark:border-zinc-600"
+                  : "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 border-slate-300 dark:border-slate-600"
               }
               aria-label="Toggle"
             >
@@ -85,7 +85,7 @@ export function EditableGate({ title, initialCriteria, defaults }: EditableGateP
                   <input
                     value={draftText}
                     onChange={(e) => setDraftText(e.target.value)}
-                    className="flex-1 rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="flex-1 rounded-md border border-slate-300 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === "Enter") saveEdit(c.id);
@@ -101,7 +101,7 @@ export function EditableGate({ title, initialCriteria, defaults }: EditableGateP
                 </div>
               ) : (
                 <>
-                  <p className={c.passed ? "text-sm text-zinc-500 line-through" : "text-sm"}>{c.text}</p>
+                  <p className={c.passed ? "text-sm text-slate-500 line-through" : "text-sm"}>{c.text}</p>
                   {c.evidence && <p className="mt-0.5 text-xs text-emerald-600 dark:text-emerald-400">↳ {c.evidence}</p>}
                 </>
               )}
@@ -110,14 +110,14 @@ export function EditableGate({ title, initialCriteria, defaults }: EditableGateP
               <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 hover:opacity-100">
                 <button
                   onClick={() => startEdit(c)}
-                  className="rounded p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-700"
+                  className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700"
                   aria-label="Edit"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => removeCriterion(c.id)}
-                  className="rounded p-1 text-zinc-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/40"
+                  className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/40"
                   aria-label="Delete"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -127,12 +127,12 @@ export function EditableGate({ title, initialCriteria, defaults }: EditableGateP
           </li>
         ))}
 
-        <li className="mt-2 flex gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+        <li className="mt-2 flex gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
           <input
             value={newText}
             onChange={(e) => setNewText(e.target.value)}
             placeholder={locale === "en" ? "Add a custom criterion…" : "添加自定义判定项…"}
-            className="flex-1 rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="flex-1 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-950"
             onKeyDown={(e) => e.key === "Enter" && addCriterion()}
           />
           <button
@@ -144,7 +144,7 @@ export function EditableGate({ title, initialCriteria, defaults }: EditableGateP
         </li>
       </ul>
 
-      <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="text-sm">
           <span className="font-mono">
             {passedCount} / {criteria.length}
@@ -155,8 +155,8 @@ export function EditableGate({ title, initialCriteria, defaults }: EditableGateP
           disabled={!allPass}
           className={
             allPass
-              ? "rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-              : "cursor-not-allowed rounded-md bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-500 dark:bg-zinc-800"
+              ? "rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+              : "cursor-not-allowed rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-500 dark:bg-slate-800"
           }
         >
           {locale === "en" ? "Mark Phase Complete" : "标记阶段完成"}

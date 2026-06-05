@@ -30,24 +30,24 @@ export function OverviewClient({ project }: OverviewClientProps) {
 
       <section>
         <h2 className="text-lg font-semibold tracking-tight">{t.project.progress}</h2>
-        <div className="mt-3 space-y-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="mt-3 space-y-2 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
           {phaseOrder.map((phase, idx) => {
             const progress = Math.round(project.phaseProgress[phase] * 100);
             const isLocked = idx > 1; // V0: only first two phases unlocked
             const href = phaseHref(phase);
             return (
               <div key={phase} className="flex items-center gap-4 text-sm">
-                <span className="w-6 shrink-0 text-zinc-400">{idx + 1}.</span>
+                <span className="w-6 shrink-0 text-slate-400">{idx + 1}.</span>
                 <span className="w-32 shrink-0">{t.phases[phase]}</span>
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                   <div
-                    className={isLocked ? "h-full bg-zinc-300 dark:bg-zinc-700" : "h-full bg-indigo-500"}
+                    className={isLocked ? "h-full bg-slate-300 dark:bg-slate-700" : "h-full bg-indigo-500"}
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <span className="w-12 shrink-0 text-right tabular-nums text-zinc-500">{progress}%</span>
+                <span className="w-12 shrink-0 text-right tabular-nums text-slate-500">{progress}%</span>
                 {isLocked ? (
-                  <span className="w-32 shrink-0 text-right text-xs text-zinc-400">{t.phases.deferred}</span>
+                  <span className="w-32 shrink-0 text-right text-xs text-slate-400">{t.phases.deferred}</span>
                 ) : href ? (
                   <Link
                     href={href}

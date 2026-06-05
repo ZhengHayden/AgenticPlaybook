@@ -58,12 +58,12 @@ const quadrantBadge: Record<QuadrantId | "failed", string> = {
   quickWin: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
   sponsorAlign: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
   investProve: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
-  deferMature: "bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
+  deferMature: "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
   failed: "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
 };
 
 const inputClass =
-  "mt-0.5 w-full rounded border border-zinc-200 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950";
+  "mt-0.5 w-full rounded border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950";
 
 function pickEdit(c: Candidate): CandidateEdit {
   return {
@@ -158,18 +158,18 @@ export function PortfolioView({ projectId, candidates }: PortfolioViewProps) {
     const eligible = isDesignEligible(edit);
     return (
       <Fragment key={c.id}>
-        <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
+        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
           <td className="px-3 py-3">
             <button
               type="button"
               onClick={() => setExpandedRow(expanded ? null : c.id)}
-              className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+              className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               aria-label={en ? "Toggle editor" : "切换编辑"}
             >
               {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </button>
           </td>
-          <td className="px-3 py-3 text-zinc-400">{index === null ? "—" : index + 1}</td>
+          <td className="px-3 py-3 text-slate-400">{index === null ? "—" : index + 1}</td>
           <td className="px-3 py-3 font-medium">{c.name}</td>
           <td className="px-3 py-3">
             {r.quadrant === "failed" || !effectiveQuadrant ? (
@@ -200,7 +200,7 @@ export function PortfolioView({ projectId, candidates }: PortfolioViewProps) {
           </td>
           <td className="px-3 py-3 text-right">
             {r.quadrant === "failed" ? (
-              <span className="text-zinc-400">—</span>
+              <span className="text-slate-400">—</span>
             ) : (
               <span className={passesFloor ? "font-mono text-emerald-700 dark:text-emerald-300" : "font-mono text-rose-700 dark:text-rose-300"}>
                 {r.priorityScore.toFixed(2)}
@@ -220,13 +220,13 @@ export function PortfolioView({ projectId, candidates }: PortfolioViewProps) {
                 )}
               </span>
             ) : (
-              <span className="text-xs text-zinc-400">{en ? "Not decided" : "未决定"}</span>
+              <span className="text-xs text-slate-400">{en ? "Not decided" : "未决定"}</span>
             )}
           </td>
           <td className="px-3 py-3 text-xs">{c.recommendation || "—"}</td>
         </tr>
         {expanded && (
-          <tr className="bg-zinc-50/60 dark:bg-zinc-950/40">
+          <tr className="bg-slate-50/60 dark:bg-slate-950/40">
             <td></td>
             <td colSpan={COLSPAN - 1} className="px-3 py-4">
               <CandidateEditor
@@ -257,13 +257,13 @@ export function PortfolioView({ projectId, candidates }: PortfolioViewProps) {
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+            className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
           >
             <Download className="h-4 w-4" /> PDF
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+            className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
           >
             <Download className="h-4 w-4" /> XLSX
           </button>
@@ -276,9 +276,9 @@ export function PortfolioView({ projectId, candidates }: PortfolioViewProps) {
         </p>
       )}
 
-      <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full min-w-[760px] text-sm">
-          <thead className="bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500 dark:bg-zinc-950">
+          <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
             <tr>
               <th className="w-8 px-3 py-2">
                 <span className="sr-only">{en ? "Expand" : "展开"}</span>
@@ -291,14 +291,14 @@ export function PortfolioView({ projectId, candidates }: PortfolioViewProps) {
               <th className="px-3 py-2 font-medium">{en ? "Recommendation" : "建议"}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
             {ranked.map((r, idx) => renderRow(r, idx))}
             {failed.map((r) => renderRow(r, null))}
           </tbody>
         </table>
       </div>
 
-      <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
         <h3 className="mb-3 text-sm font-semibold">{en ? "Priority bars" : "优先级条形图"}</h3>
         <div className="space-y-2">
           {ranked.map((r) => {
@@ -308,7 +308,7 @@ export function PortfolioView({ projectId, candidates }: PortfolioViewProps) {
             return (
               <div key={r.candidate.id} className="flex items-center gap-3 text-sm">
                 <span className="w-44 shrink-0 truncate">{r.candidate.name}</span>
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                   <div
                     className={passesFloor ? "h-full bg-emerald-500" : "h-full bg-rose-500"}
                     style={barStyle}
@@ -319,7 +319,7 @@ export function PortfolioView({ projectId, candidates }: PortfolioViewProps) {
             );
           })}
         </div>
-        <p className="mt-3 text-xs text-zinc-500">
+        <p className="mt-3 text-xs text-slate-500">
           {en
             ? `Bars in green clear the ${PRIORITY_FLOOR} Design-entry floor; bars in red do not.`
             : `绿色条形通过 ${PRIORITY_FLOOR} Design 进入门槛;红色未通过。`}
@@ -340,7 +340,7 @@ function CandidateEditor({ edit, onUpdate }: CandidateEditorProps) {
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
       <label className="block text-xs">
-        <span className="text-zinc-500">{en ? "Solution proposal" : "方案决策"}</span>
+        <span className="text-slate-500">{en ? "Solution proposal" : "方案决策"}</span>
         <select
           value={edit.solutionProposal ?? ""}
           onChange={(e) =>
@@ -357,7 +357,7 @@ function CandidateEditor({ edit, onUpdate }: CandidateEditorProps) {
         </select>
       </label>
       <label className="block text-xs">
-        <span className="text-zinc-500">{en ? "Business function" : "业务职能"}</span>
+        <span className="text-slate-500">{en ? "Business function" : "业务职能"}</span>
         <input
           value={edit.businessFunction ?? ""}
           onChange={(e) => onUpdate({ businessFunction: e.target.value || undefined })}
@@ -366,7 +366,7 @@ function CandidateEditor({ edit, onUpdate }: CandidateEditorProps) {
         />
       </label>
       <label className="block text-xs">
-        <span className="text-zinc-500">{en ? "Target completion" : "目标完成日期"}</span>
+        <span className="text-slate-500">{en ? "Target completion" : "目标完成日期"}</span>
         <input
           type="date"
           value={edit.targetCompletionDate ?? ""}
@@ -375,7 +375,7 @@ function CandidateEditor({ edit, onUpdate }: CandidateEditorProps) {
         />
       </label>
       <label className="block text-xs">
-        <span className="text-zinc-500">{en ? "Agent owner" : "智能体负责人"}</span>
+        <span className="text-slate-500">{en ? "Agent owner" : "智能体负责人"}</span>
         <input
           value={edit.agentOwner ?? ""}
           onChange={(e) => onUpdate({ agentOwner: e.target.value || undefined })}
@@ -384,7 +384,7 @@ function CandidateEditor({ edit, onUpdate }: CandidateEditorProps) {
         />
       </label>
       <label className="block text-xs">
-        <span className="text-zinc-500">{en ? "Process owner" : "流程负责人"}</span>
+        <span className="text-slate-500">{en ? "Process owner" : "流程负责人"}</span>
         <input
           value={edit.processOwner ?? ""}
           onChange={(e) => onUpdate({ processOwner: e.target.value || undefined })}

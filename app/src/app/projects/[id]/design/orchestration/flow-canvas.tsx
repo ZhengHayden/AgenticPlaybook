@@ -135,20 +135,20 @@ export function FlowCanvas({ steps, canvas, locale, onChange }: FlowCanvasProps)
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[11px] text-zinc-400">
+        <span className="text-[11px] text-slate-400">
           {en
             ? "Drag a node to move · drag its handle (▸) onto another node to connect"
             : "拖动节点移动 · 从节点手柄 (▸) 拖到另一节点建立连接"}
         </span>
         {unplaced.length > 0 && (
-          <label className="text-[11px] text-zinc-500">
+          <label className="text-[11px] text-slate-500">
             <span className="mr-1">{en ? "Add to canvas:" : "添加到画布:"}</span>
             <select
               value=""
               onChange={(e) => {
                 if (e.target.value) addNode(e.target.value);
               }}
-              className="rounded-md border border-zinc-200 bg-white px-1.5 py-0.5 text-xs dark:border-zinc-700 dark:bg-zinc-950"
+              className="rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-xs dark:border-slate-700 dark:bg-slate-950"
             >
               <option value="">{en ? "— select step —" : "— 选择步骤 —"}</option>
               {unplaced.map((s) => (
@@ -165,14 +165,14 @@ export function FlowCanvas({ steps, canvas, locale, onChange }: FlowCanvasProps)
         ref={containerRef}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
-        className="relative overflow-auto rounded-md border border-zinc-200 bg-[radial-gradient(circle,theme(colors.zinc.200)_1px,transparent_1px)] [background-size:16px_16px] dark:border-zinc-800 dark:bg-[radial-gradient(circle,theme(colors.zinc.800)_1px,transparent_1px)]"
+        className="relative overflow-auto rounded-md border border-slate-200 bg-[radial-gradient(circle,theme(colors.slate.200)_1px,transparent_1px)] [background-size:16px_16px] dark:border-slate-800 dark:bg-[radial-gradient(circle,theme(colors.slate.800)_1px,transparent_1px)]"
         style={{ height: CANVAS_H }}
       >
         <div className="relative" style={{ width, height }}>
           <svg className="pointer-events-none absolute inset-0" width={width} height={height}>
             <defs>
               <marker id="fc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M0,0 L10,5 L0,10 z" className="fill-zinc-400 dark:fill-zinc-500" />
+                <path d="M0,0 L10,5 L0,10 z" className="fill-slate-400 dark:fill-slate-500" />
               </marker>
             </defs>
             {canvas.edges.map((edge) => {
@@ -189,7 +189,7 @@ export function FlowCanvas({ steps, canvas, locale, onChange }: FlowCanvasProps)
                   x2={b.x}
                   y2={b.y}
                   markerEnd="url(#fc-arrow)"
-                  className="stroke-zinc-400 dark:stroke-zinc-500"
+                  className="stroke-slate-400 dark:stroke-slate-500"
                   strokeWidth={1.5}
                 />
               );
@@ -221,7 +221,7 @@ export function FlowCanvas({ steps, canvas, locale, onChange }: FlowCanvasProps)
                 type="button"
                 onClick={() => removeEdge(edge.id)}
                 style={{ left: mid.x - 8, top: mid.y - 8 }}
-                className="absolute flex h-4 w-4 items-center justify-center rounded-full border border-zinc-300 bg-white text-zinc-500 shadow-sm hover:border-rose-300 hover:text-rose-600 dark:border-zinc-600 dark:bg-zinc-900"
+                className="absolute flex h-4 w-4 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-500 shadow-sm hover:border-rose-300 hover:text-rose-600 dark:border-slate-600 dark:bg-slate-900"
                 title={en ? "Remove connection" : "删除连接"}
               >
                 <X className="h-2.5 w-2.5" />
@@ -241,10 +241,10 @@ export function FlowCanvas({ steps, canvas, locale, onChange }: FlowCanvasProps)
                 onPointerDown={(e) => startMove(e, node)}
                 style={{ left: node.x, top: node.y, width: NODE_W, height: NODE_H }}
                 className={cn(
-                  "absolute flex cursor-grab touch-none select-none flex-col justify-center rounded-lg border bg-white px-3 py-2 shadow-sm active:cursor-grabbing dark:bg-zinc-900",
+                  "absolute flex cursor-grab touch-none select-none flex-col justify-center rounded-lg border bg-white px-3 py-2 shadow-sm active:cursor-grabbing dark:bg-slate-900",
                   dragging
                     ? "border-indigo-400 ring-2 ring-indigo-200 dark:border-indigo-600 dark:ring-indigo-900"
-                    : "border-zinc-200 dark:border-zinc-700",
+                    : "border-slate-200 dark:border-slate-700",
                 )}
               >
                 <div className="flex items-center gap-1.5 text-xs font-medium">
@@ -253,7 +253,7 @@ export function FlowCanvas({ steps, canvas, locale, onChange }: FlowCanvasProps)
                     {step.name || (en ? "Untitled step" : "未命名步骤")}
                   </span>
                 </div>
-                <span className="mt-0.5 text-[10px] text-zinc-400">
+                <span className="mt-0.5 text-[10px] text-slate-400">
                   {en ? "Step" : "步骤"} {step.seq}
                 </span>
 
@@ -261,7 +261,7 @@ export function FlowCanvas({ steps, canvas, locale, onChange }: FlowCanvasProps)
                   type="button"
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={() => removeNode(node.stepId)}
-                  className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-zinc-300 bg-white text-zinc-500 shadow-sm hover:border-rose-300 hover:text-rose-600 dark:border-zinc-600 dark:bg-zinc-900"
+                  className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-500 shadow-sm hover:border-rose-300 hover:text-rose-600 dark:border-slate-600 dark:bg-slate-900"
                   title={en ? "Remove from canvas" : "从画布移除"}
                 >
                   <X className="h-3 w-3" />
@@ -270,7 +270,7 @@ export function FlowCanvas({ steps, canvas, locale, onChange }: FlowCanvasProps)
                 <button
                   type="button"
                   onPointerDown={(e) => startConnect(e, node)}
-                  className="absolute -right-2 top-1/2 flex h-4 w-4 -translate-y-1/2 cursor-crosshair items-center justify-center rounded-full border border-indigo-300 bg-white text-[9px] font-bold text-indigo-600 shadow-sm hover:bg-indigo-50 dark:border-indigo-700 dark:bg-zinc-900 dark:text-indigo-300"
+                  className="absolute -right-2 top-1/2 flex h-4 w-4 -translate-y-1/2 cursor-crosshair items-center justify-center rounded-full border border-indigo-300 bg-white text-[9px] font-bold text-indigo-600 shadow-sm hover:bg-indigo-50 dark:border-indigo-700 dark:bg-slate-900 dark:text-indigo-300"
                   title={en ? "Drag to connect" : "拖动以连接"}
                 >
                   ▸
@@ -281,7 +281,7 @@ export function FlowCanvas({ steps, canvas, locale, onChange }: FlowCanvasProps)
 
           {canvas.nodes.length === 0 && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-slate-400">
                 {en ? "No steps on the canvas. Add one above." : "画布上暂无步骤,请在上方添加。"}
               </span>
             </div>

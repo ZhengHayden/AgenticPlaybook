@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafafa;
-  --foreground: #18181b;
+  /* slate-50 base — paired with the slate gradient body in layout.tsx */
+  --background: #f8fafc;
+  --foreground: #0f172a;
 }
 
 @theme inline {
@@ -16,7 +17,55 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #09090b;
-    --foreground: #fafafa;
+    --background: #020617; /* slate-950 */
+    --foreground: #f8fafc;
   }
+}
+
+/* ---- Gameboard style foundation ---- */
+
+/* Slim, rounded scrollbars (light); softened for dark mode. */
+::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* slate-300 */
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* slate-400 */
+  background-clip: content-box;
+}
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background: #334155; /* slate-700 */
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #475569; /* slate-600 */
+    background-clip: content-box;
+  }
+}
+
+/* Heatmap selects (high/medium/low) get a custom chevron and no native UI,
+   so the LEVEL_HEAT background colors read cleanly. */
+select.heat {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23666'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.4rem center;
+  padding-right: 1.4rem;
+}
+
+/* Card hover lift — opt-in via the .card-lift class. */
+.card-lift {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -8px rgba(15, 23, 42, 0.25);
 }

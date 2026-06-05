@@ -20,7 +20,7 @@ const quadrantBadge: Record<QuadrantId, string> = {
   quickWin: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
   sponsorAlign: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
   investProve: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
-  deferMature: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300",
+  deferMature: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
 };
 
 const WORKFLOW_STATUSES: ReadonlyArray<WorkflowStatus> = [
@@ -121,7 +121,7 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
           <h2 className="text-lg font-semibold tracking-tight">
             {locale === "en" ? "Agentic Roadmap" : "智能体路线图"}
           </h2>
-          <p className="mt-0.5 text-xs text-zinc-500">
+          <p className="mt-0.5 text-xs text-slate-500">
             {locale === "en"
               ? "Workflows ranked by their origin candidate's Priority Score."
               : "按来源候选的优先级评分排序的工作流。"}
@@ -130,7 +130,7 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
         <button
           type="button"
           onClick={() => setShowAdd(true)}
-          className="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" /> {locale === "en" ? "Add workflow" : "添加工作流"}
         </button>
@@ -151,7 +151,7 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
             <button
               type="button"
               onClick={() => setShowAdd(true)}
-              className="shrink-0 rounded-md border border-emerald-300 bg-white px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-zinc-900 dark:text-emerald-300"
+              className="shrink-0 rounded-md border border-emerald-300 bg-white px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-slate-900 dark:text-emerald-300"
             >
               {locale === "en" ? "Promote to Design" : "提升到 Design"}
             </button>
@@ -165,7 +165,7 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
             {eligibleUnlinked.map((cand) => (
               <li
                 key={cand.id}
-                className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-white px-2 py-1 text-xs dark:border-emerald-900/50 dark:bg-zinc-900"
+                className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-white px-2 py-1 text-xs dark:border-emerald-900/50 dark:bg-slate-900"
               >
                 <span className="font-medium">{cand.name}</span>
                 {cand.solutionProposal && (
@@ -182,7 +182,7 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
       {ranked.length > 0 && (
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-[12rem]">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
             <input
               type="search"
               value={query}
@@ -192,14 +192,14 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
                   ? "Filter by name, function, or owner…"
                   : "按名称、职能或负责人筛选…"
               }
-              className="w-full rounded-md border border-zinc-200 bg-white py-1.5 pl-8 pr-3 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+              className="w-full rounded-md border border-slate-200 bg-white py-1.5 pl-8 pr-3 text-sm dark:border-slate-700 dark:bg-slate-950"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as "all" | WorkflowStatus)}
             aria-label={locale === "en" ? "Filter by status" : "按状态筛选"}
-            className="rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            className="rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-950"
           >
             <option value="all">{locale === "en" ? "All statuses" : "全部状态"}</option>
             {WORKFLOW_STATUSES.map((s) => (
@@ -208,7 +208,7 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
               </option>
             ))}
           </select>
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-slate-500">
             {locale === "en"
               ? `${filtered.length} of ${ranked.length}`
               : `${ranked.length} 个中 ${filtered.length} 个`}
@@ -217,111 +217,156 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
       )}
 
       {ranked.length === 0 ? (
-        <div className="mt-3 rounded-xl border border-dashed border-zinc-300 bg-white p-8 text-center dark:border-zinc-700 dark:bg-zinc-900">
-          <p className="text-sm text-zinc-500">
+        <div className="mt-3 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-900">
+          <p className="text-sm text-slate-500">
             {locale === "en"
               ? "No workflows yet. Promote a prioritized candidate or add a blank workflow to begin design."
               : "尚无工作流。提升一个已优先级排序的候选,或添加空白工作流以开始设计。"}
           </p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="mt-3 rounded-xl border border-dashed border-zinc-300 bg-white p-8 text-center dark:border-zinc-700 dark:bg-zinc-900">
-          <p className="text-sm text-zinc-500">
+        <div className="mt-3 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-900">
+          <p className="text-sm text-slate-500">
             {locale === "en" ? "No workflows match your filter." : "没有符合筛选条件的工作流。"}
           </p>
         </div>
       ) : (
-        <ul className="mt-3 space-y-2">
-          {filtered.map(({ workflow, rank, score }) => {
-            const quadrant = score ? quadrants.find((q) => q.id === score.quadrant) : undefined;
-            const c = assess(workflow);
-            const cand = workflow.candidateId ? candidateById.get(workflow.candidateId) : undefined;
-            return (
-              <li
-                key={workflow.id}
-                className="flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
-              >
-                <span className="w-6 shrink-0 text-center text-lg font-semibold tabular-nums text-zinc-400">
-                  {rank}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="truncate font-medium">{workflow.name}</span>
-                    {quadrant && (
-                      <span
-                        className={`shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold ${quadrantBadge[quadrant.id]}`}
-                      >
-                        {quadrant.shortName[locale]}
-                      </span>
-                    )}
-                    {!workflow.candidateId && (
-                      <span className="shrink-0 rounded-md bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500 dark:bg-zinc-800">
-                        {locale === "en" ? "Manual" : "手动"}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    <MetaChip label={locale === "en" ? "Function" : "职能"} value={cand?.businessFunction} />
-                    <MetaChip label={locale === "en" ? "Expected" : "预计完成"} value={cand?.targetCompletionDate} />
-                    <MetaChip label={locale === "en" ? "Agent owner" : "智能体负责人"} value={cand?.agentOwner} />
-                    <MetaChip label={locale === "en" ? "Process owner" : "流程负责人"} value={cand?.processOwner} />
-                  </div>
-                  <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-zinc-500">
-                    <span>
-                      {locale === "en" ? "Steps" : "步骤"}: {c.stepsDesigned}/{c.totalSteps}{" "}
-                      {locale === "en" ? "designed" : "已设计"}
-                    </span>
-                    <span>
-                      {locale === "en" ? "HITL" : "人工介入"}: {c.hitlCount}
-                    </span>
-                    <span>
-                      {locale === "en" ? "Orchestration" : "编排"}:{" "}
-                      {c.orchestrationSet ? (locale === "en" ? "set" : "已设置") : "—"}
-                    </span>
-                  </div>
-                  <label className="mt-2 inline-flex items-center gap-1.5 text-xs text-zinc-500">
-                    <span>{locale === "en" ? "Status" : "状态"}:</span>
-                    <select
-                      value={workflow.status ?? "notStarted"}
-                      onChange={(e) => onStatusChange(workflow, e.target.value as WorkflowStatus)}
-                      disabled={deleting}
-                      className="rounded border border-zinc-200 bg-white px-1.5 py-0.5 text-xs dark:border-zinc-700 dark:bg-zinc-950"
-                    >
-                      {WORKFLOW_STATUSES.map((s) => (
-                        <option key={s} value={s}>
-                          {statusLabel[s][locale]}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
-                <div className="shrink-0 text-right">
-                  <div className="text-xs text-zinc-400">{locale === "en" ? "Priority" : "优先级"}</div>
-                  <div className="tabular-nums text-lg font-semibold">
-                    {score ? score.priorityScore.toFixed(2) : "—"}
-                  </div>
-                </div>
-                <div className="flex shrink-0 items-center gap-2">
-                  <Link
-                    href={`/projects/${project.id}/design/workflow?w=${workflow.id}`}
-                    className="inline-flex items-center gap-1 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-indigo-400 dark:hover:bg-zinc-800"
+        <div className="mt-3 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <table className="w-full min-w-[900px] text-sm">
+            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
+              <tr>
+                <th className="w-8 px-3 py-2 font-medium">#</th>
+                <th className="px-3 py-2 font-medium">{locale === "en" ? "Function" : "职能"}</th>
+                <th className="px-3 py-2 font-medium">{locale === "en" ? "Workflow" : "工作流"}</th>
+                <th className="px-3 py-2 font-medium">{locale === "en" ? "Agent owner" : "智能体负责人"}</th>
+                <th className="px-3 py-2 font-medium">{locale === "en" ? "Process owner" : "流程负责人"}</th>
+                <th className="px-3 py-2 font-medium">{locale === "en" ? "Status" : "状态"}</th>
+                <th className="px-3 py-2 font-medium">{locale === "en" ? "Prioritization" : "优先级排序"}</th>
+                <th className="px-3 py-2 font-medium">
+                  <span className="sr-only">{locale === "en" ? "Actions" : "操作"}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              {filtered.map(({ workflow, rank, score }) => {
+                const quadrant = score ? quadrants.find((q) => q.id === score.quadrant) : undefined;
+                const c = assess(workflow);
+                const cand = workflow.candidateId
+                  ? candidateById.get(workflow.candidateId)
+                  : undefined;
+                return (
+                  <tr
+                    key={workflow.id}
+                    className="hover:bg-slate-50 dark:hover:bg-slate-800/40"
                   >
-                    {locale === "en" ? "Open in Design" : "进入设计"} <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => onDelete(workflow)}
-                    disabled={deleting && deletingId === workflow.id}
-                    aria-label={locale === "en" ? `Delete ${workflow.name}` : `删除 ${workflow.name}`}
-                    className="rounded-md border border-rose-200 bg-white p-1.5 text-rose-600 hover:bg-rose-50 disabled:opacity-40 dark:border-rose-900/50 dark:bg-zinc-900 dark:text-rose-400 dark:hover:bg-rose-950/30"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+                    <td className="px-3 py-3 text-center font-semibold tabular-nums text-slate-400">
+                      {rank}
+                    </td>
+                    <td className="px-3 py-3">
+                      {cand?.businessFunction ? (
+                        <span
+                          className="max-w-[10rem] truncate text-xs font-medium"
+                          title={cand.businessFunction}
+                        >
+                          {cand.businessFunction}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-slate-400">—</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{workflow.name}</span>
+                        {quadrant && (
+                          <span
+                            className={`shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold ${quadrantBadge[quadrant.id]}`}
+                          >
+                            {quadrant.shortName[locale]}
+                          </span>
+                        )}
+                        {!workflow.candidateId && (
+                          <span className="shrink-0 rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-800">
+                            {locale === "en" ? "Manual" : "手动"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-500">
+                        <span>
+                          {locale === "en" ? "Steps" : "步骤"}: {c.stepsDesigned}/{c.totalSteps}{" "}
+                          {locale === "en" ? "designed" : "已设计"}
+                        </span>
+                        <span>
+                          {locale === "en" ? "HITL" : "人工介入"}: {c.hitlCount}
+                        </span>
+                        <span>
+                          {locale === "en" ? "Orchestration" : "编排"}:{" "}
+                          {c.orchestrationSet ? (locale === "en" ? "set" : "已设置") : "—"}
+                        </span>
+                        <span>
+                          {locale === "en" ? "Expected" : "预计完成"}:{" "}
+                          {cand?.targetCompletionDate ?? "—"}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-3 py-3 text-xs text-slate-600 dark:text-slate-300">
+                      {cand?.agentOwner ?? "—"}
+                    </td>
+                    <td className="px-3 py-3 text-xs text-slate-600 dark:text-slate-300">
+                      {cand?.processOwner ?? "—"}
+                    </td>
+                    <td className="px-3 py-3">
+                      <label className="inline-flex items-center gap-1.5 text-xs text-slate-500">
+                        <span className="sr-only">{locale === "en" ? "Status" : "状态"}</span>
+                        <select
+                          value={workflow.status ?? "notStarted"}
+                          onChange={(e) =>
+                            onStatusChange(workflow, e.target.value as WorkflowStatus)
+                          }
+                          disabled={deleting}
+                          aria-label={locale === "en" ? "Status" : "状态"}
+                          className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-xs dark:border-slate-700 dark:bg-slate-950"
+                        >
+                          {WORKFLOW_STATUSES.map((s) => (
+                            <option key={s} value={s}>
+                              {statusLabel[s][locale]}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className="text-lg font-semibold tabular-nums">
+                        {score ? score.priorityScore.toFixed(2) : "—"}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/projects/${project.id}/design/workflow?w=${workflow.id}`}
+                          className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-indigo-400 dark:hover:bg-slate-800"
+                        >
+                          {locale === "en" ? "Open in Design" : "进入设计"}{" "}
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => onDelete(workflow)}
+                          disabled={deleting && deletingId === workflow.id}
+                          aria-label={
+                            locale === "en" ? `Delete ${workflow.name}` : `删除 ${workflow.name}`
+                          }
+                          className="rounded-md border border-rose-200 bg-white p-1.5 text-rose-600 hover:bg-rose-50 disabled:opacity-40 dark:border-rose-900/50 dark:bg-slate-900 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {showAdd && (
@@ -333,30 +378,5 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
         />
       )}
     </section>
-  );
-}
-
-interface MetaChipProps {
-  label: string;
-  value?: string;
-}
-
-/** A labeled metadata pill surfacing candidate ownership/timeline next to the workflow name. */
-function MetaChip({ label, value }: MetaChipProps) {
-  const has = Boolean(value && value.trim());
-  return (
-    <span
-      className={
-        "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs " +
-        (has
-          ? "border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800/60"
-          : "border-dashed border-zinc-200 bg-transparent dark:border-zinc-800")
-      }
-    >
-      <span className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">{label}</span>
-      <span className={has ? "font-medium text-zinc-700 dark:text-zinc-200" : "text-zinc-400"}>
-        {has ? value : "—"}
-      </span>
-    </span>
   );
 }

@@ -166,6 +166,12 @@ export interface Workflow {
   canvas?: WorkflowCanvas;
   /** Lifecycle status; feeds MVP/Production phase KPIs. */
   status?: WorkflowStatus;
+  /**
+   * Explicit 1-based roadmap order override. When any workflow in a project
+   * carries this, the Agentic Roadmap honors it instead of recomputing from the
+   * candidate rubric. Optional — most projects leave it unset.
+   */
+  priorityRank?: number;
 }
 
 export interface GateCriterion {

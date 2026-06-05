@@ -1,11 +1,21 @@
 "use client";
 
 import { createContext, useCallback, useContext, useSyncExternalStore } from "react";
-import { getDictionary, type Dictionary, type Locale } from "./i18n";
+import {
+  contentLocale,
+  getDictionary,
+  type Dictionary,
+  type Locale,
+  type SelectedLocale,
+} from "./i18n";
+import { TraditionalConverter } from "@/components/traditional-converter";
 
 type LocaleContextValue = {
+  /** Content locale ("en" | "zh") — drives dictionary lookup and `[locale]` indexing. */
   locale: Locale;
-  setLocale: (l: Locale) => void;
+  /** User-selected locale ("en" | "zh" | "zh-Hant") — drives the switcher UI. */
+  selected: SelectedLocale;
+  setLocale: (l: SelectedLocale) => void;
   t: Dictionary;
 };
 
@@ -22,10 +32,10 @@ const STORAGE_KEY = "awp.locale";
  */
 const listeners = new Set<() => void>();
 
-function readStoredLocale(): Locale {
+function readStoredLocale(): SelectedLocale {
   if (typeof window === "undefined") return "en";
   const stored = window.localStorage.getItem(STORAGE_KEY);
-  return stored === "en" || stored === "zh" ? stored : "en";
+  return stored === "en" || stored === "zh" || stored === "zh-Hant" ? stored : "en";
 }
 
 function subscribe(callback: () => void): () => void {
@@ -38,15 +48,27 @@ function subscribe(callback: () => void): () => void {
 }
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const locale = useSyncExternalStore<Locale>(subscribe, readStoredLocale, () => "en");
+  const selected = useSyncExternalStore<SelectedLocale>(subscribe, readStoredLocale, () => "en");
 
-  const setLocale = useCallback((l: Locale) => {
+  const setLocale = useCallback((l: SelectedLocale) => {
     if (typeof window !== "undefined") window.localStorage.setItem(STORAGE_KEY, l);
     listeners.forEach((cb) => cb());
   }, []);
 
-  const value: LocaleContextValue = { locale, setLocale, t: getDictionary(locale) };
-  return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
+  const locale = contentLocale(selected);
+  const value: LocaleContextValue = { locale, selected, setLocale, t: getDictionary(locale) };
+
+  // Key the content subtree on `selected` so switching to/from Traditional
+  // remounts it — the converter then runs on a clean Simplified DOM (and reverts
+  // cleanly when leaving Traditional). The converter itself stays unkeyed.
+  return (
+    <LocaleContext.Provider value={value}>
+      <TraditionalConverter active={selected === "zh-Hant"} />
+      <div key={selected} className="contents">
+        {children}
+      </div>
+    </LocaleContext.Provider>
+  );
 }
 
 export function useLocale() {

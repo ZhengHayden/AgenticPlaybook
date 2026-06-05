@@ -65,16 +65,16 @@ export function WorkflowBar({ projectId, workflows, candidates, variant }: Workf
     <div>
       <div className="flex items-baseline justify-between">
         <h1 className="text-xl font-semibold tracking-tight">{t.phases.design}</h1>
-        <span className="text-xs text-zinc-500">{variantNames[variant][locale]}</span>
+        <span className="text-xs text-slate-500">{variantNames[variant][locale]}</span>
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
-        <label className="text-xs text-zinc-500">{locale === "en" ? "Workflow" : "工作流"}</label>
+        <label className="text-xs text-slate-500">{locale === "en" ? "Workflow" : "工作流"}</label>
         <select
           value={selectedId ?? ""}
           onChange={(e) => onSelectWorkflow(e.target.value)}
           disabled={workflows.length === 0}
-          className="rounded-md border border-zinc-200 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+          className="rounded-md border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
         >
           {workflows.length === 0 && <option value="">{locale === "en" ? "No workflows" : "无工作流"}</option>}
           {workflows.map((w) => (
@@ -86,7 +86,7 @@ export function WorkflowBar({ projectId, workflows, candidates, variant }: Workf
         <button
           type="button"
           onClick={() => setShowAdd(true)}
-          className="inline-flex items-center gap-1 rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
         >
           <Plus className="h-3.5 w-3.5" /> {locale === "en" ? "Add workflow" : "添加工作流"}
         </button>
@@ -95,14 +95,14 @@ export function WorkflowBar({ projectId, workflows, candidates, variant }: Workf
             type="button"
             onClick={onDeleteWorkflow}
             aria-label={locale === "en" ? "Delete workflow" : "删除工作流"}
-            className="inline-flex items-center gap-1 rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-500 hover:text-rose-600 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:text-rose-400"
+            className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-500 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-900 dark:hover:text-rose-400"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
         )}
       </div>
 
-      <nav className="mt-2 flex flex-wrap gap-1 border-b border-zinc-200 dark:border-zinc-800">
+      <nav className="mt-2 flex flex-wrap gap-1 border-b border-slate-200 dark:border-slate-800">
         {TAB_KEYS.map((key) => {
           const href = `${base}/${key}`;
           const active = pathname.startsWith(href);
@@ -113,8 +113,8 @@ export function WorkflowBar({ projectId, workflows, candidates, variant }: Workf
               className={cn(
                 "border-b-2 px-3 py-1.5 text-sm font-medium transition-colors",
                 active
-                  ? "border-indigo-600 text-zinc-900 dark:text-zinc-50"
-                  : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100",
+                  ? "border-indigo-600 text-slate-900 dark:text-slate-50"
+                  : "border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-100",
               )}
             >
               {tabLabel(key)}

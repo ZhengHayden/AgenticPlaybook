@@ -1,5 +1,19 @@
 export type Locale = "en" | "zh";
 
+/**
+ * The locale the user selects in the UI. `zh-Hant` (Traditional Chinese) reuses
+ * the Simplified (`zh`) content dictionary — its characters are converted to
+ * Traditional at display time (see TraditionalConverter) rather than maintained
+ * as a separate dictionary. So `SelectedLocale` drives the switcher and storage,
+ * while {@link Locale} stays the *content* locale used for dictionary lookup.
+ */
+export type SelectedLocale = "en" | "zh" | "zh-Hant";
+
+/** Map a user-selected locale onto the content locale used for dictionaries. */
+export function contentLocale(selected: SelectedLocale): Locale {
+  return selected === "en" ? "en" : "zh";
+}
+
 export type Dictionary = {
   app: {
     name: string;

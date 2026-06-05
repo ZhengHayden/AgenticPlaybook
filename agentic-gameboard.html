@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agentic Transformation Gameboard</title>
+
+  <!-- No build, no backend. All deps from public CDNs; state lives in localStorage. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Traditional Chinese conversion (Simplified content -> Traditional at display time) -->
+  <script src="https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js"></script>
+  <style>
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Drag-and-drop feedback */
+    .chip-dragging { opacity: 0.35; transform: scale(0.97); }
+    .drop-active { box-shadow: inset 0 0 0 2px #6366f1; background-image: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(99,102,241,0.06)); }
+    .drop-armed { box-shadow: inset 0 0 0 1.5px rgba(99,102,241,0.35); }
+    .card-lift { transition: transform .12s ease, box-shadow .12s ease; }
+    .card-lift:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -8px rgba(15,23,42,.25); }
+    /* Thin, modern scrollbars */
+    ::-webkit-scrollbar { height: 10px; width: 10px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; border: 2px solid transparent; background-clip: content-box; }
+    select.heat { -webkit-appearance: none; appearance: none; background-position: right .4rem center; background-repeat: no-repeat; background-size: 0.7em; padding-right: 1.4rem;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23666'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E"); }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-slate-50 via-slate-50 to-slate-100 text-slate-900 min-h-screen">
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react">
+    const { useState, useEffect, useMemo, useRef } = React;
+
+    /* ============================================================
+     * Scoring model (pure, immutable)
+     * ============================================================ */
+    const LEVELS = ["high", "medium", "low"];
+    const LEVEL_SCORE = { high: 3, medium: 2, low: 1 };
+    const AUTOMATION_PCT = { high: 0.30, medium: 0.20, low: 0.10 };
+    const FEASIBILITY_GATE = 2;     // avg >= 2 enters the matrix
+    const FEASIBILITY_SPLIT = 2.5;  // within-matrix feasibility high/low boundary
+
+    // Quadrant ids double as roadmap phases. Order = roadmap priority.
+    const QUADRANTS = ["quickWin", "alignmentRequired", "designValidate", "defer"];
+
+    const impact = (w) => (Number(w.peopleImpacted) || 0) * AUTOMATION_PCT[w.automation];
+    const feasibility = (w) => (LEVEL_SCORE[w.dataDigital] + LEVEL_SCORE[w.standardization]) / 2;
+    const passes = (w) => feasibility(w) >= FEASIBILITY_GATE;
+
+    function medianImpactSplit(passing) {
+      const xs = passing.map(impact).sort((a, b) => a - b);
+      if (xs.length === 0) return 0;
+      const mid = Math.floor(xs.length / 2);
+      return xs.length % 2 ? xs[mid] : (xs[mid - 1] + xs[mid]) / 2;
+    }
+
+    function computedQuadrant(w, split) {
+      const hiImpact = impact(w) >= split;
+      const hiFeas = feasibility(w) >= FEASIBILITY_SPLIT;
+      if (hiImpact && hiFeas) return "quickWin";
+      if (hiImpact && !hiFeas) return "alignmentRequired";
+      if (!hiImpact && hiFeas) return "designValidate";
+      return "defer";
+    }
+
+    const effectiveQuadrant = (w, split) => w.override || computedQuadrant(w, split);
+
+    function rankWorkflows(workflows, split) {
+      const order = (q) => QUADRANTS.indexOf(q);
+      return [...workflows].sort((a, b) => {
+        const qa = order(effectiveQuadrant(a, split));
+        const qb = order(effectiveQuadrant(b, split));
+        if (qa !== qb) return qa - qb;
+        return impact(b) - impact(a);
+      });
+    }
+
+    /* ------------------------------------------------------------
+     * Stable process codes — e.g. R&D workflow #1 = "R1".
+     * Derived from function name initial (de-duplicated) + 1-based
+     * position within the function. Computed, never persisted.
+     * ------------------------------------------------------------ */
+    // Distinct color per function, cycled by position. Full class names so the
+    // Tailwind Play CDN JIT picks them up. White badge text on each.
+    const FN_PALETTE = [
+      "bg-indigo-600", "bg-emerald-600", "bg-amber-500", "bg-sky-600",
+      "bg-rose-500", "bg-violet-600", "bg-teal-600", "bg-orange-500",
+      "bg-fuchsia-600", "bg-cyan-600", "bg-lime-600", "bg-slate-600",
+    ];
+
+    function buildCodes(board) {
+      const used = new Set();
+      const fnCode = {};
+      const fnColor = {};
+      board.functions.forEach((f, idx) => {
+        const letters = (f.name || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+        const base = letters.charAt(0) || "X";
+        let code = base, k = 1;
+        while (used.has(code)) { code = base + (letters.charAt(k) || k); k++; }
+        used.add(code);
+        fnCode[f.id] = code;
+        fnColor[f.id] = FN_PALETTE[idx % FN_PALETTE.length];
+      });
+      const wfCode = {};
+      for (const f of board.functions) {
+        const members = board.workflows.filter((w) => w.functionId === f.id);
+        members.forEach((w, i) => { wfCode[w.id] = fnCode[f.id] + (i + 1); });
+      }
+      return { fnCode, wfCode, fnColor };
+    }
+
+    const LEVEL_HEAT = {
+      high: "bg-emerald-50 text-emerald-700 border-emerald-300",
+      medium: "bg-amber-50 text-amber-700 border-amber-300",
+      low: "bg-rose-50 text-rose-700 border-rose-300",
+    };
+
+    // Full class names (so the Tailwind Play CDN JIT picks them up).
+    const QUADRANT_STYLE = {
+      quickWin: {
+        tint: "bg-emerald-50/70 border-emerald-200", head: "text-emerald-700",
+        dot: "bg-emerald-500", badge: "bg-emerald-600", icon: "⚡",
+      },
+      alignmentRequired: {
+        tint: "bg-amber-50/70 border-amber-200", head: "text-amber-700",
+        dot: "bg-amber-500", badge: "bg-amber-500", icon: "⚖",
+      },
+      designValidate: {
+        tint: "bg-sky-50/70 border-sky-200", head: "text-sky-700",
+        dot: "bg-sky-500", badge: "bg-sky-600", icon: "✎",
+      },
+      defer: {
+        tint: "bg-slate-50 border-slate-200", head: "text-slate-600",
+        dot: "bg-slate-400", badge: "bg-slate-500", icon: "⏳",
+      },
+    };
+
+    /* ============================================================
+     * i18n  (content authored in en + zh-Hans; zh-Hant is converted at runtime)
+     * ============================================================ */
+    const STRINGS = {
+      en: {
+        appName: "Agentic Transformation Gameboard",
+        tagline: "Assess workflows, prioritize by impact & feasibility, release a roadmap.",
+        tabs: { gameboard: "Gameboard", prioritization: "Prioritization", roadmap: "Roadmap" },
+        dims: { peopleImpacted: "People Impacted", automation: "Automation Potential", standardization: "Standardization", dataDigital: "Data Digitalization" },
+        levels: { high: "High", medium: "Medium", low: "Low" },
+        kpi: { functions: "Functions", workflows: "Workflows", feasible: "Feasible", totalHc: "Total Headcount" },
+        gb: {
+          totalHc: "Total HC", addFunction: "Add Function", addWorkflow: "Add Workflow", function: "Function",
+          workflow: "Workflow", feasibility: "Feasibility", pass: "Pass", hold: "Hold",
+          remove: "Remove", newFunction: "New function", newWorkflow: "New workflow", impact: "Impact",
+          editName: "Rename", workflowsCount: "workflows", id: "ID",
+          hint: "The last three dimensions are scored High / Medium / Low. Feasibility = avg(Data, Standardization).",
+        },
+        pr: {
+          title: "Prioritization Matrix", impactAxis: "Impact", feasAxis: "Feasibility",
+          high: "High", low: "Low", drag: "Drag a card to another quadrant to override its placement.",
+          notFeasible: "Not yet feasible", reason: "feasibility avg below gate", auto: "auto", resetTip: "Reset to computed placement",
+          empty: "No workflows have passed feasibility yet.", dropHere: "Drop here", cards: "cards",
+        },
+        rm: {
+          title: "Roadmap", phase: "Phase", agentOwner: "Agent Owner", processOwner: "Process Owner",
+          sponsor: "Sponsor", include: "Include", export: "Export JSON", import: "Import JSON",
+          rank: "#", id: "ID", workflow: "Workflow", function: "Function", impact: "Impact", empty: "No feasible workflows to release.",
+          unassigned: "—",
+        },
+        quadrants: { quickWin: "Quick Win", alignmentRequired: "Alignment Required", designValidate: "Design & Validate", defer: "Defer / Mature" },
+        common: { reset: "Reset demo data", confirmReset: "Reset to seed data? This clears your saved board.", save: "Save", saved: "Saved ✓" },
+      },
+      zh: {
+        appName: "智能体转型推演盘",
+        tagline: "评估工作流，按影响与可行性排定优先级，发布路线图。",
+        tabs: { gameboard: "推演盘", prioritization: "优先级矩阵", roadmap: "路线图" },
+        dims: { peopleImpacted: "影响人数", automation: "自动化潜力", standardization: "标准化", dataDigital: "数据数字化" },
+        levels: { high: "高", medium: "中", low: "低" },
+        kpi: { functions: "职能", workflows: "工作流", feasible: "可行", totalHc: "总人数" },
+        gb: {
+          totalHc: "总人数", addFunction: "新增职能", addWorkflow: "新增工作流", function: "职能",
+          workflow: "工作流", feasibility: "可行性", pass: "通过", hold: "暂缓",
+          remove: "删除", newFunction: "新职能", newWorkflow: "新工作流", impact: "影响",
+          editName: "重命名", workflowsCount: "个工作流", id: "编号",
+          hint: "后三个维度按 高 / 中 / 低 评分。可行性 = (数据 + 标准化) 均值。",
+        },
+        pr: {
+          title: "优先级矩阵", impactAxis: "影响", feasAxis: "可行性",
+          high: "高", low: "低", drag: "将卡片拖到其他象限可手动覆盖其位置。",
+          notFeasible: "暂不可行", reason: "可行性均值低于门槛", auto: "自动", resetTip: "恢复为自动计算的位置",
+          empty: "暂无通过可行性的工作流。", dropHere: "拖放到此", cards: "张卡片",
+        },
+        rm: {
+          title: "路线图", phase: "阶段", agentOwner: "智能体负责人", processOwner: "流程负责人",
+          sponsor: "发起人", include: "纳入", export: "导出 JSON", import: "导入 JSON",
+          rank: "#", id: "编号", workflow: "工作流", function: "职能", impact: "影响", empty: "暂无可发布的可行工作流。",
+          unassigned: "—",
+        },
+        quadrants: { quickWin: "速赢", alignmentRequired: "需对齐", designValidate: "设计与验证", defer: "暂缓 / 培育" },
+        common: { reset: "重置示例数据", confirmReset: "重置为示例数据？这将清除已保存的看板。", save: "保存", saved: "已保存 ✓" },
+      },
+    };
+
+    const contentLocale = (sel) => (sel === "en" ? "en" : "zh");
+
+    /* ============================================================
+     * Traditional Chinese converter (DOM-level, cn -> tw)
+     * ============================================================ */
+    const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "TEXTAREA", "INPUT", "CODE", "PRE", "NOSCRIPT"]);
+    const TEXT_ATTRS = ["placeholder", "title", "aria-label"];
+    const NO_CONVERT = "data-no-convert";
+
+    function shouldSkip(node) {
+      let el = node;
+      while (el) {
+        if (el.nodeType === Node.ELEMENT_NODE) {
+          if (SKIP_TAGS.has(el.tagName)) return true;
+          if (el.hasAttribute(NO_CONVERT)) return true;
+        }
+        el = el.parentNode;
+      }
+      return false;
+    }
+
+    function TraditionalConverter({ active }) {
+      useEffect(() => {
+        if (!active || typeof window === "undefined" || !window.OpenCC) return;
+        const convert = window.OpenCC.Converter({ from: "cn", to: "tw" });
+        let observer;
+
+        const convText = (n) => {
+          const o = n.nodeValue;
+          if (!o || !o.trim() || shouldSkip(n)) return;
+          const nx = convert(o);
+          if (nx !== o) n.nodeValue = nx;
+        };
+        const convAttrs = (el) => {
+          if (shouldSkip(el)) return;
+          for (const a of TEXT_ATTRS) {
+            const v = el.getAttribute(a);
+            if (!v || !v.trim()) continue;
+            const nx = convert(v);
+            if (nx !== v) el.setAttribute(a, nx);
+          }
+        };
+        const walk = (root) => {
+          if (root.nodeType === Node.TEXT_NODE) return convText(root);
+          if (root.nodeType !== Node.ELEMENT_NODE) return;
+          convAttrs(root);
+          const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+          const texts = [];
+          while (tw.nextNode()) texts.push(tw.currentNode);
+          texts.forEach(convText);
+          root.querySelectorAll(TEXT_ATTRS.map((a) => `[${a}]`).join(",")).forEach(convAttrs);
+        };
+        const reconnect = () => observer.observe(document.body, {
+          subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: TEXT_ATTRS,
+        });
+        const run = (muts) => {
+          observer.disconnect();
+          for (const m of muts) {
+            if (m.type === "characterData" && m.target.nodeType === Node.TEXT_NODE) convText(m.target);
+            else if (m.type === "attributes" && m.target.nodeType === Node.ELEMENT_NODE) convAttrs(m.target);
+            else m.addedNodes.forEach(walk);
+          }
+          reconnect();
+        };
+
+        walk(document.body);
+        observer = new MutationObserver(run);
+        reconnect();
+        return () => observer && observer.disconnect();
+      }, [active]);
+      return null;
+    }
+
+    /* ============================================================
+     * Store (localStorage) + seed
+     * ============================================================ */
+    const STORAGE_KEY = "awp.gameboard.v2"; // v2: seeded with the real /elt NEXT board
+    const LOCALE_KEY = "awp.locale";
+
+    let _idn = 0;
+    const newId = (p) => p + Date.now().toString(36) + (_idn++).toString(36);
+
+    const wf = (functionId, name, peopleImpacted, automation, standardization, dataDigital, agenticRatio) => ({
+      id: newId("w"), functionId, name, peopleImpacted, automation, standardization, dataDigital,
+      agenticRatio, override: null, includeOnRoadmap: true, agentOwner: "", processOwner: "", sponsor: "",
+    });
+
+    // Seed = the real "/elt" board for NEXT: functions, baseline HC per function
+    // (from the Opportunity Scan model), and workflows per function with their
+    // people-impacted counts. The old board never filled the readiness dims, so
+    // the 3 High/Medium/Low levels default to Medium for the user to tune.
+    function seedBoard() {
+      const F = [
+        { name: "R&D", totalHc: 5711, rows: [
+          ["ECN/ECO Processing", 0, {"override": "quickWin", "agentOwner": "Ivon", "processOwner": "Ivon"}],
+          ["BOM Creation & EBOM-MBOM Conversion", 25],
+          ["DFM/DFA Review & Report Generation", 20],
+          ["Test Report & Qualification Documentation", 15],
+          ["Component Selection & AVL Cross-Reference", 15],
+          ["Simulation Setup & Analysis Reporting", 8],
+          ["Prototype Build Coordination", 12],
+          ["Patent & IP Disclosure Drafting", 10],
+        ] },
+        { name: "Procurement", totalHc: 460, rows: [
+          ["RFQ Package Preparation & Bid Analysis", 15],
+          ["PO Creation from MRP & Exception Handling", 18],
+          ["Supplier Scorecard & QBR Preparation", 10],
+          ["3-Way Match & Invoice Reconciliation", 20],
+          ["Should-Cost Modeling & BOM Cost Build-up", 8],
+          ["Component EOL & Shortage Management", 12],
+          ["Supplier Risk Monitoring", 6],
+        ] },
+        { name: "Manufacturing", totalHc: 3614, rows: [
+          ["Production Scheduling & Line Allocation", 10],
+          ["MRP Exception Management", 8],
+          ["SOP & Work Instruction Authoring", 12],
+          ["Yield Analysis & Failure Pareto", 10],
+          ["OEE Tracking & Loss Attribution", 10],
+          ["Trial Run (T0/T1/T2) Issue Tracking & Resolution", 15],
+          ["Shift Handover & Production Status Reporting", 30],
+          ["Process FMEA Maintenance", 8],
+        ] },
+        { name: "Sales", totalHc: 213, rows: [
+          ["Customer RFQ Response & Quotation Build-Up", 10],
+          ["Customer Forecast Alignment & Gap Analysis", 10],
+          ["QBR Deck & Business Review Preparation", 12],
+          ["Order Change Impact Analysis", 12],
+          ["Win/Loss Analysis & Competitive Intelligence", 5],
+          ["Customer Credit & Contract Compliance Monitoring", 6],
+        ] },
+        { name: "Finance & Accounting", totalHc: 100, rows: [
+          ["Month-End Close & Accruals", 12],
+          ["3-Way Match & AP Processing", 15],
+          ["Standard Cost Roll-Up & Variance Analysis", 8],
+          ["Revenue Forecast & Rolling Budget", 10],
+          ["Management Deck & KPI Dashboard Preparation", 8],
+          ["Customer Profitability Analysis", 8],
+          ["CAPEX Evaluation & Tracking", 10],
+          ["Cash Flow Forecasting & Working Capital Optimization", 8],
+        ] },
+        { name: "HR", totalHc: 149, rows: [
+          ["Resume Screening & Candidate Shortlisting", 15],
+          ["Payroll Processing & Statutory Compliance", 5],
+          ["Training Needs Analysis & Compliance Tracking", 12],
+          ["Onboarding Program Execution", 10],
+          ["HR Reporting & People Analytics", 6],
+          ["Attrition Analysis & Retention Action Planning", 5],
+        ] },
+      ];
+      const functions = [];
+      const workflows = [];
+      for (const f of F) {
+        const fid = newId("f");
+        functions.push({ id: fid, name: f.name, totalHc: f.totalHc });
+        for (const [name, people, extra] of f.rows) {
+          workflows.push({
+            id: newId("w"), functionId: fid, name, peopleImpacted: people,
+            automation: "medium", standardization: "medium", dataDigital: "medium",
+            agenticRatio: 30, override: (extra && extra.override) || null, includeOnRoadmap: true,
+            agentOwner: (extra && extra.agentOwner) || "", processOwner: (extra && extra.processOwner) || "", sponsor: "",
+          });
+        }
+      }
+      return { functions, workflows };
+    }
+
+    function loadBoard() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return seedBoard();
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.functions) && Array.isArray(parsed.workflows)) return parsed;
+      } catch (e) { /* fall through to seed */ }
+      return seedBoard();
+    }
+
+    /* ============================================================
+     * Small UI helpers
+     * ============================================================ */
+    function IdBadge({ children, bg = "bg-indigo-600", className = "" }) {
+      return (
+        <span className={"inline-flex items-center justify-center rounded-md px-1.5 py-0.5 text-[11px] font-bold leading-none tracking-wide tabular-nums text-white shadow-sm " + bg + " " + className}>
+          {children}
+        </span>
+      );
+    }
+
+    function LevelSelect({ value, onChange, t }) {
+      return (
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={"heat rounded-md border px-2 py-1 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-300 " + LEVEL_HEAT[value]}
+        >
+          {LEVELS.map((l) => (
+            <option key={l} value={l}>{t.levels[l]}</option>
+          ))}
+        </select>
+      );
+    }
+
+    function Badge({ ok, children }) {
+      const cls = ok
+        ? "bg-emerald-100 text-emerald-700 border-emerald-300"
+        : "bg-slate-100 text-slate-500 border-slate-300";
+      return <span className={"inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold " + cls}>{children}</span>;
+    }
+
+    function StatCard({ label, value, accent }) {
+      return (
+        <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+          <span className={"h-9 w-1.5 rounded-full " + accent}></span>
+          <div>
+            <div className="text-xl font-bold leading-none tabular-nums text-slate-800">{value}</div>
+            <div className="mt-1 text-xs font-medium text-slate-400">{label}</div>
+          </div>
+        </div>
+      );
+    }
+
+    // Explicit "store updated data" control. The board also auto-persists on
+    // every edit; this button gives a confident manual save + visible feedback.
+    function SaveButton({ board, t }) {
+      const [saved, setSaved] = useState(false);
+      const timer = useRef(null);
+      useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+      const save = () => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(board));
+        setSaved(true);
+        if (timer.current) clearTimeout(timer.current);
+        timer.current = setTimeout(() => setSaved(false), 1800);
+      };
+      return (
+        <button type="button" onClick={save}
+          className={"shrink-0 rounded-lg px-3.5 py-2 text-sm font-semibold shadow-sm transition " +
+            (saved ? "bg-emerald-600 text-white" : "bg-slate-800 text-white hover:bg-slate-700")}>
+          {saved ? t.common.saved : "↓ " + t.common.save}
+        </button>
+      );
+    }
+
+    /* ============================================================
+     * Gameboard tab
+     * ============================================================ */
+    function Gameboard({ board, setBoard, codes, t }) {
+      const [collapsed, setCollapsed] = useState({});
+
+      const updateWorkflow = (id, patch) =>
+        setBoard((b) => ({ ...b, workflows: b.workflows.map((w) => (w.id === id ? { ...w, ...patch } : w)) }));
+      const removeWorkflow = (id) =>
+        setBoard((b) => ({ ...b, workflows: b.workflows.filter((w) => w.id !== id) }));
+      const addWorkflow = (functionId) =>
+        setBoard((b) => ({ ...b, workflows: [...b.workflows, wf(functionId, t.gb.newWorkflow, 1, "medium", "medium", "medium", 20)] }));
+      const updateFunction = (id, patch) =>
+        setBoard((b) => ({ ...b, functions: b.functions.map((f) => (f.id === id ? { ...f, ...patch } : f)) }));
+      const removeFunction = (id) =>
+        setBoard((b) => ({ ...b, functions: b.functions.filter((f) => f.id !== id), workflows: b.workflows.filter((w) => w.functionId !== id) }));
+      const addFunction = () =>
+        setBoard((b) => ({ ...b, functions: [...b.functions, { id: newId("f"), name: t.gb.newFunction, totalHc: null }] }));
+
+      const hcFor = (fn, members) =>
+        fn.totalHc != null && fn.totalHc !== "" ? Number(fn.totalHc) : members.reduce((s, w) => s + (Number(w.peopleImpacted) || 0), 0);
+
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm text-slate-500">{t.gb.hint}</p>
+            <div className="flex shrink-0 items-center gap-2">
+              <button type="button" onClick={addFunction}
+                className="rounded-lg bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 hover:shadow">
+                + {t.gb.addFunction}
+              </button>
+              <SaveButton board={board} t={t} />
+            </div>
+          </div>
+
+          {board.functions.map((fn) => {
+            const members = board.workflows.filter((w) => w.functionId === fn.id);
+            const isCollapsed = !!collapsed[fn.id];
+            return (
+              <div key={fn.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div className="flex items-center gap-3 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white px-4 py-3">
+                  <button type="button" onClick={() => setCollapsed((c) => ({ ...c, [fn.id]: !c[fn.id] }))}
+                    className="flex h-6 w-6 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700">
+                    <span className={"inline-block text-[10px] transition-transform " + (isCollapsed ? "" : "rotate-90")}>▶</span>
+                  </button>
+                  <IdBadge bg={codes.fnColor[fn.id]}>{codes.fnCode[fn.id]}</IdBadge>
+                  <input
+                    value={fn.name}
+                    onChange={(e) => updateFunction(fn.id, { name: e.target.value })}
+                    className="min-w-0 flex-1 bg-transparent text-sm font-semibold text-slate-800 focus:outline-none"
+                    title={t.gb.editName}
+                  />
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">{members.length} {t.gb.workflowsCount}</span>
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs font-medium text-slate-400">{t.gb.totalHc}</label>
+                    <input
+                      type="number" min="0"
+                      value={fn.totalHc == null ? "" : fn.totalHc}
+                      placeholder={String(hcFor(fn, members))}
+                      onChange={(e) => updateFunction(fn.id, { totalHc: e.target.value === "" ? null : Number(e.target.value) })}
+                      className="w-24 rounded-md border border-slate-300 px-2 py-1 text-right text-xs tabular-nums focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                    />
+                    <button type="button" onClick={() => removeFunction(fn.id)}
+                      className="rounded-md px-2 py-1 text-xs text-rose-400 transition hover:bg-rose-50 hover:text-rose-600" title={t.gb.remove}>✕</button>
+                  </div>
+                </div>
+
+                {!isCollapsed && (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-100 bg-slate-50/60 text-left text-[11px] uppercase tracking-wide text-slate-400">
+                          <th className="px-3 py-2 font-semibold">{t.gb.id}</th>
+                          <th className="px-2 py-2 font-semibold">{t.gb.workflow}</th>
+                          <th className="px-2 py-2 font-semibold">{t.dims.peopleImpacted}</th>
+                          <th className="px-2 py-2 font-semibold">{t.dims.standardization}</th>
+                          <th className="px-2 py-2 font-semibold">{t.dims.dataDigital}</th>
+                          <th className="px-2 py-2 font-semibold">{t.dims.automation}</th>
+                          <th className="px-2 py-2 font-semibold">{t.gb.feasibility}</th>
+                          <th className="px-2 py-2"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {members.map((w) => (
+                          <tr key={w.id} className="border-b border-slate-50 transition-colors last:border-0 hover:bg-indigo-50/30">
+                            <td className="px-3 py-2"><IdBadge bg={codes.fnColor[w.functionId]}>{codes.wfCode[w.id]}</IdBadge></td>
+                            <td className="px-2 py-2">
+                              <input value={w.name} onChange={(e) => updateWorkflow(w.id, { name: e.target.value })}
+                                className="w-52 rounded bg-transparent px-1 py-0.5 font-medium text-slate-700 focus:bg-slate-50 focus:outline-none" />
+                            </td>
+                            <td className="px-2 py-2">
+                              <input type="number" min="0" value={w.peopleImpacted}
+                                onChange={(e) => updateWorkflow(w.id, { peopleImpacted: Number(e.target.value) })}
+                                className="w-16 rounded-md border border-slate-300 px-2 py-1 text-right tabular-nums focus:outline-none focus:ring-2 focus:ring-indigo-300" />
+                            </td>
+                            <td className="px-2 py-2"><LevelSelect value={w.standardization} onChange={(v) => updateWorkflow(w.id, { standardization: v })} t={t} /></td>
+                            <td className="px-2 py-2"><LevelSelect value={w.dataDigital} onChange={(v) => updateWorkflow(w.id, { dataDigital: v })} t={t} /></td>
+                            <td className="px-2 py-2"><LevelSelect value={w.automation} onChange={(v) => updateWorkflow(w.id, { automation: v })} t={t} /></td>
+                            <td className="px-2 py-2">
+                              <div className="flex items-center gap-2">
+                                <span className="tabular-nums font-medium text-slate-600">{feasibility(w).toFixed(1)}</span>
+                                <Badge ok={passes(w)}>{passes(w) ? t.gb.pass : t.gb.hold}</Badge>
+                              </div>
+                            </td>
+                            <td className="px-2 py-2 text-right">
+                              <button type="button" onClick={() => removeWorkflow(w.id)}
+                                className="rounded-md px-2 py-1 text-xs text-rose-400 transition hover:bg-rose-50 hover:text-rose-600" title={t.gb.remove}>✕</button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <div className="px-4 py-2.5">
+                      <button type="button" onClick={() => addWorkflow(fn.id)}
+                        className="rounded-lg border border-dashed border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-500 transition hover:border-indigo-400 hover:bg-indigo-50/50 hover:text-indigo-600">
+                        + {t.gb.addWorkflow}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    /* ============================================================
+     * Prioritization 2x2 matrix
+     * ============================================================ */
+    // grid layout (row-major): top row = high impact, columns: low feas (left) / high feas (right)
+    const GRID = [
+      ["alignmentRequired", "quickWin"],
+      ["defer", "designValidate"],
+    ];
+
+    function MatrixCard({ w, codes, fnName, dragId, setDragId, setOverQ, setOverride, t }) {
+      return (
+        <div
+          draggable
+          onDragStart={(e) => { setDragId(w.id); e.dataTransfer.effectAllowed = "move"; }}
+          onDragEnd={() => { setDragId(null); setOverQ(null); }}
+          className={"card-lift group flex cursor-grab items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 shadow-sm active:cursor-grabbing " + (dragId === w.id ? "chip-dragging " : "")}
+        >
+          <span className="select-none text-slate-300 transition-colors group-hover:text-slate-400" title="Drag">⠿</span>
+          <IdBadge bg={codes.fnColor[w.functionId]}>{codes.wfCode[w.id]}</IdBadge>
+          <div className="min-w-0">
+            <div className="truncate text-xs font-semibold text-slate-700">{w.name}</div>
+            <div className="truncate text-[10px] text-slate-400">{fnName(w.functionId)} · {t.rm.impact} {impact(w).toFixed(1)}</div>
+          </div>
+          {w.override && (
+            <button type="button" title={t.pr.resetTip}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={() => setOverride(w.id, null)}
+              className="ml-auto shrink-0 rounded bg-indigo-50 px-1.5 py-0.5 text-[10px] font-medium text-indigo-500 transition hover:bg-indigo-100">↺ {t.pr.auto}</button>
+          )}
+        </div>
+      );
+    }
+
+    function Matrix2x2({ board, setBoard, codes, t }) {
+      const [dragId, setDragId] = useState(null);
+      const [overQ, setOverQ] = useState(null);
+
+      const passing = board.workflows.filter(passes);
+      const split = medianImpactSplit(passing);
+      const blocked = board.workflows.filter((w) => !passes(w));
+      const fnName = (id) => (board.functions.find((f) => f.id === id) || {}).name || "";
+
+      const setOverride = (id, q) => setBoard((b) => ({ ...b, workflows: b.workflows.map((w) => (w.id === id ? { ...w, override: q } : w)) }));
+      const onDrop = (q) => { if (dragId) setOverride(dragId, q); setDragId(null); setOverQ(null); };
+      const cardsFor = (q) => passing.filter((w) => effectiveQuadrant(w, split) === q);
+
+      return (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-slate-500">{t.pr.drag}</p>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                {QUADRANTS.map((q) => (
+                  <span key={q} className="inline-flex items-center gap-1.5">
+                    <span className={"h-2.5 w-2.5 rounded-full " + QUADRANT_STYLE[q].dot}></span>{t.quadrants[q]}
+                  </span>
+                ))}
+              </div>
+              <SaveButton board={board} t={t} />
+            </div>
+          </div>
+
+          {passing.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-400">{t.pr.empty}</div>
+          ) : (
+            <div className="flex gap-3">
+              {/* Y axis */}
+              <div className="flex w-7 flex-col items-center justify-center">
+                <span className="whitespace-nowrap text-xs font-semibold uppercase tracking-widest text-slate-400 [writing-mode:vertical-rl] rotate-180">▲ {t.pr.impactAxis}</span>
+              </div>
+
+              <div className="flex-1">
+                <div className="grid grid-cols-2 gap-3 rounded-2xl bg-slate-100/60 p-3">
+                  {GRID.map((row, ri) =>
+                    row.map((q, ci) => {
+                      const st = QUADRANT_STYLE[q];
+                      const cards = cardsFor(q);
+                      return (
+                        <div
+                          key={q}
+                          onDragOver={(e) => { e.preventDefault(); setOverQ(q); }}
+                          onDragLeave={() => setOverQ((cur) => (cur === q ? null : cur))}
+                          onDrop={() => onDrop(q)}
+                          className={"relative min-h-[190px] rounded-xl border p-3 transition " + st.tint
+                            + (overQ === q ? " drop-active" : (dragId ? " drop-armed" : ""))}
+                        >
+                          <div className="mb-2.5 flex items-center justify-between">
+                            <span className={"flex items-center gap-1.5 text-sm font-bold " + st.head}>
+                              <span aria-hidden="true">{st.icon}</span>{t.quadrants[q]}
+                            </span>
+                            <span className="rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-medium text-slate-400">
+                              {(ri === 0 ? t.pr.high : t.pr.low)} {t.pr.impactAxis} · {(ci === 1 ? t.pr.high : t.pr.low)} {t.pr.feasAxis}
+                            </span>
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            {cards.map((w) => (
+                              <MatrixCard key={w.id} w={w} codes={codes} fnName={fnName}
+                                dragId={dragId} setDragId={setDragId} setOverQ={setOverQ} setOverride={setOverride} t={t} />
+                            ))}
+                          </div>
+                          {overQ === q && (
+                            <div className="pointer-events-none mt-2 rounded-lg border-2 border-dashed border-indigo-300 py-2 text-center text-[11px] font-medium text-indigo-400">{t.pr.dropHere}</div>
+                          )}
+                          {cards.length === 0 && overQ !== q && (
+                            <div className="pointer-events-none absolute inset-x-3 bottom-3 text-[10px] text-slate-300">0 {t.pr.cards}</div>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+                {/* X axis */}
+                <div className="mt-2 text-center text-xs font-semibold uppercase tracking-widest text-slate-400">{t.pr.feasAxis} ▶</div>
+              </div>
+            </div>
+          )}
+
+          {blocked.length > 0 && (
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <h3 className="mb-2.5 flex items-center gap-2 text-sm font-bold text-slate-700">
+                <span className="h-2 w-2 rounded-full bg-rose-400"></span>{t.pr.notFeasible}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {blocked.map((w) => (
+                  <span key={w.id} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs">
+                    <IdBadge bg={codes.fnColor[w.functionId]}>{codes.wfCode[w.id]}</IdBadge>
+                    <span className="font-medium text-slate-600">{w.name}</span>
+                    <span className="text-slate-400">— {feasibility(w).toFixed(1)} &lt; {FEASIBILITY_GATE}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ============================================================
+     * Roadmap tab
+     * ============================================================ */
+    function Roadmap({ board, setBoard, codes, t }) {
+      const passing = board.workflows.filter(passes);
+      const split = medianImpactSplit(passing);
+      const ranked = rankWorkflows(passing, split);
+      const fnName = (id) => (board.functions.find((f) => f.id === id) || {}).name || "";
+
+      const update = (id, patch) => setBoard((b) => ({ ...b, workflows: b.workflows.map((w) => (w.id === id ? { ...w, ...patch } : w)) }));
+
+      const exportJson = () => {
+        const blob = new Blob([JSON.stringify(board, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "agentic-gameboard.json";
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+      const importRef = useRef(null);
+      const importJson = (file) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            if (parsed && Array.isArray(parsed.functions) && Array.isArray(parsed.workflows)) setBoard(() => parsed);
+            else alert("Invalid board file.");
+          } catch (e) { alert("Could not parse JSON file."); }
+        };
+        reader.readAsText(file);
+      };
+
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center justify-end gap-2">
+            <SaveButton board={board} t={t} />
+            <button type="button" onClick={exportJson}
+              className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">↓ {t.rm.export}</button>
+            <button type="button" onClick={() => importRef.current && importRef.current.click()}
+              className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">↑ {t.rm.import}</button>
+            <input ref={importRef} type="file" accept="application/json" className="hidden"
+              onChange={(e) => { const f = e.target.files[0]; if (f) importJson(f); e.target.value = ""; }} />
+          </div>
+
+          {ranked.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-400">{t.rm.empty}</div>
+          ) : (
+            <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50/60 text-left text-[11px] uppercase tracking-wide text-slate-400">
+                    <th className="px-3 py-2.5 font-semibold">{t.rm.rank}</th>
+                    <th className="px-3 py-2.5 font-semibold">{t.rm.id}</th>
+                    <th className="px-3 py-2.5 font-semibold">{t.rm.workflow}</th>
+                    <th className="px-3 py-2.5 font-semibold">{t.rm.function}</th>
+                    <th className="px-3 py-2.5 font-semibold">{t.rm.impact}</th>
+                    <th className="px-3 py-2.5 font-semibold">{t.rm.phase}</th>
+                    <th className="px-3 py-2.5 font-semibold">{t.rm.agentOwner}</th>
+                    <th className="px-3 py-2.5 font-semibold">{t.rm.processOwner}</th>
+                    <th className="px-3 py-2.5 font-semibold">{t.rm.sponsor}</th>
+                    <th className="px-3 py-2.5 font-semibold">{t.rm.include}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ranked.map((w, i) => {
+                    const q = effectiveQuadrant(w, split);
+                    const st = QUADRANT_STYLE[q];
+                    return (
+                      <tr key={w.id} className="border-b border-slate-50 transition-colors last:border-0 hover:bg-indigo-50/30">
+                        <td className="px-3 py-2 tabular-nums font-semibold text-slate-300">{i + 1}</td>
+                        <td className="px-3 py-2"><IdBadge bg={codes.fnColor[w.functionId]}>{codes.wfCode[w.id]}</IdBadge></td>
+                        <td className="px-3 py-2 font-semibold text-slate-800">{w.name}</td>
+                        <td className="px-3 py-2 text-slate-500">{fnName(w.functionId)}</td>
+                        <td className="px-3 py-2 tabular-nums text-slate-600">{impact(w).toFixed(1)}</td>
+                        <td className="px-3 py-2">
+                          <div className="inline-flex items-center gap-1.5">
+                            <span className={"h-2 w-2 rounded-full " + st.dot}></span>
+                            <select value={q} onChange={(e) => update(w.id, { override: e.target.value })}
+                              className="rounded-md border border-slate-300 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                              {QUADRANTS.map((qq) => <option key={qq} value={qq}>{t.quadrants[qq]}</option>)}
+                            </select>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2"><input value={w.agentOwner} placeholder={t.rm.unassigned} onChange={(e) => update(w.id, { agentOwner: e.target.value })} className="w-28 rounded-md border border-slate-300 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-300" /></td>
+                        <td className="px-3 py-2"><input value={w.processOwner} placeholder={t.rm.unassigned} onChange={(e) => update(w.id, { processOwner: e.target.value })} className="w-28 rounded-md border border-slate-300 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-300" /></td>
+                        <td className="px-3 py-2"><input value={w.sponsor} placeholder={t.rm.unassigned} onChange={(e) => update(w.id, { sponsor: e.target.value })} className="w-28 rounded-md border border-slate-300 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-300" /></td>
+                        <td className="px-3 py-2 text-center">
+                          <input type="checkbox" checked={w.includeOnRoadmap} onChange={(e) => update(w.id, { includeOnRoadmap: e.target.checked })}
+                            className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-400" />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ============================================================
+     * App shell
+     * ============================================================ */
+    const LANGS = [
+      { value: "en", label: "EN" },
+      { value: "zh", label: "简体中文" },
+      { value: "zh-Hant", label: "繁體中文" },
+    ];
+
+    function App() {
+      const [tab, setTab] = useState("gameboard");
+      const [board, setBoard] = useState(loadBoard);
+      const [locale, setLocale] = useState(() => localStorage.getItem(LOCALE_KEY) || "en");
+
+      useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(board)); }, [board]);
+      useEffect(() => { localStorage.setItem(LOCALE_KEY, locale); }, [locale]);
+
+      const t = STRINGS[contentLocale(locale)];
+      const codes = useMemo(() => buildCodes(board), [board]);
+
+      const stats = useMemo(() => {
+        const totalHc = board.functions.reduce((s, f) => {
+          if (f.totalHc != null && f.totalHc !== "") return s + Number(f.totalHc);
+          return s + board.workflows.filter((w) => w.functionId === f.id).reduce((a, w) => a + (Number(w.peopleImpacted) || 0), 0);
+        }, 0);
+        return {
+          functions: board.functions.length,
+          workflows: board.workflows.length,
+          feasible: board.workflows.filter(passes).length,
+          totalHc,
+        };
+      }, [board]);
+
+      const resetDemo = () => {
+        if (window.confirm(t.common.confirmReset)) setBoard(seedBoard());
+      };
+
+      const TABS = ["gameboard", "prioritization", "roadmap"];
+
+      return (
+        <React.Fragment>
+          <TraditionalConverter active={locale === "zh-Hant"} />
+          <div key={locale}>
+            <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/80 shadow-sm backdrop-blur">
+              <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-lg font-bold text-white shadow-md">A</span>
+                <div className="mr-auto min-w-0">
+                  <h1 className="truncate text-base font-bold tracking-tight text-slate-900">{t.appName}</h1>
+                  <p className="truncate text-xs text-slate-500">{t.tagline}</p>
+                </div>
+                <button type="button" onClick={resetDemo} className="rounded-md px-2 py-1 text-xs text-slate-400 transition hover:text-slate-700">{t.common.reset}</button>
+                <div data-no-convert className="flex items-center gap-0.5 rounded-lg border border-slate-200 bg-white p-0.5 shadow-sm">
+                  {LANGS.map((l) => (
+                    <button key={l.value} type="button" onClick={() => setLocale(l.value)}
+                      className={"rounded-md px-2 py-1 text-xs font-semibold transition " + (locale === l.value ? "bg-indigo-600 text-white shadow-sm" : "text-slate-500 hover:bg-slate-100 hover:text-slate-900")}>
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mx-auto flex max-w-6xl items-center gap-2 px-6 pb-3">
+                <nav className="flex gap-1 rounded-xl border border-slate-200 bg-slate-100/70 p-1">
+                  {TABS.map((id) => (
+                    <button key={id} type="button" onClick={() => setTab(id)}
+                      className={"rounded-lg px-4 py-1.5 text-sm font-semibold transition " + (tab === id ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-800")}>
+                      {t.tabs[id]}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+            </header>
+
+            <main className="mx-auto max-w-6xl px-6 py-6">
+              <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <StatCard label={t.kpi.functions} value={stats.functions} accent="bg-indigo-500" />
+                <StatCard label={t.kpi.workflows} value={stats.workflows} accent="bg-violet-500" />
+                <StatCard label={t.kpi.feasible} value={stats.feasible} accent="bg-emerald-500" />
+                <StatCard label={t.kpi.totalHc} value={stats.totalHc.toLocaleString()} accent="bg-sky-500" />
+              </div>
+
+              {tab === "gameboard" && <Gameboard board={board} setBoard={setBoard} codes={codes} t={t} />}
+              {tab === "prioritization" && <Matrix2x2 board={board} setBoard={setBoard} codes={codes} t={t} />}
+              {tab === "roadmap" && <Roadmap board={board} setBoard={setBoard} codes={codes} t={t} />}
+            </main>
+          </div>
+        </React.Fragment>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

@@ -52,11 +52,11 @@ export function BenchmarkUploadModal({ companyKey, region, sector, onClose, onDo
     }
   };
 
-  const labelCls = "block text-xs text-zinc-500";
+  const labelCls = "block text-xs text-slate-500";
   const inputCls =
-    "mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950";
+    "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950";
   const fileInputCls =
-    "mt-1 block w-full text-xs text-zinc-600 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-zinc-400 dark:file:bg-indigo-950 dark:file:text-indigo-300";
+    "mt-1 block w-full text-xs text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-slate-400 dark:file:bg-indigo-950 dark:file:text-indigo-300";
 
   return (
     <div
@@ -66,7 +66,7 @@ export function BenchmarkUploadModal({ companyKey, region, sector, onClose, onDo
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md space-y-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
+        className="w-full max-w-md space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-base font-semibold">{t.benchmark.uploadTitle}</h2>
@@ -83,18 +83,18 @@ export function BenchmarkUploadModal({ companyKey, region, sector, onClose, onDo
         </label>
 
         <label className="block">
-          <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
             {t.benchmark.uploadLaborOptional}
           </span>
           <input ref={laborRef} type="file" accept=".xlsx" className={fileInputCls} />
         </label>
         <label className="block">
-          <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
             {t.benchmark.uploadAutomationOptional}
           </span>
           <input ref={autoRef} type="file" accept=".md,.markdown,.txt" className={fileInputCls} />
         </label>
-        <p className="text-[11px] text-zinc-400">{t.benchmark.uploadHint}</p>
+        <p className="text-[11px] text-slate-400">{t.benchmark.uploadHint}</p>
 
         {error && (
           <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
@@ -106,7 +106,7 @@ export function BenchmarkUploadModal({ companyKey, region, sector, onClose, onDo
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+            className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
           >
             {t.common.cancel}
           </button>
@@ -114,7 +114,7 @@ export function BenchmarkUploadModal({ companyKey, region, sector, onClose, onDo
             type="button"
             onClick={onSubmit}
             disabled={busy}
-            className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-40"
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-40"
           >
             {busy ? t.benchmark.saving : t.benchmark.upload}
           </button>

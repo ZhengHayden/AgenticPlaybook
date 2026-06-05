@@ -18,7 +18,7 @@ export const SOLUTION_BADGE: Record<SolutionProposal, string> = {
   rpa: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
   agent: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
   legacy: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  defer: "bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300",
+  defer: "bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
 };
 
 /** Ordered list for rendering selects. */

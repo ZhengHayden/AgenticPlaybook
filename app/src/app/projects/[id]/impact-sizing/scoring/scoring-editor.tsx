@@ -61,7 +61,7 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
 
   if (candidates.length === 0) {
     return (
-      <p className="rounded-md border border-zinc-200 bg-white p-4 text-sm text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900">
+      <p className="rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900">
         {locale === "en"
           ? "No candidates have passed the Readiness Check yet. Complete a candidate's Readiness Check (≥5 of 6) first."
           : "尚无通过准备度检查的候选。请先在准备度检查页完成候选评估(6 项中 ≥5 项)。"}
@@ -145,7 +145,7 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
           <h2 className="text-base font-semibold">
             {locale === "en" ? "Layer 3 · Detailed Scoring" : "Layer 3 · 详细评分"}
           </h2>
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-slate-500">
             {locale === "en"
               ? "Quick Win / Sponsor & Align / Invest & Prove candidates only."
               : "仅 Quick Win / Sponsor & Align / Invest & Prove 候选。"}
@@ -190,7 +190,7 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
             className={
               idx === activeIdx
                 ? "rounded-md bg-indigo-600 px-3 py-1 text-xs font-medium text-white"
-                : "rounded-md bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                : "rounded-md bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
             }
           >
             {c.name}
@@ -201,12 +201,12 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
         <div className="space-y-4">
           {/* VM section */}
-          <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <header className="flex items-center justify-between">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {locale === "en" ? "Value Magnitude (VM)" : "价值量 (VM)"}
               </h3>
-              <span className="text-xs text-zinc-400">VM = Σ(weight × score)</span>
+              <span className="text-xs text-slate-400">VM = Σ(weight × score)</span>
             </header>
             <div className="mt-3 space-y-4">
               {vmDimensions.map((d) => {
@@ -216,9 +216,9 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
                   <div key={d.id}>
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-medium">
-                        {d.label[locale]} <span className="text-zinc-400">×{d.weight}</span>
+                        {d.label[locale]} <span className="text-slate-400">×{d.weight}</span>
                       </span>
-                      <div className="inline-flex overflow-hidden rounded border border-zinc-200 dark:border-zinc-700">
+                      <div className="inline-flex overflow-hidden rounded border border-slate-200 dark:border-slate-700">
                         {[1, 2, 3, 4, 5].map((v) => (
                           <button
                             key={v}
@@ -227,7 +227,7 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
                             className={
                               current === v
                                 ? "bg-indigo-600 px-2 py-0.5 text-white"
-                                : "bg-white px-2 py-0.5 text-zinc-600 hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                                : "bg-white px-2 py-0.5 text-slate-600 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
                             }
                           >
                             {v}
@@ -240,44 +240,44 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
                         <span className="rounded bg-indigo-50 px-1.5 py-0.5 font-semibold text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">
                           {anchor.label[locale]}
                         </span>
-                        <span className="text-zinc-500">{anchor.range[locale]}</span>
-                        <span className="text-zinc-400">— {anchor.description[locale]}</span>
+                        <span className="text-slate-500">{anchor.range[locale]}</span>
+                        <span className="text-slate-400">— {anchor.description[locale]}</span>
                       </div>
                     )}
                   </div>
                 );
               })}
             </div>
-            <div className="mt-3 flex items-baseline justify-end gap-1 border-t border-zinc-100 pt-2 text-xs dark:border-zinc-800">
-              <span className="text-zinc-500">VM composite:</span>
+            <div className="mt-3 flex items-baseline justify-end gap-1 border-t border-slate-100 pt-2 text-xs dark:border-slate-800">
+              <span className="text-slate-500">VM composite:</span>
               <span className="font-mono text-base font-semibold">{vmTotal.toFixed(2)}</span>
-              <span className="text-zinc-400">/ 5.00</span>
+              <span className="text-slate-400">/ 5.00</span>
             </div>
           </section>
 
           {/* DDI section */}
-          <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <header className="flex items-center justify-between">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {locale === "en" ? "Decision Density Index (DDI)" : "决策密度指数 (DDI)"}
               </h3>
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-slate-400">
                 DDI<sub>raw</sub> = Σ(w × count) / steps
               </span>
             </header>
-            <p className="mt-1 text-[11px] text-zinc-500">
+            <p className="mt-1 text-[11px] text-slate-500">
               {locale === "en"
                 ? "Map decision points by complexity. Normalized against the highest-DDI candidate in this cohort."
                 : "按复杂度统计决策点。基于本组中最高 DDI 进行归一化。"}
             </p>
             <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-4">
               {decisionTypes.map((dt) => (
-                <label key={dt.id} className="rounded-md border border-zinc-200 p-2 text-xs dark:border-zinc-700">
+                <label key={dt.id} className="rounded-md border border-slate-200 p-2 text-xs dark:border-slate-700">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">{dt.label[locale]}</span>
-                    <span className="text-zinc-400">w={dt.weight}</span>
+                    <span className="text-slate-400">w={dt.weight}</span>
                   </div>
-                  <p className="mt-0.5 line-clamp-2 text-[10px] text-zinc-500">
+                  <p className="mt-0.5 line-clamp-2 text-[10px] text-slate-500">
                     {dt.description[locale]}
                   </p>
                   <input
@@ -285,13 +285,13 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
                     min={0}
                     value={s.ddi[dt.id]}
                     onChange={(e) => setDdi(dt.id, Number(e.target.value) || 0)}
-                    className="mt-1 w-full rounded border border-zinc-200 bg-white px-2 py-1 font-mono text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="mt-1 w-full rounded border border-slate-200 bg-white px-2 py-1 font-mono text-sm dark:border-slate-700 dark:bg-slate-950"
                   />
                 </label>
               ))}
-              <label className="rounded-md border border-zinc-200 p-2 text-xs dark:border-zinc-700">
+              <label className="rounded-md border border-slate-200 p-2 text-xs dark:border-slate-700">
                 <div className="font-semibold">{locale === "en" ? "Total steps" : "总步骤数"}</div>
-                <p className="mt-0.5 text-[10px] text-zinc-500">
+                <p className="mt-0.5 text-[10px] text-slate-500">
                   {locale === "en" ? "Denominator" : "分母"}
                 </p>
                 <input
@@ -299,7 +299,7 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
                   min={1}
                   value={s.totalSteps}
                   onChange={(e) => update({ totalSteps: Math.max(1, Number(e.target.value) || 1) })}
-                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2 py-1 font-mono text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                  className="mt-1 w-full rounded border border-slate-200 bg-white px-2 py-1 font-mono text-sm dark:border-slate-700 dark:bg-slate-950"
                 />
               </label>
               <div className="rounded-md border border-indigo-200 bg-indigo-50 p-2 text-xs dark:border-indigo-900/50 dark:bg-indigo-950/30">
@@ -307,7 +307,7 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
                   {locale === "en" ? "DDI normalized" : "DDI 归一化"}
                 </div>
                 <div className="mt-1 font-mono text-base font-semibold">{ddiNormalized.toFixed(2)}</div>
-                <div className="text-[10px] text-zinc-500">
+                <div className="text-[10px] text-slate-500">
                   {ddiInterp.level[locale]} · {ddiInterp.implication[locale]}
                 </div>
               </div>
@@ -315,12 +315,12 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
           </section>
 
           {/* Risk section */}
-          <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <header className="flex items-center justify-between">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {locale === "en" ? "Risk Assessment" : "风险评估"}
               </h3>
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-slate-400">
                 {locale === "en" ? "RAS = VM × (1 − 0.15 × #High)" : "RAS = VM × (1 − 0.15 × 高风险数)"}
               </span>
             </header>
@@ -328,10 +328,10 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
               {riskCategories.map((cat) => {
                 const current = s.risk[cat.id];
                 return (
-                  <div key={cat.id} className="rounded-md border border-zinc-200 p-2 text-xs dark:border-zinc-700">
+                  <div key={cat.id} className="rounded-md border border-slate-200 p-2 text-xs dark:border-slate-700">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold">{cat.label[locale]}</span>
-                      <div className="inline-flex overflow-hidden rounded border border-zinc-200 dark:border-zinc-700">
+                      <div className="inline-flex overflow-hidden rounded border border-slate-200 dark:border-slate-700">
                         {(["L", "M", "H"] as RiskLevel[]).map((lvl) => (
                           <button
                             key={lvl}
@@ -344,7 +344,7 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
                                   : lvl === "M"
                                   ? "bg-amber-600 px-2 py-0.5 text-white"
                                   : "bg-emerald-600 px-2 py-0.5 text-white"
-                                : "bg-white px-2 py-0.5 text-zinc-600 hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                                : "bg-white px-2 py-0.5 text-slate-600 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
                             }
                           >
                             {lvl}
@@ -352,27 +352,27 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
                         ))}
                       </div>
                     </div>
-                    <p className="mt-1 text-[10px] text-zinc-500">{cat.basedOn[locale]}</p>
-                    <p className="mt-0.5 text-[10px] italic text-zinc-500">
+                    <p className="mt-1 text-[10px] text-slate-500">{cat.basedOn[locale]}</p>
+                    <p className="mt-0.5 text-[10px] italic text-slate-500">
                       {cat.criteria.find((cr) => cr.level === current)?.[locale]}
                     </p>
                   </div>
                 );
               })}
             </div>
-            <div className="mt-3 flex items-baseline justify-end gap-1 border-t border-zinc-100 pt-2 text-xs dark:border-zinc-800">
-              <span className="text-zinc-500">
+            <div className="mt-3 flex items-baseline justify-end gap-1 border-t border-slate-100 pt-2 text-xs dark:border-slate-800">
+              <span className="text-slate-500">
                 {locale === "en" ? "High count:" : "高风险数:"}
               </span>
               <span className="font-mono">{riskPenalty}</span>
-              <span className="text-zinc-400">→ penalty {(riskPenalty * 15)}%</span>
+              <span className="text-slate-400">→ penalty {(riskPenalty * 15)}%</span>
             </div>
           </section>
 
           {/* Notes */}
-          <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {locale === "en" ? "Scoring notes" : "评分备注"}
               </span>
               <textarea
@@ -384,7 +384,7 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
                     ? "Document any borderline calls, calibration disagreements, or overrides."
                     : "记录边界情况、校准分歧或主动覆盖。"
                 }
-                className="mt-1 w-full resize-y rounded-md border border-zinc-200 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                className="mt-1 w-full resize-y rounded-md border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
               />
             </label>
           </section>
@@ -400,12 +400,12 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
                 : "border-rose-300 bg-rose-50 dark:border-rose-900/40 dark:bg-rose-950/30")
             }
           >
-            <div className="text-xs uppercase tracking-wide text-zinc-500">
+            <div className="text-xs uppercase tracking-wide text-slate-500">
               {locale === "en" ? "Priority Score" : "优先级分数"}
             </div>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="font-mono text-3xl font-bold">{priority.toFixed(2)}</span>
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-slate-400">
                 {locale === "en" ? "floor" : "门槛"} ≥ {PRIORITY_FLOOR}
               </span>
             </div>
@@ -419,34 +419,34 @@ export function ScoringEditor({ projectId, candidates, allCandidates }: ScoringE
             >
               {interp.label[locale]}
             </span>
-            <p className="mt-2 text-[11px] text-zinc-600 dark:text-zinc-400">
+            <p className="mt-2 text-[11px] text-slate-600 dark:text-slate-400">
               {interp.action[locale]}
             </p>
           </div>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-4 text-xs dark:border-zinc-800 dark:bg-zinc-900">
-            <h4 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 text-xs dark:border-slate-800 dark:bg-slate-900">
+            <h4 className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
               {locale === "en" ? "Breakdown" : "拆解"}
             </h4>
             <dl className="mt-2 space-y-1">
               <div className="flex justify-between">
-                <dt className="text-zinc-500">VM</dt>
+                <dt className="text-slate-500">VM</dt>
                 <dd className="font-mono">{vmTotal.toFixed(2)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-zinc-500">RiskPenalty</dt>
+                <dt className="text-slate-500">RiskPenalty</dt>
                 <dd className="font-mono">{riskPenalty} × 15%</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-zinc-500">RAS</dt>
+                <dt className="text-slate-500">RAS</dt>
                 <dd className="font-mono">{ras.toFixed(2)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-zinc-500">DDI&nbsp;norm.</dt>
+                <dt className="text-slate-500">DDI&nbsp;norm.</dt>
                 <dd className="font-mono">{ddiNormalized.toFixed(2)}</dd>
               </div>
             </dl>
-            <p className="mt-3 font-mono text-[10px] text-zinc-400">
+            <p className="mt-3 font-mono text-[10px] text-slate-400">
               Priority = RAS × (1 + 0.25 × DDI)
             </p>
           </div>
@@ -467,26 +467,26 @@ function ScoringToolReference() {
         <h3 className="text-sm font-semibold">
           {locale === "en" ? "Value Magnitude (VM)" : "价值量 (VM)"}
         </h3>
-        <p className="mt-1 text-xs text-zinc-500">
+        <p className="mt-1 text-xs text-slate-500">
           VM = Cost×0.35 + Quality×0.25 + Speed×0.20 + Strategic×0.20
         </p>
         {vmDimensions.map((d) => (
           <article
             key={d.id}
-            className="mt-3 rounded-md border border-zinc-200 p-2 text-xs dark:border-zinc-800"
+            className="mt-3 rounded-md border border-slate-200 p-2 text-xs dark:border-slate-800"
           >
             <header className="flex items-center justify-between font-semibold">
               <span>{d.label[locale]}</span>
-              <span className="text-zinc-400">×{d.weight}</span>
+              <span className="text-slate-400">×{d.weight}</span>
             </header>
             <table className="mt-2 w-full text-[11px]">
               <tbody>
                 {d.anchors.map((a) => (
-                  <tr key={a.score} className="border-t border-zinc-100 dark:border-zinc-800">
+                  <tr key={a.score} className="border-t border-slate-100 dark:border-slate-800">
                     <td className="w-6 py-1 font-mono">{a.score}</td>
                     <td className="w-20 py-1 font-semibold">{a.label[locale]}</td>
-                    <td className="w-24 py-1 text-zinc-500">{a.range[locale]}</td>
-                    <td className="py-1 text-zinc-500">{a.description[locale]}</td>
+                    <td className="w-24 py-1 text-slate-500">{a.range[locale]}</td>
+                    <td className="py-1 text-slate-500">{a.description[locale]}</td>
                   </tr>
                 ))}
               </tbody>
@@ -499,20 +499,20 @@ function ScoringToolReference() {
         <h3 className="text-sm font-semibold">
           {locale === "en" ? "Decision Density Index (DDI)" : "决策密度指数 (DDI)"}
         </h3>
-        <p className="mt-1 text-xs text-zinc-500">
+        <p className="mt-1 text-xs text-slate-500">
           {locale === "en"
             ? "DDI_raw = Σ(weight × count) / total_steps; normalize across cohort."
             : "DDI_raw = Σ(权重 × 计数) / 总步骤数;按本组归一化。"}
         </p>
         <ul className="mt-2 space-y-1 text-xs">
           {decisionTypes.map((dt) => (
-            <li key={dt.id} className="rounded-md border border-zinc-200 p-2 dark:border-zinc-800">
+            <li key={dt.id} className="rounded-md border border-slate-200 p-2 dark:border-slate-800">
               <div className="flex items-center justify-between font-semibold">
                 <span>{dt.label[locale]}</span>
-                <span className="text-zinc-400">w = {dt.weight}</span>
+                <span className="text-slate-400">w = {dt.weight}</span>
               </div>
-              <p className="mt-0.5 text-zinc-500">{dt.description[locale]}</p>
-              <p className="mt-0.5 italic text-zinc-500">e.g. {dt.example[locale]}</p>
+              <p className="mt-0.5 text-slate-500">{dt.description[locale]}</p>
+              <p className="mt-0.5 italic text-slate-500">e.g. {dt.example[locale]}</p>
             </li>
           ))}
         </ul>
@@ -524,10 +524,10 @@ function ScoringToolReference() {
         </h3>
         <ul className="mt-2 space-y-1 text-xs">
           {riskCategories.map((cat) => (
-            <li key={cat.id} className="rounded-md border border-zinc-200 p-2 dark:border-zinc-800">
+            <li key={cat.id} className="rounded-md border border-slate-200 p-2 dark:border-slate-800">
               <div className="flex items-center justify-between font-semibold">
                 <span>{cat.label[locale]}</span>
-                <span className="text-zinc-400">{cat.basedOn[locale]}</span>
+                <span className="text-slate-400">{cat.basedOn[locale]}</span>
               </div>
               <dl className="mt-1 space-y-0.5">
                 {cat.criteria.map((cr) => (
@@ -544,14 +544,14 @@ function ScoringToolReference() {
                     >
                       {cr.level}
                     </dt>
-                    <dd className="text-zinc-500">{cr[locale]}</dd>
+                    <dd className="text-slate-500">{cr[locale]}</dd>
                   </div>
                 ))}
               </dl>
             </li>
           ))}
         </ul>
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-slate-500">
           {locale === "en"
             ? "RiskPenalty = count of High; RAS = VM × (1 − 0.15 × RiskPenalty)."
             : "RiskPenalty = 高风险数量;RAS = VM × (1 − 0.15 × RiskPenalty)。"}
@@ -576,7 +576,7 @@ function ScoringToolReference() {
                   {i.range[0]}–{i.range[1] === 999 ? "∞" : i.range[1]}
                 </td>
                 <td className="w-20 py-1 font-semibold">{i.label[locale]}</td>
-                <td className="py-1 text-zinc-600 dark:text-zinc-400">{i.action[locale]}</td>
+                <td className="py-1 text-slate-600 dark:text-slate-400">{i.action[locale]}</td>
               </tr>
             ))}
           </tbody>

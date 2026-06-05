@@ -37,10 +37,10 @@ export function OpportunityDashboard({ model: initialModel, showClientLink = fal
   const selectedMeta = selectedFn ? model.detail[selectedFn] : null;
 
   const modeBtnCls = (active: boolean): string =>
-    `rounded-md px-3 py-1.5 text-sm font-medium ${
+    `rounded-lg px-3.5 py-2 text-sm font-semibold shadow-sm transition ${
       active
         ? "bg-indigo-600 text-white"
-        : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900"
+        : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900"
     }`;
 
   return (
@@ -48,7 +48,7 @@ export function OpportunityDashboard({ model: initialModel, showClientLink = fal
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">{model.company}</h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-slate-500">
             {model.sector} · {t.scan.generatedAt} {new Date(model.generatedAt).toLocaleString()}
           </p>
         </div>
@@ -63,7 +63,7 @@ export function OpportunityDashboard({ model: initialModel, showClientLink = fal
         <button
           type="button"
           onClick={() => setShowEdit(true)}
-          className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
         >
           {t.scan.editData}
         </button>
@@ -75,7 +75,7 @@ export function OpportunityDashboard({ model: initialModel, showClientLink = fal
         <button
           type="button"
           onClick={() => setShowHeatmap(true)}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
         >
           {t.scan.runScan}
         </button>
@@ -89,21 +89,21 @@ export function OpportunityDashboard({ model: initialModel, showClientLink = fal
                 </button>
               ))}
             </div>
-            <span className="text-sm text-zinc-500">
+            <span className="text-sm text-slate-500">
               {t.scan[MODES.find((m) => m.id === mode)!.descKey]}:{" "}
-              <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+              <span className="font-semibold text-slate-800 dark:text-slate-200">
                 {formatValue(totalValue(model.totals, mode), mode)}
               </span>
             </span>
           </div>
 
-          <p className="text-xs text-zinc-400">{t.scan.clickHint}</p>
+          <p className="text-xs text-slate-400">{t.scan.clickHint}</p>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <Heatmap model={model} mode={mode} onCellClick={setSelectedFn} />
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-zinc-500">
+          <div className="flex items-center gap-2 text-xs text-slate-500">
             <span>{t.scan.legendLow}</span>
             <span
               className="h-3 w-40 rounded-sm"

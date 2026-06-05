@@ -31,10 +31,10 @@ interface EditableGridProps {
 
 const defaultFormat = (n: number): string => Math.round(n).toLocaleString();
 
-const headerCls = "px-2 py-1.5 text-left text-[11px] font-semibold uppercase tracking-wide text-zinc-500";
+const headerCls = "px-2 py-1.5 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500";
 const cellInputCls =
-  "w-24 rounded border border-zinc-200 bg-white px-2 py-1 text-right text-sm tabular-nums dark:border-zinc-700 dark:bg-zinc-950";
-const totalCls = "px-2 py-1 text-right text-sm font-semibold tabular-nums text-zinc-700 dark:text-zinc-300";
+  "w-24 rounded border border-slate-200 bg-white px-2 py-1 text-right text-sm tabular-nums dark:border-slate-700 dark:bg-slate-950";
+const totalCls = "px-2 py-1 text-right text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-300";
 
 export function EditableGrid({
   cornerLabel,
@@ -58,7 +58,7 @@ export function EditableGrid({
       <table className="min-w-full border-separate border-spacing-0">
         <thead>
           <tr>
-            <th className={`${headerCls} sticky left-0 bg-white dark:bg-zinc-900`}>{cornerLabel}</th>
+            <th className={`${headerCls} sticky left-0 bg-white dark:bg-slate-900`}>{cornerLabel}</th>
             {cols.map((c) => (
               <th key={c.key} className={`${headerCls} text-right`}>
                 {c.label}
@@ -69,8 +69,8 @@ export function EditableGrid({
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={r.key} className="border-t border-zinc-100 dark:border-zinc-800">
-              <th className="sticky left-0 bg-white px-2 py-1 text-left text-sm font-medium dark:bg-zinc-900">
+            <tr key={r.key} className="border-t border-slate-100 dark:border-slate-800">
+              <th className="sticky left-0 bg-white px-2 py-1 text-left text-sm font-medium dark:bg-slate-900">
                 {r.label}
               </th>
               {cols.map((c) => {
@@ -78,7 +78,7 @@ export function EditableGrid({
                 return (
                   <td key={c.key} className="px-1 py-1 text-right">
                     {value === undefined ? (
-                      <span className="text-sm text-zinc-300 dark:text-zinc-600">—</span>
+                      <span className="text-sm text-slate-300 dark:text-slate-600">—</span>
                     ) : (
                       <input
                         type="number"
@@ -97,8 +97,8 @@ export function EditableGrid({
             </tr>
           ))}
           {showSubtotals && (
-            <tr className="border-t-2 border-zinc-200 dark:border-zinc-700">
-              <th className="sticky left-0 bg-white px-2 py-1 text-left text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:bg-zinc-900">
+            <tr className="border-t-2 border-slate-200 dark:border-slate-700">
+              <th className="sticky left-0 bg-white px-2 py-1 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-900">
                 {subtotalLabel}
               </th>
               {cols.map((c) => (

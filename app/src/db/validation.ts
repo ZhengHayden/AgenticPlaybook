@@ -179,6 +179,7 @@ const workflowSchema = z.object({
   architectureSummary: z.string().optional(),
   canvas: workflowCanvasSchema.optional(),
   status: z.enum(["notStarted", "inDesign", "built", "live", "onHold"]).optional(),
+  priorityRank: z.number().int().positive().optional(),
 });
 
 const gateCriterionSchema = z.object({

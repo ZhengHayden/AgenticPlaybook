@@ -40,11 +40,11 @@ export function ProjectListClient({ projects }: ProjectListClientProps) {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{t.nav.projects}</h1>
-          <p className="mt-1 text-sm text-zinc-500">{t.app.tagline}</p>
+          <p className="mt-1 text-sm text-slate-500">{t.app.tagline}</p>
         </div>
         <Link
           href="/projects/new"
-          className="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" /> {t.project.createNew}
         </Link>
@@ -60,20 +60,20 @@ export function ProjectListClient({ projects }: ProjectListClientProps) {
             <Link
               key={project.id}
               href={`/projects/${project.id}/overview`}
-              className="group rounded-xl border border-zinc-200 bg-white p-5 transition-colors hover:border-zinc-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
+              className="card-lift group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
             >
               <div className="mb-2 flex items-center justify-between">
                 <h2 className="font-medium tracking-tight">{project.name}</h2>
-                <span className="text-xs text-zinc-400 group-hover:text-zinc-500">→</span>
+                <span className="text-xs text-slate-400 group-hover:text-slate-500">→</span>
               </div>
-              <div className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+              <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
                 <div className="flex justify-between">
                   <span>{t.project.domain}</span>
-                  <span className="font-medium text-zinc-900 dark:text-zinc-100">{project.domain}</span>
+                  <span className="font-medium text-slate-900 dark:text-slate-100">{project.domain}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="shrink-0">{phaseLabel}</span>
-                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                     <div
                       className="h-full bg-indigo-500"
                       style={{ width: `${progress}%` }}
@@ -101,7 +101,7 @@ export function ProjectListClient({ projects }: ProjectListClientProps) {
                     {t.project.variant}: {variantLabels[project.p1Variant][locale]} /{" "}
                     {designLabels[project.p2Variant][locale]}
                   </span>
-                  <span className="text-zinc-400">{formatRelativeTime(project.updatedAt)}</span>
+                  <span className="text-slate-400">{formatRelativeTime(project.updatedAt)}</span>
                 </div>
               </div>
             </Link>

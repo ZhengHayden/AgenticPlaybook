@@ -18,12 +18,12 @@ export default async function ProjectLayout({ children, params }: ProjectLayoutP
 
   return (
     <section>
-      <div className="mb-4 flex items-baseline gap-2 text-sm text-zinc-500">
-        <Link href="/projects" className="hover:text-zinc-900 dark:hover:text-zinc-100">
+      <div className="mb-4 flex items-baseline gap-2 text-sm text-slate-500">
+        <Link href="/projects" className="hover:text-slate-900 dark:hover:text-slate-100">
           Projects
         </Link>
         <span>›</span>
-        <span className="text-zinc-900 dark:text-zinc-100">{project.name}</span>
+        <span className="text-slate-900 dark:text-slate-100">{project.name}</span>
       </div>
       <ProjectTabs projectId={project.id} currentPhase={project.currentPhase} />
       <div className="mt-6">{children}</div>

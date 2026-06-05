@@ -55,7 +55,7 @@ export function NewProjectWizard() {
           className={
             form[phase] === opt.value
               ? "block cursor-pointer rounded-md border-2 border-indigo-500 bg-indigo-50 p-3 dark:bg-indigo-950/30"
-              : "block cursor-pointer rounded-md border-2 border-transparent bg-zinc-50 p-3 hover:border-zinc-300 dark:bg-zinc-800/50 dark:hover:border-zinc-700"
+              : "block cursor-pointer rounded-md border-2 border-transparent bg-slate-50 p-3 hover:border-slate-300 dark:bg-slate-800/50 dark:hover:border-slate-700"
           }
         >
           <input
@@ -70,7 +70,7 @@ export function NewProjectWizard() {
             {opt[locale === "zh" ? "zh" : "en"]}
             {opt.recommended && <span className="ml-2 text-xs text-indigo-600">⭐ {t.common.recommended}</span>}
           </span>
-          <p className="ml-6 mt-1 text-xs text-zinc-500">
+          <p className="ml-6 mt-1 text-xs text-slate-500">
             {locale === "zh" ? opt.desc_zh : opt.desc_en}
           </p>
         </label>
@@ -102,35 +102,35 @@ export function NewProjectWizard() {
     <section className="mx-auto max-w-2xl space-y-6">
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">{t.project.createNew}</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-slate-500">
           {locale === "en" ? `Step ${step} of 3` : `第 ${step} 步,共 3 步`}
         </p>
       </header>
 
-      <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
         {step === 1 && (
           <div className="space-y-4">
             <h2 className="text-base font-semibold">{locale === "en" ? "Engagement basics" : "项目基础信息"}</h2>
             <label className="block text-sm">
-              <span className="block text-xs text-zinc-500">{t.project.nameLabel}</span>
+              <span className="block text-xs text-slate-500">{t.project.nameLabel}</span>
               <input
                 value={form.name}
                 onChange={(e) => update({ name: e.target.value })}
                 placeholder="ACME Finance — AP Automation"
-                className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950"
+                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950"
               />
             </label>
             <label className="block text-sm">
-              <span className="block text-xs text-zinc-500">{t.project.client}</span>
+              <span className="block text-xs text-slate-500">{t.project.client}</span>
               <input
                 value={form.client}
                 onChange={(e) => update({ client: e.target.value })}
                 placeholder="ACME Corp"
-                className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950"
+                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950"
               />
             </label>
             <label className="block text-sm">
-              <span className="block text-xs text-zinc-500">{t.project.domain}</span>
+              <span className="block text-xs text-slate-500">{t.project.domain}</span>
               {addingDomain ? (
                 <div className="mt-1 flex gap-2">
                   <input
@@ -138,7 +138,7 @@ export function NewProjectWizard() {
                     value={form.domain}
                     onChange={(e) => update({ domain: e.target.value })}
                     placeholder={locale === "en" ? "New domain name" : "新领域名称"}
-                    className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950"
+                    className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950"
                   />
                   <button
                     type="button"
@@ -146,7 +146,7 @@ export function NewProjectWizard() {
                       setAddingDomain(false);
                       update({ domain: DOMAINS[0] });
                     }}
-                    className="shrink-0 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                    className="shrink-0 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
                   >
                     {t.common.back}
                   </button>
@@ -162,7 +162,7 @@ export function NewProjectWizard() {
                       update({ domain: e.target.value });
                     }
                   }}
-                  className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950"
+                  className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950"
                 >
                   {DOMAINS.map((d) => (
                     <option key={d}>{d}</option>
@@ -174,7 +174,7 @@ export function NewProjectWizard() {
               )}
             </label>
             <fieldset>
-              <legend className="text-xs text-zinc-500">{t.project.language}</legend>
+              <legend className="text-xs text-slate-500">{t.project.language}</legend>
               <div className="mt-1 flex gap-3 text-sm">
                 {(["en", "zh", "bilingual"] as const).map((l) => (
                   <label key={l} className="flex items-center gap-1.5">
@@ -260,28 +260,28 @@ export function NewProjectWizard() {
           <div className="space-y-3">
             <h2 className="text-base font-semibold">{locale === "en" ? "Review & create" : "确认并创建"}</h2>
             <dl className="space-y-2 text-sm">
-              <div className="flex justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800">
-                <dt className="text-zinc-500">{t.project.name}</dt>
+              <div className="flex justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
+                <dt className="text-slate-500">{t.project.name}</dt>
                 <dd className="font-medium">{form.name || "—"}</dd>
               </div>
-              <div className="flex justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800">
-                <dt className="text-zinc-500">{t.project.client}</dt>
+              <div className="flex justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
+                <dt className="text-slate-500">{t.project.client}</dt>
                 <dd className="font-medium">{form.client || "—"}</dd>
               </div>
-              <div className="flex justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800">
-                <dt className="text-zinc-500">{t.project.domain}</dt>
+              <div className="flex justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
+                <dt className="text-slate-500">{t.project.domain}</dt>
                 <dd className="font-medium">{form.domain.trim() || "Other"}</dd>
               </div>
-              <div className="flex justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800">
-                <dt className="text-zinc-500">{t.project.language}</dt>
+              <div className="flex justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
+                <dt className="text-slate-500">{t.project.language}</dt>
                 <dd className="font-medium">{form.language}</dd>
               </div>
-              <div className="flex justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800">
-                <dt className="text-zinc-500">{t.phases.impactSizing}</dt>
+              <div className="flex justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
+                <dt className="text-slate-500">{t.phases.impactSizing}</dt>
                 <dd className="font-medium">Variant {form.p1Variant}</dd>
               </div>
-              <div className="flex justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800">
-                <dt className="text-zinc-500">{t.phases.design}</dt>
+              <div className="flex justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
+                <dt className="text-slate-500">{t.phases.design}</dt>
                 <dd className="font-medium">Variant {form.p2Variant}</dd>
               </div>
             </dl>
@@ -305,7 +305,7 @@ export function NewProjectWizard() {
         <button
           disabled={step === 1}
           onClick={() => setStep((s) => (s > 1 ? ((s - 1) as Step) : s))}
-          className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-40 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 disabled:opacity-40 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
         >
           ← {t.common.back}
         </button>

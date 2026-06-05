@@ -98,7 +98,16 @@ export function rankWorkflows(
     return { workflow, index, score: eligible ? score : undefined };
   });
 
+  // When any workflow carries an explicit priorityRank override, rank by that
+  // first; otherwise fall back to candidate priority (today's behavior).
+  const hasManual = withScore.some((w) => typeof w.workflow.priorityRank === "number");
+
   withScore.sort((a, b) => {
+    if (hasManual) {
+      const ra = a.workflow.priorityRank ?? Number.POSITIVE_INFINITY;
+      const rb = b.workflow.priorityRank ?? Number.POSITIVE_INFINITY;
+      if (ra !== rb) return ra - rb;
+    }
     const sa = a.score?.priorityScore ?? -1;
     const sb = b.score?.priorityScore ?? -1;
     if (sb !== sa) return sb - sa;

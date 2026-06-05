@@ -27,7 +27,7 @@ export function ScanIndexClient({ manifests }: ScanIndexClientProps) {
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <h1 className="text-xl font-semibold tracking-tight">{t.scan.indexTitle}</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.scan.indexSubtitle}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t.scan.indexSubtitle}</p>
         </div>
         <button
           type="button"
@@ -39,7 +39,7 @@ export function ScanIndexClient({ manifests }: ScanIndexClientProps) {
       </header>
 
       {manifests.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900/40">
+        <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900/40">
           {t.scan.noScans}
         </p>
       ) : (
@@ -48,11 +48,11 @@ export function ScanIndexClient({ manifests }: ScanIndexClientProps) {
             <Link
               key={m.companyKey}
               href={`/scan/${m.companyKey}`}
-              className="rounded-xl border border-zinc-200 bg-white p-4 transition-colors hover:border-indigo-300 hover:bg-indigo-50/40 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-900/60 dark:hover:bg-indigo-950/20"
+              className="rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-indigo-300 hover:bg-indigo-50/40 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-900/60 dark:hover:bg-indigo-950/20"
             >
               <h2 className="truncate font-semibold tracking-tight">{m.company}</h2>
-              <p className="mt-1 text-xs text-zinc-500">{m.sector}</p>
-              <p className="mt-3 text-[11px] text-zinc-400">
+              <p className="mt-1 text-xs text-slate-500">{m.sector}</p>
+              <p className="mt-3 text-[11px] text-slate-400">
                 {t.scan.generatedAt} {new Date(m.generatedAt).toLocaleString()}
               </p>
             </Link>

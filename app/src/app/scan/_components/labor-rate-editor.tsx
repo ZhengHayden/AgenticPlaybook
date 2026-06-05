@@ -55,7 +55,7 @@ export function LaborRateEditor({ rows, onChange }: LaborRateEditorProps) {
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-zinc-500">{t.scan.salaryUsd}</p>
+      <p className="text-xs text-slate-500">{t.scan.salaryUsd}</p>
       <EditableGrid
         cornerLabel={t.scan.function}
         rows={functions}

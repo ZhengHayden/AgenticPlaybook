@@ -51,9 +51,9 @@ export function PhaseSubNav({ phase, variant, tabs }: PhaseSubNavProps) {
     <div>
       <div className="flex items-baseline justify-between">
         <h1 className="text-xl font-semibold tracking-tight">{phaseTitle}</h1>
-        <span className="text-xs text-zinc-500">{variantLabel}</span>
+        <span className="text-xs text-slate-500">{variantLabel}</span>
       </div>
-      <nav className="mt-2 flex flex-wrap gap-1 border-b border-zinc-200 dark:border-zinc-800">
+      <nav className="mt-2 flex flex-wrap gap-1 border-b border-slate-200 dark:border-slate-800">
         {tabs.map((tab) => {
           const active = pathname.startsWith(tab.href);
           return (
@@ -63,8 +63,8 @@ export function PhaseSubNav({ phase, variant, tabs }: PhaseSubNavProps) {
               className={cn(
                 "border-b-2 px-3 py-1.5 text-sm font-medium transition-colors",
                 active
-                  ? "border-indigo-600 text-zinc-900 dark:text-zinc-50"
-                  : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100",
+                  ? "border-indigo-600 text-slate-900 dark:text-slate-50"
+                  : "border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-100",
               )}
             >
               {tabLabel(tab.key)}

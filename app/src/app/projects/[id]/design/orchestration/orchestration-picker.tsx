@@ -23,7 +23,7 @@ interface OrchestrationPickerProps {
 const fitBadge: Record<Fit, string> = {
   recommended: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
   good: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
-  poor: "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400",
+  poor: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
 };
 
 const fitLabel: Record<Fit, { en: string; zh: string }> = {
@@ -99,14 +99,14 @@ export function OrchestrationPicker({ projectId, workflows, workflow }: Orchestr
               <span className="font-semibold">{en ? "Suggested: " : "建议:"}</span>
               {a2aPatterns.find((p) => p.id === advice.recommended)?.[locale].name}
               {advice.recommendedReason && (
-                <span className="text-zinc-600 dark:text-zinc-400"> — {advice.recommendedReason[locale]}</span>
+                <span className="text-slate-600 dark:text-slate-400"> — {advice.recommendedReason[locale]}</span>
               )}
             </p>
             {advice.recommended !== pattern && (
               <button
                 type="button"
                 onClick={() => choose(advice.recommended as A2APatternId)}
-                className="mt-1.5 rounded-md border border-emerald-300 bg-white px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-zinc-900 dark:text-emerald-300"
+                className="mt-1.5 rounded-md border border-emerald-300 bg-white px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-slate-900 dark:text-emerald-300"
               >
                 {en ? "Apply suggestion" : "采用建议"}
               </button>
@@ -126,7 +126,7 @@ export function OrchestrationPicker({ projectId, workflows, workflow }: Orchestr
               className={
                 p.id === pattern
                   ? "rounded-xl border border-indigo-300 bg-indigo-50 p-3 text-left ring-2 ring-indigo-200 dark:border-indigo-700 dark:bg-indigo-950/30 dark:ring-indigo-900"
-                  : "rounded-xl border border-zinc-200 bg-white p-3 text-left hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900"
+                  : "rounded-xl border border-slate-200 bg-white p-3 text-left hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900"
               }
             >
               <div className="flex items-center justify-between gap-2">
@@ -135,21 +135,21 @@ export function OrchestrationPicker({ projectId, workflows, workflow }: Orchestr
                   {fitLabel[fit][locale]}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-zinc-500">{p[locale].description}</p>
+              <p className="mt-1 text-xs text-slate-500">{p[locale].description}</p>
             </button>
           );
         })}
       </div>
 
       {selected && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
           <h3 className="text-sm font-semibold">
             {en ? "Why" : "为什么"} {selected[locale].name}?
           </h3>
-          <p className="mt-1 text-xs text-zinc-500">{selected[locale].useWhen}</p>
+          <p className="mt-1 text-xs text-slate-500">{selected[locale].useWhen}</p>
 
           <div className="mt-4 flex items-center justify-between">
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               {en ? "Orchestration canvas" : "编排画布"}
             </h4>
           </div>
@@ -162,13 +162,13 @@ export function OrchestrationPicker({ projectId, workflows, workflow }: Orchestr
             />
           </div>
 
-          <h4 className="mt-4 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+          <h4 className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
             {en ? "Coordination considerations" : "编排注意事项"}
           </h4>
           <ul className="mt-2 space-y-1">
             {concerns.map((c, i) => (
-              <li key={i} className="flex gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-                <span className="text-zinc-400">•</span>
+              <li key={i} className="flex gap-2 text-xs text-slate-600 dark:text-slate-400">
+                <span className="text-slate-400">•</span>
                 {c[locale]}
               </li>
             ))}

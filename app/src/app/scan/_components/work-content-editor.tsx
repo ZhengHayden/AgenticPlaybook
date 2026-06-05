@@ -79,9 +79,9 @@ function setRatio(meta: FunctionMeta, levelIndex: number, field: RatioField, val
 }
 
 const inputCls =
-  "mt-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950";
+  "mt-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950";
 const numCls =
-  "w-20 rounded border border-zinc-200 bg-white px-2 py-1 text-right text-sm tabular-nums dark:border-zinc-700 dark:bg-zinc-950";
+  "w-20 rounded border border-slate-200 bg-white px-2 py-1 text-right text-sm tabular-nums dark:border-slate-700 dark:bg-slate-950";
 
 /**
  * Work-content editor: pick a function + job grade, then edit the per-category
@@ -104,12 +104,12 @@ export function WorkContentEditor({ automation, onChange }: WorkContentEditorPro
 
   const apply = (nextMeta: FunctionMeta) => onChange({ ...automation, [selectedFn]: nextMeta });
 
-  if (!meta || !level) return <p className="text-sm text-zinc-400">{t.scan.noEditableData}</p>;
+  if (!meta || !level) return <p className="text-sm text-slate-400">{t.scan.noEditableData}</p>;
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
-        <label className="block text-xs text-zinc-500">
+        <label className="block text-xs text-slate-500">
           {t.scan.selectFunction}
           <select
             value={selectedFn}
@@ -123,7 +123,7 @@ export function WorkContentEditor({ automation, onChange }: WorkContentEditorPro
             ))}
           </select>
         </label>
-        <label className="block text-xs text-zinc-500">
+        <label className="block text-xs text-slate-500">
           {t.scan.selectGrade}
           <select
             value={level.levelCode}
@@ -141,7 +141,7 @@ export function WorkContentEditor({ automation, onChange }: WorkContentEditorPro
 
       <table className="min-w-full border-separate border-spacing-0 text-sm">
         <thead>
-          <tr className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+          <tr className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
             <th className="px-2 py-1.5 text-left">{t.scan.categoryName}</th>
             <th className="px-2 py-1.5 text-right">{t.scan.baselinePct}</th>
             <th className="px-2 py-1.5 text-right">{t.scan.targetPct}</th>
@@ -150,7 +150,7 @@ export function WorkContentEditor({ automation, onChange }: WorkContentEditorPro
         </thead>
         <tbody>
           {meta.categories.map((cat, ci) => (
-            <tr key={cat.key} className="border-t border-zinc-100 dark:border-zinc-800">
+            <tr key={cat.key} className="border-t border-slate-100 dark:border-slate-800">
               <td className="px-2 py-1">
                 <input
                   value={cat.name}
@@ -189,7 +189,7 @@ export function WorkContentEditor({ automation, onChange }: WorkContentEditorPro
                 <button
                   type="button"
                   onClick={() => apply(removeCategory(meta, ci))}
-                  className="rounded border border-zinc-200 px-2 py-0.5 text-xs text-zinc-500 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
+                  className="rounded border border-slate-200 px-2 py-0.5 text-xs text-slate-500 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
                 >
                   {t.scan.removeWorkContent}
                 </button>
@@ -206,10 +206,10 @@ export function WorkContentEditor({ automation, onChange }: WorkContentEditorPro
       >
         + {t.scan.addWorkContent}
       </button>
-      <p className="text-[11px] text-zinc-400">{t.scan.breakdownSumHint}</p>
+      <p className="text-[11px] text-slate-400">{t.scan.breakdownSumHint}</p>
 
       <div className="grid grid-cols-2 gap-3">
-        <label className="block text-xs text-zinc-500">
+        <label className="block text-xs text-slate-500">
           {t.scan.automationRatioLabel}
           <input
             type="number"
@@ -221,7 +221,7 @@ export function WorkContentEditor({ automation, onChange }: WorkContentEditorPro
             className={`${inputCls} block w-full`}
           />
         </label>
-        <label className="block text-xs text-zinc-500">
+        <label className="block text-xs text-slate-500">
           {t.scan.releaseRatioLabel}
           <input
             type="number"
@@ -235,7 +235,7 @@ export function WorkContentEditor({ automation, onChange }: WorkContentEditorPro
         </label>
       </div>
 
-      <label className="block text-xs text-zinc-500">
+      <label className="block text-xs text-slate-500">
         {t.scan.insightLabel}
         <textarea
           value={meta.keyInsight ?? ""}
