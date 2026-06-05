@@ -16,10 +16,10 @@ import { maturityAccent, maturityLabel, validationDotClass, validationLabel } fr
 import { OverviewTab } from "./editor/overview-tab";
 import { ImpactTab } from "./editor/impact-tab";
 import { AgenticTab } from "./editor/agentic-tab";
-import { ReferencesTab } from "./editor/references-tab";
-import { ValidationTab } from "./editor/validation-tab";
+import { EvidenceTab } from "./editor/evidence-tab";
+import { ArtifactsTab } from "./editor/artifacts-tab"; // created in Task 12
 
-type EditorTab = "overview" | "impact" | "agentic" | "references" | "validation";
+type EditorTab = "overview" | "impact" | "agentic" | "artifacts" | "evidence";
 
 interface UseCaseEditorProps {
   useCase: KnowledgeUseCase;
@@ -53,8 +53,8 @@ export function UseCaseEditor({
     { value: "overview", label: t.knowledge.tabOverview },
     { value: "impact", label: t.knowledge.tabImpact },
     { value: "agentic", label: t.knowledge.tabAgentic },
-    { value: "references", label: t.knowledge.tabReferences },
-    { value: "validation", label: t.knowledge.tabValidation },
+    { value: "artifacts", label: t.knowledge.tabArtifacts },
+    { value: "evidence", label: t.knowledge.tabEvidence },
   ];
 
   return (
@@ -110,11 +110,11 @@ export function UseCaseEditor({
           <div className={tab === "agentic" ? "" : "hidden"}>
             <AgenticTab useCase={useCase} onPatch={patch} />
           </div>
-          <div className={tab === "references" ? "" : "hidden"}>
-            <ReferencesTab useCase={useCase} onPatch={patch} />
+          <div className={tab === "artifacts" ? "" : "hidden"}>
+            <ArtifactsTab useCaseId={useCase.id} />
           </div>
-          <div className={tab === "validation" ? "" : "hidden"}>
-            <ValidationTab useCase={useCase} onSetValidation={onSetValidation} />
+          <div className={tab === "evidence" ? "" : "hidden"}>
+            <EvidenceTab useCase={useCase} onPatch={patch} onSetValidation={onSetValidation} />
           </div>
         </div>
       </div>
