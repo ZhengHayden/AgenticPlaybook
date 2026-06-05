@@ -24,6 +24,7 @@ export interface Filters {
   maturity: Maturity | "";
   techTag: TechTag | "";
   validationStatus: ValidationStatus | "";
+  hasArtifacts: boolean;
 }
 
 export const EMPTY_FILTERS: Filters = {
@@ -32,6 +33,7 @@ export const EMPTY_FILTERS: Filters = {
   maturity: "",
   techTag: "",
   validationStatus: "",
+  hasArtifacts: false,
 };
 
 // ─── scope cascade ────────────────────────────────────────────
@@ -69,13 +71,18 @@ export function scopedUseCases(lib: KnowledgeLibrary, companyId: string): Knowle
   return lib.useCases.filter((uc) => uc.companyId === companyId);
 }
 
-export function applyFilters(useCases: KnowledgeUseCase[], filters: Filters): KnowledgeUseCase[] {
+export function applyFilters(
+  useCases: KnowledgeUseCase[],
+  filters: Filters,
+  useCaseIdsWithArtifacts?: ReadonlySet<string>,
+): KnowledgeUseCase[] {
   const q = filters.search.trim().toLowerCase();
   return useCases.filter((uc) => {
     if (filters.functionId && uc.functionId !== filters.functionId) return false;
     if (filters.maturity && uc.maturity !== filters.maturity) return false;
     if (filters.techTag && uc.techTag !== filters.techTag) return false;
     if (filters.validationStatus && uc.validation.status !== filters.validationStatus) return false;
+    if (filters.hasArtifacts && !(useCaseIdsWithArtifacts?.has(uc.id) ?? false)) return false;
     if (q) {
       const haystack = [uc.name, uc.domain, uc.description, ...uc.kpis, ...uc.businessObjectives]
         .join(" ")
