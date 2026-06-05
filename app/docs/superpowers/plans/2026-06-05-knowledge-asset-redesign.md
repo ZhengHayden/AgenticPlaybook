@@ -2422,12 +2422,14 @@ Open `/knowledge`, select a Sector/Industry/Company with use cases, open a use c
 
 Confirm five tabs: Overview / Impact / Agentic / Artifacts / Evidence. Confirm Evidence shows validation status+note AND references, each saving independently.
 
-- [ ] **Step 4: Coverage check**
+- [x] **Step 4: Coverage check**
 
 Run: `npm run test:cov`
 Expected: artifact logic modules (storage, repo, validation, routes, api-client, filtering) ≥ 80% line coverage. If below, add cases for: oversize upload reject, bad-MIME reject, 404 download for a link artifact, updateArtifact on missing id.
 
-- [ ] **Step 5: Final commit**
+> Done: storage 100%, repo 98.9%, validation 100%, `[id]/artifacts` 86%, `[aid]` 81%, `[aid]/download` 87%. 46 tests pass. Added download + file-replace route tests (oversize/bad-MIME/missing-file reject, link/missing 404).
+
+- [x] **Step 5: Final commit**
 
 ```bash
 git add -A
