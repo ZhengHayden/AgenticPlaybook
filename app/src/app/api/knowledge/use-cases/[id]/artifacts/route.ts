@@ -17,8 +17,8 @@ interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
-function zodMessage(error: { issues: { path: (string | number)[]; message: string }[] }): string {
-  return error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
+function zodMessage(error: { issues: { path: PropertyKey[]; message: string }[] }): string {
+  return error.issues.map((i) => `${i.path.map(String).join(".")}: ${i.message}`).join("; ");
 }
 
 /** GET — list artifacts for a use case. */
@@ -42,7 +42,12 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     // from a FormData instance, so we treat any non-JSON body as multipart.
     const isJson = contentType.includes("application/json");
     if (!isJson) {
-      const form = await request.formData();
+      let form: FormData;
+      try {
+        form = await request.formData();
+      } catch {
+        return fail("Invalid form data", 400);
+      }
       const meta = createFileMetaSchema.safeParse({
         title: form.get("title"),
         type: form.get("type"),
