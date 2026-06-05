@@ -22,23 +22,28 @@ export function sanitizeFileName(name: string): string {
 
 /**
  * Allowlist: IDs may only contain alphanumerics, dots, underscores, hyphens.
+ * Additionally rejects pure-dot strings (".", "..") to prevent path traversal.
  * Throws on empty or invalid input so bad IDs never reach the filesystem.
  */
 function safeId(id: string): string {
   const clean = id.replace(/[^a-zA-Z0-9._-]/g, "");
   if (!clean) throw new Error(`Invalid id: "${id}"`);
+  if (/^\.+$/.test(clean)) {
+    throw new Error(`Invalid id (dot-only ids are not permitted): "${id}"`);
+  }
   return clean;
 }
 
 /**
  * Resolve a path within the artifacts root, guarding against traversal.
- * Rejects any resolved path that is not strictly inside the root directory.
+ * Requires the resolved path to be a STRICT CHILD of the root directory —
+ * the root itself is not a valid target for any operation.
  */
 function resolveWithin(relativePath: string): string {
   const root = path.resolve(artifactsRoot());
   const abs = path.resolve(root, relativePath);
-  // abs must be a strict child of root (not root itself, not a sibling)
-  if (abs !== root && !abs.startsWith(root + path.sep)) {
+  // abs must be strictly inside root (must start with root + separator)
+  if (!abs.startsWith(root + path.sep)) {
     throw new Error(`Path escapes artifacts root: "${relativePath}"`);
   }
   return abs;

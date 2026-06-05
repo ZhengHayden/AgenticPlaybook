@@ -4,6 +4,7 @@ import {
   writeArtifactFile,
   readArtifactFile,
   deleteArtifactDir,
+  deleteUseCaseArtifactsDir,
   sanitizeFileName,
 } from "./artifact-storage";
 
@@ -40,5 +41,40 @@ describe("write/read/delete", () => {
 
   it("rejects reads that escape the artifacts dir", async () => {
     await expect(readArtifactFile("../../etc/passwd")).rejects.toThrow();
+  });
+});
+
+describe("dot/traversal id rejection (root-wipe guard)", () => {
+  it('deleteArtifactDir rejects artifactId ".."', async () => {
+    await expect(deleteArtifactDir("x", "..")).rejects.toThrow();
+  });
+
+  it('deleteUseCaseArtifactsDir rejects useCaseId "."', async () => {
+    await expect(deleteUseCaseArtifactsDir(".")).rejects.toThrow();
+  });
+
+  it('deleteUseCaseArtifactsDir rejects useCaseId ".."', async () => {
+    await expect(deleteUseCaseArtifactsDir("..")).rejects.toThrow();
+  });
+
+  it('writeArtifactFile rejects artifactId ".."', async () => {
+    await expect(
+      writeArtifactFile("uc", "..", "pwn.txt", Buffer.from("x")),
+    ).rejects.toThrow();
+  });
+
+  it("deleteUseCaseArtifactsDir succeeds for a normal use-case id and removes only that dir", async () => {
+    // Arrange: write a file under uc-safe/art-safe
+    await writeArtifactFile("uc-safe", "art-safe", "f.txt", Buffer.from("data"));
+    const dirPath = `${process.env.PLAYBOOK_ARTIFACTS_DIR}/uc-safe`;
+    expect(fs.existsSync(dirPath)).toBe(true);
+
+    // Act: delete just the use-case dir
+    await deleteUseCaseArtifactsDir("uc-safe");
+
+    // Assert: that dir is gone
+    expect(fs.existsSync(dirPath)).toBe(false);
+    // And the artifacts root itself still exists
+    expect(fs.existsSync(process.env.PLAYBOOK_ARTIFACTS_DIR!)).toBe(true);
   });
 });
