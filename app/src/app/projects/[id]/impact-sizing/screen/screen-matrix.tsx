@@ -4,11 +4,12 @@ import { Fragment, useState } from "react";
 import { useLocale } from "@/lib/locale-context";
 import { useProjectSave } from "@/lib/use-project-save";
 import { uploadSop, requestUnderstanding } from "@/lib/api-client";
-import type { Candidate, ScreenAnswer, SopFileRef } from "@/content/sample-data";
+import type { Candidate, ScreenAnswer, SopFileRef, ProjectUseCase } from "@/content/sample-data";
 import type { ReadinessSuggestions } from "@/lib/understanding-agent";
 import { screenCriteria, SCREEN_PASS_THRESHOLD, SCREEN_TOTAL, type ScreenCriterionId } from "@/content/binary-screen";
 import { ToolDrawer } from "@/components/tool-drawer";
 import { InlineAnchor } from "@/components/inline-anchor";
+import { UseCaseIdeasPanel } from "../_components/use-case-ideas-panel";
 import { ChevronDown, ChevronRight, Sparkles, FileText, Upload, X } from "lucide-react";
 
 interface ScreenMatrixProps {
@@ -35,16 +36,30 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
     });
     return out;
   });
+  const [useCasesByCandidate, setUseCasesByCandidate] = useState<Record<string, ProjectUseCase[]>>(() => {
+    const out: Record<string, ProjectUseCase[]> = {};
+    candidates.forEach((c) => {
+      out[c.id] = c.useCases ? [...c.useCases] : [];
+    });
+    return out;
+  });
 
-  /** Merge current screen answers + SOP refs back onto the candidates (immutably). */
+  /** Merge current screen answers, SOP refs, and use-case ideas back onto the candidates (immutably). */
   const buildMerged = (
     answersSnap: Record<string, Record<ScreenCriterionId, ScreenAnswer>>,
     sopsSnap: Record<string, SopFileRef | undefined>,
+    useCasesSnap: Record<string, ProjectUseCase[]>,
   ): Candidate[] =>
     candidates.map((c) => {
       const { sopFile: _prev, ...rest } = c;
       const sop = sopsSnap[c.id];
-      return { ...rest, screen: answersSnap[c.id] ?? c.screen, ...(sop ? { sopFile: sop } : {}) };
+      const ideas = useCasesSnap[c.id] ?? c.useCases ?? [];
+      return {
+        ...rest,
+        screen: answersSnap[c.id] ?? c.screen,
+        ...(sop ? { sopFile: sop } : {}),
+        ...(ideas.length > 0 ? { useCases: ideas } : {}),
+      };
     });
 
   const toggleYes = (candidateId: string, key: ScreenCriterionId) => {
@@ -74,7 +89,7 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
   };
 
   const onSave = async () => {
-    await save({ candidates: buildMerged(answers, sopByCandidate) });
+    await save({ candidates: buildMerged(answers, sopByCandidate, useCasesByCandidate) });
     setDirty(false);
   };
 
@@ -82,8 +97,13 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
   const onSopChange = async (candidateId: string, ref: SopFileRef | undefined) => {
     const nextSops = { ...sopByCandidate, [candidateId]: ref };
     setSopByCandidate(nextSops);
-    await save({ candidates: buildMerged(answers, nextSops) });
+    await save({ candidates: buildMerged(answers, nextSops, useCasesByCandidate) });
     setDirty(false);
+  };
+
+  const updateUseCases = (candidateId: string, next: ProjectUseCase[]) => {
+    setUseCasesByCandidate((prev) => ({ ...prev, [candidateId]: next }));
+    setDirty(true);
   };
 
   /** Apply grounded agent suggestions to local answers; null dimensions are left untouched. */
@@ -266,6 +286,13 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                           onSopChange={(ref) => onSopChange(c.id, ref)}
                           onApplySuggestions={(s) => applySuggestions(c.id, s)}
                         />
+                        <div className="mt-4">
+                          <UseCaseIdeasPanel
+                            candidateId={c.id}
+                            useCases={useCasesByCandidate[c.id] ?? []}
+                            onChange={(next) => updateUseCases(c.id, next)}
+                          />
+                        </div>
                       </td>
                     </tr>
                   )}
