@@ -95,6 +95,24 @@ const sopFileSchema = z.object({
   uploadedAt: z.string(),
 });
 
+const scoringModeSchema = z.enum(["workflow", "useCase"]);
+
+const projectUseCaseSchema = z.object({
+  id: z.string().min(1),
+  candidateId: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string(),
+  impactRationale: z.string(),
+  expectedKpis: z.array(z.string()).optional(),
+  vm: vmScoresSchema.optional(),
+  ddi: ddiCountsSchema.optional(),
+  totalSteps: z.number().int().positive().optional(),
+  risk: riskAssessmentSchema.optional(),
+  scoringNotes: z.string().optional(),
+  solutionProposal: solutionProposalSchema.optional(),
+  knowledgeUseCaseId: z.string().optional(),
+});
+
 const candidateSchema = z.object({
   id: z.string().min(1),
   name: z.string(),
@@ -119,6 +137,7 @@ const candidateSchema = z.object({
   solutionProposal: solutionProposalSchema.optional(),
   quadrantOverride: quadrantIdSchema.optional(),
   sopFile: sopFileSchema.optional(),
+  useCases: z.array(projectUseCaseSchema).optional(),
 });
 
 const teamMemberSchema = z.object({
@@ -174,6 +193,7 @@ const workflowSchema = z.object({
   id: z.string().min(1),
   name: z.string(),
   candidateId: z.string().optional(),
+  useCaseId: z.string().optional(),
   description: z.string().optional(),
   steps: z.array(workflowStepSchema),
   a2aPattern: a2aPatternIdSchema.optional(),
@@ -213,6 +233,7 @@ export const projectFieldsSchema = z.object({
   status: z.enum(["active", "archived"]),
   currentPhase: phaseIdSchema,
   phaseProgress: phaseProgressSchema,
+  scoringMode: scoringModeSchema.optional(),
   candidates: z.array(candidateSchema),
   workflows: z.array(workflowSchema),
   p1Gate: z.array(gateCriterionSchema),
