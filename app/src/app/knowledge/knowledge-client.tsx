@@ -1,109 +1,230 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import type {
+  CreateUseCaseFields,
+  KnowledgeLibrary,
+  KnowledgeUseCase,
+  ValidationStatus,
+} from "@/content/knowledge";
+import type { UpdateUseCaseInput } from "@/db/knowledge-validation";
 import { useLocale } from "@/lib/locale-context";
-import { cn } from "@/lib/utils";
-import { archetypes } from "@/content/archetypes";
-import { interactionModes } from "@/content/interactions";
-import { a2aPatterns } from "@/content/a2a-patterns";
+import { StatCard } from "@/components/ui/stat-card";
+import { Button } from "@/components/ui/button";
+import {
+  createUseCase as apiCreateUseCase,
+  deleteUseCase as apiDeleteUseCase,
+  setUseCaseValidation as apiSetValidation,
+  updateUseCase as apiUpdateUseCase,
+} from "@/lib/api-client";
+import {
+  Scope,
+  applyFilters,
+  companiesForIndustry,
+  defaultScope,
+  EMPTY_FILTERS,
+  Filters,
+  industriesForSector,
+  scopedUseCases,
+  workflowsForCompany,
+} from "./_components/filtering";
+import { localized } from "./_components/display";
+import { LibrarySidebar } from "./_components/library-sidebar";
+import { UseCaseList, type LibraryView } from "./_components/use-case-list";
+import { UseCaseEditor } from "./_components/use-case-editor";
+import { UseCaseModal } from "./_components/use-case-modal";
 
-type Tab = "archetypes" | "interactions" | "a2a";
+interface KnowledgeClientProps {
+  library: KnowledgeLibrary;
+}
 
-export function KnowledgeClient() {
+const SCOPE_SELECT_CLASS =
+  "rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium dark:border-slate-700 dark:bg-slate-800";
+
+export function KnowledgeClient({ library: initial }: KnowledgeClientProps) {
   const { t, locale } = useLocale();
-  const [tab, setTab] = useState<Tab>("archetypes");
+  const [library, setLibrary] = useState<KnowledgeLibrary>(initial);
+  const [scope, setScope] = useState<Scope>(() => defaultScope(initial));
+  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [view, setView] = useState<LibraryView>("grouped");
+  const [detail, setDetail] = useState<KnowledgeUseCase | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const tabs: ReadonlyArray<{ key: Tab; label: string }> = [
-    { key: "archetypes", label: locale === "en" ? "5 Agent Archetypes" : "5 个智能体原型" },
-    { key: "interactions", label: locale === "en" ? "3 Interaction Modes" : "3 种交互模式" },
-    { key: "a2a", label: locale === "en" ? "6 A2A Patterns" : "6 种 A2A 模式" },
-  ];
+  const industries = industriesForSector(library, scope.sectorId);
+  const companies = companiesForIndustry(library, scope.industryId);
+
+  const companyUseCases = useMemo(
+    () => scopedUseCases(library, scope.companyId),
+    [library, scope.companyId],
+  );
+  const filtered = useMemo(() => applyFilters(companyUseCases, filters), [companyUseCases, filters]);
+
+  const stats = useMemo(() => {
+    const workflows = workflowsForCompany(library, scope.companyId).length;
+    const count = (s: KnowledgeUseCase["maturity"]) =>
+      companyUseCases.filter((uc) => uc.maturity === s).length;
+    const validated = companyUseCases.filter((uc) => uc.validation.status === "validated").length;
+    return { total: companyUseCases.length, workflows, proven: count("proven"), emerging: count("emerging"), pilot: count("pilot"), validated };
+  }, [library, scope.companyId, companyUseCases]);
+
+  function selectSector(sectorId: string) {
+    const industry = industriesForSector(library, sectorId)[0];
+    const company = industry ? companiesForIndustry(library, industry.id)[0] : undefined;
+    setScope({ sectorId, industryId: industry?.id ?? "", companyId: company?.id ?? "" });
+    setFilters(EMPTY_FILTERS);
+  }
+
+  function selectIndustry(industryId: string) {
+    const company = companiesForIndustry(library, industryId)[0];
+    setScope((prev) => ({ ...prev, industryId, companyId: company?.id ?? "" }));
+    setFilters(EMPTY_FILTERS);
+  }
+
+  function selectCompany(companyId: string) {
+    setScope((prev) => ({ ...prev, companyId }));
+    setFilters(EMPTY_FILTERS);
+  }
+
+  async function handleSubmit(fields: CreateUseCaseFields) {
+    const saved = await apiCreateUseCase(fields);
+    setLibrary((prev) => ({ ...prev, useCases: [...prev.useCases, saved] }));
+    setModalOpen(false);
+  }
+
+  async function handlePatch(id: string, patch: UpdateUseCaseInput) {
+    const saved = await apiUpdateUseCase(id, patch);
+    setLibrary((prev) => ({
+      ...prev,
+      useCases: prev.useCases.map((uc) => (uc.id === saved.id ? saved : uc)),
+    }));
+    setDetail(saved);
+  }
+
+  async function handleDelete(useCase: KnowledgeUseCase) {
+    if (!window.confirm(t.knowledge.deleteConfirm)) return;
+    await apiDeleteUseCase(useCase.id);
+    setLibrary((prev) => ({ ...prev, useCases: prev.useCases.filter((uc) => uc.id !== useCase.id) }));
+    if (detail?.id === useCase.id) setDetail(null);
+  }
+
+  async function handleSetValidation(id: string, status: ValidationStatus, note: string) {
+    const saved = await apiSetValidation(id, { status, note });
+    setLibrary((prev) => ({
+      ...prev,
+      useCases: prev.useCases.map((uc) => (uc.id === saved.id ? saved : uc)),
+    }));
+    setDetail(saved);
+  }
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{t.nav.knowledge}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          {locale === "en"
-            ? "Reference library: taxonomies that power the design methodology."
-            : "参考库:支撑设计方法论的分类法。"}
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">{t.knowledge.title}</h1>
+          <p className="mt-1 text-sm text-slate-500">{t.knowledge.subtitle}</p>
+        </div>
+        <Button onClick={() => setModalOpen(true)} disabled={!scope.companyId}>
+          + {t.knowledge.addUseCase}
+        </Button>
       </div>
 
-      <nav className="flex gap-1 border-b border-slate-200 dark:border-slate-800">
-        {tabs.map((x) => (
-          <button
-            key={x.key}
-            onClick={() => setTab(x.key)}
-            className={cn(
-              "border-b-2 px-3 py-2 text-sm font-medium transition-colors",
-              tab === x.key
-                ? "border-indigo-600 text-slate-900 dark:text-slate-50"
-                : "border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-100",
-            )}
-          >
-            {x.label}
-          </button>
-        ))}
-      </nav>
+      {/* scope bar */}
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
+        <ScopeSelect
+          label={t.knowledge.sector}
+          value={scope.sectorId}
+          onChange={selectSector}
+          options={library.sectors
+            .slice()
+            .sort((a, b) => a.sort - b.sort)
+            .map((s) => ({ value: s.id, label: localized(s.name, locale) }))}
+        />
+        <span className="text-slate-300">›</span>
+        <ScopeSelect
+          label={t.knowledge.industry}
+          value={scope.industryId}
+          onChange={selectIndustry}
+          options={industries.map((i) => ({ value: i.id, label: localized(i.name, locale) }))}
+        />
+        <span className="text-slate-300">›</span>
+        <ScopeSelect
+          label={t.knowledge.company}
+          value={scope.companyId}
+          onChange={selectCompany}
+          options={companies.map((c) => ({ value: c.id, label: c.name }))}
+        />
+      </div>
 
-      {tab === "archetypes" && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {archetypes.map((a) => (
-            <article key={a.id} className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-              <div className="text-3xl">{a.icon}</div>
-              <h2 className="mt-2 text-lg font-semibold">{a[locale].name}</h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{a[locale].function}</p>
-              <dl className="mt-3 space-y-1 text-xs">
-                <div>
-                  <dt className="font-semibold text-slate-700 dark:text-slate-300">{locale === "en" ? "Selection trigger" : "选择触发"}</dt>
-                  <dd className="text-slate-500">{a[locale].trigger}</dd>
-                </div>
-                <div>
-                  <dt className="font-semibold text-slate-700 dark:text-slate-300">{locale === "en" ? "Example" : "示例"}</dt>
-                  <dd className="text-slate-500">{a[locale].example}</dd>
-                </div>
-              </dl>
-            </article>
-          ))}
-        </div>
+      {/* scoped stats */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <StatCard label={t.knowledge.useCases} value={stats.total} accent="bg-indigo-500" />
+        <StatCard label={t.knowledge.workflows} value={stats.workflows} accent="bg-sky-500" />
+        <StatCard label={t.knowledge.maturityProven} value={stats.proven} accent="bg-emerald-500" />
+        <StatCard label={t.knowledge.maturityEmerging} value={stats.emerging} accent="bg-sky-500" />
+        <StatCard label={t.knowledge.maturityPilot} value={stats.pilot} accent="bg-amber-500" />
+        <StatCard label={t.knowledge.validated} value={stats.validated} accent="bg-emerald-500" />
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[16rem_1fr]">
+        <LibrarySidebar
+          library={library}
+          companyId={scope.companyId}
+          filters={filters}
+          onFiltersChange={setFilters}
+          view={view}
+          onViewChange={setView}
+        />
+        <UseCaseList
+          view={view}
+          library={library}
+          useCases={filtered}
+          onView={setDetail}
+          onEdit={setDetail}
+          onDelete={handleDelete}
+        />
+      </div>
+
+      {detail && (
+        <UseCaseEditor
+          key={detail.id}
+          useCase={detail}
+          library={library}
+          onClose={() => setDetail(null)}
+          onPatch={handlePatch}
+          onSetValidation={handleSetValidation}
+          onDelete={handleDelete}
+        />
       )}
-
-      {tab === "interactions" && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {interactionModes.map((m) => (
-            <article key={m.id} className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-              <div className="text-3xl">{m.icon}</div>
-              <h2 className="mt-2 text-lg font-semibold">{m[locale].name}</h2>
-              <dl className="mt-3 space-y-1 text-xs">
-                <div>
-                  <dt className="font-semibold text-slate-700 dark:text-slate-300">{locale === "en" ? "Autonomy" : "自主程度"}</dt>
-                  <dd className="text-slate-500">{m[locale].autonomy}</dd>
-                </div>
-                <div>
-                  <dt className="font-semibold text-slate-700 dark:text-slate-300">{locale === "en" ? "Use when" : "使用条件"}</dt>
-                  <dd className="text-slate-500">{m[locale].criterion}</dd>
-                </div>
-              </dl>
-            </article>
-          ))}
-        </div>
-      )}
-
-      {tab === "a2a" && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {a2aPatterns.map((p) => (
-            <article key={p.id} className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-              <h2 className="text-lg font-semibold">{p[locale].name}</h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{p[locale].description}</p>
-              <p className="mt-3 text-xs">
-                <strong className="text-slate-700 dark:text-slate-300">{locale === "en" ? "Use when:" : "使用条件:"}</strong>{" "}
-                <span className="text-slate-500">{p[locale].useWhen}</span>
-              </p>
-            </article>
-          ))}
-        </div>
+      {modalOpen && (
+        <UseCaseModal
+          library={library}
+          companyId={scope.companyId}
+          onClose={() => setModalOpen(false)}
+          onSubmit={handleSubmit}
+        />
       )}
     </section>
+  );
+}
+
+interface ScopeSelectProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: ReadonlyArray<{ value: string; label: string }>;
+}
+
+function ScopeSelect({ label, value, onChange, options }: ScopeSelectProps) {
+  return (
+    <label className="flex items-center gap-2">
+      <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</span>
+      <select className={SCOPE_SELECT_CLASS} value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

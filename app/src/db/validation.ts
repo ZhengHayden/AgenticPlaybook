@@ -10,9 +10,10 @@ import { z } from "zod";
 // ─── Scalar / id unions ───────────────────────────────────────
 const localeSchema = z.enum(["en", "zh"]);
 const phaseIdSchema = z.enum(["impactSizing", "design", "mvp", "production"]);
-const archetypeIdSchema = z.enum(["orchestrator", "executor", "analyst", "retriever", "evaluator"]);
-const interactionIdSchema = z.enum(["autopilot", "copilot", "guardian"]);
-const a2aPatternIdSchema = z.enum([
+// Exported for reuse by the Knowledge library boundary (`db/knowledge-validation.ts`).
+export const archetypeIdSchema = z.enum(["orchestrator", "executor", "analyst", "retriever", "evaluator"]);
+export const interactionIdSchema = z.enum(["autopilot", "copilot", "guardian"]);
+export const a2aPatternIdSchema = z.enum([
   "sequential",
   "pipeline",
   "parallel",
