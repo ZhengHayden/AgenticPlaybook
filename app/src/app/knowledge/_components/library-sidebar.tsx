@@ -34,7 +34,7 @@ export function LibrarySidebar({
   const { t, locale } = useLocale();
   const functions = functionsForCompany(library, companyId).sort((a, b) => a.sort - b.sort);
   const hasFilters =
-    filters.search || filters.functionId || filters.maturity || filters.techTag || filters.validationStatus;
+    filters.search || filters.functionId || filters.maturity || filters.techTag || filters.validationStatus || filters.hasArtifacts;
 
   function patch(next: Partial<Filters>) {
     onFiltersChange({ ...filters, ...next });
@@ -92,6 +92,14 @@ export function LibrarySidebar({
           allLabel={t.knowledge.allValidation}
           options={VALIDATION_STATUSES.map((s) => ({ value: s, label: validationLabel(t, s) }))}
         />
+        <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+          <input
+            type="checkbox"
+            checked={filters.hasArtifacts}
+            onChange={(e) => patch({ hasArtifacts: e.target.checked })}
+          />
+          {t.knowledge.hasArtifacts}
+        </label>
 
         {hasFilters && (
           <Button

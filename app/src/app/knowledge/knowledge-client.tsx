@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   CreateUseCaseFields,
   KnowledgeLibrary,
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import {
   createUseCase as apiCreateUseCase,
   deleteUseCase as apiDeleteUseCase,
+  listArtifacts as apiListArtifacts,
   setUseCaseValidation as apiSetValidation,
   updateUseCase as apiUpdateUseCase,
 } from "@/lib/api-client";
@@ -49,6 +50,7 @@ export function KnowledgeClient({ library: initial }: KnowledgeClientProps) {
   const [view, setView] = useState<LibraryView>("grouped");
   const [detail, setDetail] = useState<KnowledgeUseCase | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [artifactCounts, setArtifactCounts] = useState<Record<string, number>>({});
 
   const industries = industriesForSector(library, scope.sectorId);
   const companies = companiesForIndustry(library, scope.industryId);
@@ -57,7 +59,28 @@ export function KnowledgeClient({ library: initial }: KnowledgeClientProps) {
     () => scopedUseCases(library, scope.companyId),
     [library, scope.companyId],
   );
-  const filtered = useMemo(() => applyFilters(companyUseCases, filters), [companyUseCases, filters]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const entries = await Promise.all(
+        companyUseCases.map(async (uc) => [uc.id, (await apiListArtifacts(uc.id)).length] as const),
+      );
+      if (!cancelled) setArtifactCounts(Object.fromEntries(entries));
+    })().catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [companyUseCases]);
+
+  const idsWithArtifacts = useMemo(
+    () => new Set(Object.entries(artifactCounts).filter(([, n]) => n > 0).map(([id]) => id)),
+    [artifactCounts],
+  );
+  const filtered = useMemo(
+    () => applyFilters(companyUseCases, filters, idsWithArtifacts),
+    [companyUseCases, filters, idsWithArtifacts],
+  );
 
   const stats = useMemo(() => {
     const workflows = workflowsForCompany(library, scope.companyId).length;
@@ -156,14 +179,22 @@ export function KnowledgeClient({ library: initial }: KnowledgeClientProps) {
       </div>
 
       {/* scoped stats */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        <StatCard label={t.knowledge.useCases} value={stats.total} accent="bg-indigo-500" />
-        <StatCard label={t.knowledge.workflows} value={stats.workflows} accent="bg-sky-500" />
-        <StatCard label={t.knowledge.maturityProven} value={stats.proven} accent="bg-emerald-500" />
-        <StatCard label={t.knowledge.maturityEmerging} value={stats.emerging} accent="bg-sky-500" />
-        <StatCard label={t.knowledge.maturityPilot} value={stats.pilot} accent="bg-amber-500" />
-        <StatCard label={t.knowledge.validated} value={stats.validated} accent="bg-emerald-500" />
-      </div>
+      {(() => {
+        const artifactTotal = Object.values(artifactCounts).reduce((a, b) => a + b, 0);
+        return (
+          <>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <StatCard label={t.knowledge.useCases} value={stats.total} accent="bg-indigo-500" />
+              <StatCard label={t.knowledge.validated} value={stats.validated} accent="bg-emerald-500" />
+              <StatCard label={t.knowledge.artifacts} value={artifactTotal} accent="bg-sky-500" />
+              <StatCard label={t.knowledge.workflows} value={stats.workflows} accent="bg-violet-500" />
+            </div>
+            <p className="text-xs text-slate-400">
+              {t.knowledge.maturityProven}: {stats.proven} · {t.knowledge.maturityEmerging}: {stats.emerging} · {t.knowledge.maturityPilot}: {stats.pilot}
+            </p>
+          </>
+        );
+      })()}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[16rem_1fr]">
         <LibrarySidebar
@@ -178,6 +209,7 @@ export function KnowledgeClient({ library: initial }: KnowledgeClientProps) {
           view={view}
           library={library}
           useCases={filtered}
+          counts={artifactCounts}
           onView={setDetail}
           onEdit={setDetail}
           onDelete={handleDelete}
