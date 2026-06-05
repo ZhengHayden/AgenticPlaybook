@@ -24,6 +24,36 @@ function createConnection() {
       updated_at INTEGER NOT NULL,
       data TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS knowledge_taxonomy (
+      id TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      parent_id TEXT,
+      sort INTEGER NOT NULL,
+      data TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS knowledge_use_cases (
+      id TEXT PRIMARY KEY,
+      workflow_id TEXT NOT NULL,
+      sector_id TEXT NOT NULL,
+      industry_id TEXT NOT NULL,
+      company_id TEXT NOT NULL,
+      function_id TEXT NOT NULL,
+      maturity TEXT NOT NULL,
+      tech_tag TEXT NOT NULL,
+      name TEXT NOT NULL,
+      validation_status TEXT NOT NULL,
+      data TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS knowledge_artifacts (
+      id TEXT PRIMARY KEY,
+      use_case_id TEXT NOT NULL,
+      kind TEXT NOT NULL,
+      type TEXT NOT NULL,
+      status TEXT NOT NULL,
+      updated_at INTEGER NOT NULL,
+      data TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_artifacts_use_case ON knowledge_artifacts(use_case_id);
   `);
   return drizzle(sqlite, { schema });
 }
