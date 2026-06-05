@@ -12,6 +12,11 @@ beforeEach(() => {
   tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "playbook-test-"));
   process.env.PLAYBOOK_DB_PATH = path.join(tmpRoot, "test.db");
   process.env.PLAYBOOK_ARTIFACTS_DIR = path.join(tmpRoot, "artifacts");
+  // Clear the cached db connection so the next db import picks up the new path.
+  // This is necessary in the node test environment where globalThis is the real
+  // Node global and the connection is cached across tests in the same process.
+  const g = globalThis as unknown as { __playbookDb?: unknown };
+  delete g.__playbookDb;
 });
 
 afterEach(() => {
