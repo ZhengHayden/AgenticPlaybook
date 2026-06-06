@@ -11,6 +11,8 @@ interface UseCaseIdeasPanelProps {
   useCases: ReadonlyArray<ProjectUseCase>;
   /** Receives the full next list (immutable); the host persists it. */
   onChange: (next: ProjectUseCase[]) => void;
+  /** Display-only: render names as text with no add/edit/delete controls. */
+  readOnly?: boolean;
 }
 
 function newId(): string {
@@ -29,6 +31,7 @@ const T = {
     remove: "Remove",
     details: "Edit details",
     empty: "No use-case ideas yet.",
+    untitled: "Untitled",
   },
   zh: {
     title: "用例",
@@ -41,6 +44,7 @@ const T = {
     remove: "移除",
     details: "编辑详情",
     empty: "暂无用例想法。",
+    untitled: "未命名",
   },
 };
 
@@ -53,10 +57,36 @@ const iconButtonClass =
  * single add button appends a new idea. Pure and immutable — edits return new
  * arrays and call `onChange`; the host persists.
  */
-export function UseCaseIdeasPanel({ candidateId, useCases, onChange }: UseCaseIdeasPanelProps) {
+export function UseCaseIdeasPanel({
+  candidateId,
+  useCases,
+  onChange,
+  readOnly = false,
+}: UseCaseIdeasPanelProps) {
   const { locale } = useLocale();
   const t = T[locale];
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  if (readOnly) {
+    return (
+      <section>
+        <div className="mb-1">
+          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            {t.title}
+          </span>
+        </div>
+        {useCases.length === 0 ? (
+          <p className="text-xs text-slate-400">{t.empty}</p>
+        ) : (
+          <ul className="list-disc space-y-0.5 pl-5 text-sm text-slate-700 dark:text-slate-300">
+            {useCases.map((uc) => (
+              <li key={uc.id}>{uc.name || t.untitled}</li>
+            ))}
+          </ul>
+        )}
+      </section>
+    );
+  }
 
   const patchAt = (index: number, patch: Partial<ProjectUseCase>) => {
     onChange(useCases.map((uc, i) => (i === index ? { ...uc, ...patch } : uc)));

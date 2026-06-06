@@ -10,7 +10,7 @@ import { screenCriteria, SCREEN_PASS_THRESHOLD, SCREEN_TOTAL, type ScreenCriteri
 import { ToolDrawer } from "@/components/tool-drawer";
 import { InlineAnchor } from "@/components/inline-anchor";
 import { UseCaseIdeasPanel } from "../_components/use-case-ideas-panel";
-import { ChevronDown, ChevronRight, Sparkles, FileText, Upload, X } from "lucide-react";
+import { ChevronDown, ChevronRight, Sparkles, FileText, Upload, X, Pencil, Check } from "lucide-react";
 
 interface ScreenMatrixProps {
   projectId: string;
@@ -20,12 +20,20 @@ interface ScreenMatrixProps {
 /** Sentinel filter value for candidates with no business function set. */
 const UNASSIGNED = "__unassigned__";
 
+const yesBadge =
+  "inline-flex h-7 w-7 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300";
+const noBadge =
+  "inline-flex h-7 w-7 items-center justify-center rounded-md bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300";
+
+const iconBtn =
+  "inline-flex h-7 w-7 items-center justify-center rounded-md text-slate-400 disabled:opacity-40";
+
 export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
   const { locale } = useLocale();
   const en = locale === "en";
   const { status, error, save } = useProjectSave(projectId);
-  // Per-workflow unsaved-changes tracking — editing is workflow-scoped.
-  const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
+  // Only one workflow is editable at a time; everything else is display-only.
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<string, Record<ScreenCriterionId, ScreenAnswer>>>(() => {
     const out: Record<string, Record<ScreenCriterionId, ScreenAnswer>> = {};
     candidates.forEach((c) => {
@@ -57,9 +65,6 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
     return out;
   });
 
-  const markDirty = (candidateId: string) =>
-    setDirtyIds((prev) => (prev.has(candidateId) ? prev : new Set(prev).add(candidateId)));
-
   /** Merge current screen answers, SOP refs, use-case ideas, and business function back onto candidates (immutably). */
   const buildMerged = (
     answersSnap: Record<string, Record<ScreenCriterionId, ScreenAnswer>>,
@@ -81,15 +86,12 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
       };
     });
 
-  /** Persist the full current state (PATCH replaces all candidates) and clear unsaved flags. */
-  const persist = async (
+  /** Persist the full current state (PATCH replaces all candidates). */
+  const persist = (
     sopsSnap = sopByCandidate,
     useCasesSnap = useCasesByCandidate,
     bizFnSnap = bizFnByCandidate,
-  ) => {
-    await save({ candidates: buildMerged(answers, sopsSnap, useCasesSnap, bizFnSnap) });
-    setDirtyIds(new Set());
-  };
+  ) => save({ candidates: buildMerged(answers, sopsSnap, useCasesSnap, bizFnSnap) });
 
   const toggleYes = (candidateId: string, key: ScreenCriterionId) => {
     setAnswers((prev) => ({
@@ -99,7 +101,6 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
         [key]: { ...prev[candidateId][key], yes: !prev[candidateId][key].yes },
       },
     }));
-    markDirty(candidateId);
   };
 
   const updateField = (
@@ -114,7 +115,6 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
         [key]: { ...prev[candidateId][key], ...patch },
       },
     }));
-    markDirty(candidateId);
   };
 
   /** Persist a SOP upload/removal immediately so the stored file is never orphaned. */
@@ -126,12 +126,10 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
 
   const updateUseCases = (candidateId: string, next: ProjectUseCase[]) => {
     setUseCasesByCandidate((prev) => ({ ...prev, [candidateId]: next }));
-    markDirty(candidateId);
   };
 
   const updateBizFn = (candidateId: string, value: string | undefined) => {
     setBizFnByCandidate((prev) => ({ ...prev, [candidateId]: value }));
-    markDirty(candidateId);
   };
 
   /** Apply grounded agent suggestions to local answers; null dimensions are left untouched. */
@@ -151,7 +149,25 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
       }
       return { ...prev, [candidateId]: next };
     });
-    markDirty(candidateId);
+  };
+
+  const enterEdit = (candidateId: string) => {
+    setEditingId(candidateId);
+    setExpandedRow(candidateId);
+  };
+
+  const saveWorkflow = async () => {
+    await persist();
+    setEditingId(null);
+  };
+
+  /** Discard a workflow's in-flight edits, reverting local state to the stored candidate. */
+  const cancelWorkflow = (c: Candidate) => {
+    setAnswers((prev) => ({ ...prev, [c.id]: { ...c.screen } }));
+    setSopByCandidate((prev) => ({ ...prev, [c.id]: c.sopFile }));
+    setUseCasesByCandidate((prev) => ({ ...prev, [c.id]: c.useCases ? [...c.useCases] : [] }));
+    setBizFnByCandidate((prev) => ({ ...prev, [c.id]: c.businessFunction }));
+    setEditingId(null);
   };
 
   const scoreFor = (candidateId: string): number =>
@@ -170,7 +186,7 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
   });
 
   // expand col is rendered as an empty cell; the colspan covers the remaining columns.
-  const SUBROW_COLSPAN = screenCriteria.length + 4;
+  const SUBROW_COLSPAN = screenCriteria.length + 5;
 
   return (
     <div className="space-y-4">
@@ -229,7 +245,7 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <table className="w-full min-w-[820px] text-sm">
+        <table className="w-full min-w-[860px] text-sm">
           <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
             <tr>
               <th className="w-8 px-3 py-2">
@@ -258,6 +274,9 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
               ))}
               <th className="px-3 py-2 text-right font-medium">{en ? "Score" : "得分"}</th>
               <th className="px-3 py-2 font-medium">{en ? "Status" : "状态"}</th>
+              <th className="px-3 py-2 text-right font-medium">
+                <span className="sr-only">{en ? "Actions" : "操作"}</span>
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -265,7 +284,7 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
               const score = scoreFor(c.id);
               const pass = score >= SCREEN_PASS_THRESHOLD;
               const expanded = expandedRow === c.id;
-              const wfDirty = dirtyIds.has(c.id);
+              const editing = editingId === c.id;
               return (
                 <Fragment key={c.id}>
                   <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
@@ -290,18 +309,23 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                       const a = answers[c.id][cr.id];
                       return (
                         <td key={cr.id} className="px-3 py-3 align-top">
-                          <button
-                            type="button"
-                            onClick={() => toggleYes(c.id, cr.id)}
-                            className={
-                              a.yes
-                                ? "inline-flex h-7 w-7 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
-                                : "inline-flex h-7 w-7 items-center justify-center rounded-md bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"
-                            }
-                            title={a.evidence ?? a.mitigation ?? ""}
-                          >
-                            {a.yes ? "✓" : "✗"}
-                          </button>
+                          {editing ? (
+                            <button
+                              type="button"
+                              onClick={() => toggleYes(c.id, cr.id)}
+                              className={a.yes ? yesBadge : noBadge}
+                              title={a.evidence ?? a.mitigation ?? ""}
+                            >
+                              {a.yes ? "✓" : "✗"}
+                            </button>
+                          ) : (
+                            <span
+                              className={`${a.yes ? yesBadge : noBadge} cursor-default`}
+                              title={a.evidence ?? a.mitigation ?? ""}
+                            >
+                              {a.yes ? "✓" : "✗"}
+                            </span>
+                          )}
                         </td>
                       );
                     })}
@@ -319,26 +343,66 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                         {pass ? "PASS" : "FAIL"}
                       </span>
                     </td>
+                    <td className="px-3 py-3 text-right align-top">
+                      {editing ? (
+                        <div className="inline-flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={saveWorkflow}
+                            disabled={status === "saving"}
+                            aria-label={en ? "Save workflow" : "保存此工作流"}
+                            title={en ? "Save workflow" : "保存此工作流"}
+                            className={`${iconBtn} hover:text-emerald-600 dark:hover:text-emerald-400`}
+                          >
+                            <Check className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => cancelWorkflow(c)}
+                            disabled={status === "saving"}
+                            aria-label={en ? "Cancel" : "取消"}
+                            title={en ? "Cancel" : "取消"}
+                            className={`${iconBtn} hover:text-rose-600 dark:hover:text-rose-400`}
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => enterEdit(c.id)}
+                          disabled={status === "saving"}
+                          aria-label={en ? "Edit workflow" : "编辑工作流"}
+                          title={en ? "Edit workflow" : "编辑工作流"}
+                          className={`${iconBtn} hover:text-indigo-600 dark:hover:text-indigo-400`}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                      )}
+                    </td>
                   </tr>
 
                   {expanded && (
                     <tr className="bg-slate-50/60 dark:bg-slate-950/40">
                       <td></td>
                       <td colSpan={SUBROW_COLSPAN} className="px-3 py-4">
-                        <label className="mb-3 block max-w-sm text-xs">
-                          <span className="text-slate-500">{en ? "Business function" : "业务职能"}</span>
-                          <input
-                            value={bizFnByCandidate[c.id] ?? ""}
-                            onChange={(e) => updateBizFn(c.id, e.target.value || undefined)}
-                            placeholder={en ? "e.g. Accounts Payable" : "例如:应付账款"}
-                            className="mt-0.5 w-full rounded border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
-                          />
-                        </label>
+                        {editing && (
+                          <label className="mb-3 block max-w-sm text-xs">
+                            <span className="text-slate-500">{en ? "Business function" : "业务职能"}</span>
+                            <input
+                              value={bizFnByCandidate[c.id] ?? ""}
+                              onChange={(e) => updateBizFn(c.id, e.target.value || undefined)}
+                              placeholder={en ? "e.g. Accounts Payable" : "例如:应付账款"}
+                              className="mt-0.5 w-full rounded border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+                            />
+                          </label>
+                        )}
                         <EvidencePanel
                           projectId={projectId}
                           candidate={c}
                           answers={answers[c.id]}
                           sopFile={sopByCandidate[c.id]}
+                          readOnly={!editing}
                           onUpdate={(key, patch) => updateField(c.id, key, patch)}
                           onSopChange={(ref) => onSopChange(c.id, ref)}
                           onApplySuggestions={(s) => applySuggestions(c.id, s)}
@@ -347,31 +411,16 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                     </tr>
                   )}
 
-                  {/* Always-visible use-case list + per-workflow save. */}
+                  {/* Always-visible use-case list (read-only unless this workflow is being edited). */}
                   <tr className="bg-white dark:bg-slate-900">
                     <td></td>
                     <td colSpan={SUBROW_COLSPAN} className="px-3 pb-4 pt-0">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <UseCaseIdeasPanel
-                            candidateId={c.id}
-                            useCases={useCasesByCandidate[c.id] ?? []}
-                            onChange={(next) => updateUseCases(c.id, next)}
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => persist()}
-                          disabled={!wfDirty || status === "saving"}
-                          className="shrink-0 rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
-                        >
-                          {status === "saving"
-                            ? en ? "Saving…" : "保存中…"
-                            : !wfDirty && status === "saved"
-                              ? en ? "Saved ✓" : "已保存 ✓"
-                              : en ? "Save workflow" : "保存此工作流"}
-                        </button>
-                      </div>
+                      <UseCaseIdeasPanel
+                        candidateId={c.id}
+                        useCases={useCasesByCandidate[c.id] ?? []}
+                        onChange={(next) => updateUseCases(c.id, next)}
+                        readOnly={!editing}
+                      />
                     </td>
                   </tr>
                 </Fragment>
@@ -397,6 +446,8 @@ interface EvidencePanelProps {
   candidate: Candidate;
   answers: Record<ScreenCriterionId, ScreenAnswer>;
   sopFile: SopFileRef | undefined;
+  /** Display-only: inputs are disabled and the upload/agent actions are hidden. */
+  readOnly: boolean;
   onUpdate: (key: ScreenCriterionId, patch: Partial<ScreenAnswer>) => void;
   onSopChange: (ref: SopFileRef | undefined) => Promise<void>;
   onApplySuggestions: (suggestions: ReadinessSuggestions) => void;
@@ -407,11 +458,13 @@ function EvidencePanel({
   candidate,
   answers,
   sopFile,
+  readOnly,
   onUpdate,
   onSopChange,
   onApplySuggestions,
 }: EvidencePanelProps) {
   const { locale } = useLocale();
+  const en = locale === "en";
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [agentLoading, setAgentLoading] = useState(false);
@@ -457,11 +510,14 @@ function EvidencePanel({
     }
   };
 
+  const fieldClass =
+    "mt-0.5 w-full rounded border border-slate-200 bg-white px-2 py-1 text-sm disabled:cursor-default disabled:bg-slate-50 disabled:text-slate-600 dark:border-slate-700 dark:bg-slate-950 dark:disabled:bg-slate-900";
+
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-          {locale === "en" ? `Evidence — ${candidate.name}` : `证据 — ${candidate.name}`}
+          {en ? `Evidence — ${candidate.name}` : `证据 — ${candidate.name}`}
         </h3>
         <div className="flex flex-wrap items-center gap-2">
           {sopFile ? (
@@ -476,23 +532,27 @@ function EvidencePanel({
               >
                 {sopFile.filename}
               </a>
-              <button
-                type="button"
-                onClick={onRemoveSop}
-                className="text-slate-400 hover:text-rose-600"
-                aria-label={locale === "en" ? "Remove SOP" : "移除 SOP"}
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
+              {!readOnly && (
+                <button
+                  type="button"
+                  onClick={onRemoveSop}
+                  className="text-slate-400 hover:text-rose-600"
+                  aria-label={en ? "Remove SOP" : "移除 SOP"}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
             </span>
+          ) : readOnly ? (
+            <span className="text-xs text-slate-400">{en ? "No SOP uploaded" : "未上传 SOP"}</span>
           ) : (
             <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
               <Upload className="h-3.5 w-3.5" />
               {uploading
-                ? locale === "en"
+                ? en
                   ? "Uploading…"
                   : "上传中…"
-                : locale === "en"
+                : en
                   ? "Upload SOP (PDF)"
                   : "上传 SOP(PDF)"}
               <input
@@ -507,28 +567,24 @@ function EvidencePanel({
               />
             </label>
           )}
-          <button
-            type="button"
-            onClick={onRunAgent}
-            disabled={!sopFile || agentLoading}
-            title={
-              sopFile
-                ? undefined
-                : locale === "en"
-                  ? "Upload a SOP first"
-                  : "请先上传 SOP"
-            }
-            className="inline-flex items-center gap-1 rounded-md border border-indigo-200 px-2 py-1 text-xs text-indigo-600 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-indigo-900/50 dark:text-indigo-400 dark:hover:bg-indigo-950/30"
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            {agentLoading
-              ? locale === "en"
-                ? "Reading SOP…"
-                : "读取 SOP…"
-              : locale === "en"
-                ? "Run Understanding Agent"
-                : "运行流程理解智能体"}
-          </button>
+          {!readOnly && (
+            <button
+              type="button"
+              onClick={onRunAgent}
+              disabled={!sopFile || agentLoading}
+              title={sopFile ? undefined : en ? "Upload a SOP first" : "请先上传 SOP"}
+              className="inline-flex items-center gap-1 rounded-md border border-indigo-200 px-2 py-1 text-xs text-indigo-600 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-indigo-900/50 dark:text-indigo-400 dark:hover:bg-indigo-950/30"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              {agentLoading
+                ? en
+                  ? "Reading SOP…"
+                  : "读取 SOP…"
+                : en
+                  ? "Run Understanding Agent"
+                  : "运行流程理解智能体"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -544,7 +600,7 @@ function EvidencePanel({
       )}
       {notStated.length > 0 && (
         <p className="text-xs text-slate-500">
-          {locale === "en"
+          {en
             ? "Dimensions left blank were not stated in the SOP — review and fill them in manually."
             : "留空的维度在 SOP 中未提及 — 请人工复核并填写。"}
         </p>
@@ -569,7 +625,7 @@ function EvidencePanel({
                 <div className="flex items-center gap-1">
                   {isNotStated && (
                     <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
-                      {locale === "en" ? "not stated in SOP" : "SOP 未提及"}
+                      {en ? "not stated in SOP" : "SOP 未提及"}
                     </span>
                   )}
                   <span
@@ -588,38 +644,41 @@ function EvidencePanel({
                   <span className="text-slate-500">{cr.factField[locale]}</span>
                   <input
                     value={a.factValue ?? ""}
+                    disabled={readOnly}
                     onChange={(e) => onUpdate(cr.id, { factValue: e.target.value })}
                     placeholder={cr.factField.placeholder}
-                    className="mt-0.5 w-full rounded border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+                    className={fieldClass}
                   />
                 </label>
               )}
               <label className="mt-2 block text-xs">
                 <span className="text-slate-500">
-                  {a.yes ? (locale === "en" ? "Evidence" : "证据") : (locale === "en" ? "Gap description" : "缺口描述")}
+                  {a.yes ? (en ? "Evidence" : "证据") : (en ? "Gap description" : "缺口描述")}
                 </span>
                 <textarea
                   rows={2}
-                  value={a.yes ? (a.evidence ?? "") : (a.evidence ?? "")}
+                  value={a.evidence ?? ""}
+                  disabled={readOnly}
                   onChange={(e) => onUpdate(cr.id, { evidence: e.target.value })}
-                  className="mt-0.5 w-full resize-y rounded border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+                  className={`${fieldClass} resize-y`}
                 />
               </label>
               {!a.yes && (
                 <label className="mt-2 block text-xs">
                   <span className="text-slate-500">
-                    {locale === "en" ? "Mitigation feasibility" : "缓解方案可行性"}
+                    {en ? "Mitigation feasibility" : "缓解方案可行性"}
                   </span>
                   <textarea
                     rows={2}
                     value={a.mitigation ?? ""}
+                    disabled={readOnly}
                     onChange={(e) => onUpdate(cr.id, { mitigation: e.target.value })}
                     placeholder={
-                      locale === "en"
+                      en
                         ? "Describe gap + mitigation; only 1 No allowed."
                         : "描述缺口与缓解方案;仅允许 1 项 No。"
                     }
-                    className="mt-0.5 w-full resize-y rounded border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+                    className={`${fieldClass} resize-y`}
                   />
                 </label>
               )}

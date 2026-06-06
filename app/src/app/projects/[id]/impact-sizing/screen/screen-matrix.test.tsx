@@ -77,22 +77,36 @@ describe("ScreenMatrix", () => {
     expect(screen.queryByText("Hiring Funnel")).not.toBeInTheDocument();
   });
 
-  it("shows use cases inline by default (no expand needed)", () => {
+  it("shows use cases inline by default as read-only text", () => {
     const c = candidate("c1", "AP Invoicing", "Finance", [idea("u1", "c1", "Auto-match")]);
     wrap(<ScreenMatrix projectId="p" candidates={[c]} />);
-    // The inline use-case name is editable and present without expanding the row.
-    expect(screen.getByDisplayValue("Auto-match")).toBeInTheDocument();
+    // Visible without expanding, but read-only: name is text, not an input, and there is no add button.
+    expect(screen.getByText("Auto-match")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Auto-match")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /add use case/i })).not.toBeInTheDocument();
   });
 
-  it("offers a per-workflow Save and no global page Save", () => {
+  it("is display-only by default and a pen icon enters inline edit mode", () => {
     wrap(<ScreenMatrix projectId="p" candidates={[candidate("c1", "AP Invoicing", "Finance")]} />);
-    // Per-workflow save (disabled until a change is made).
-    const save = screen.getByRole("button", { name: /save workflow/i });
-    expect(save).toBeInTheDocument();
-    expect(save).toBeDisabled();
+    // Display: an Edit affordance, no Save/Cancel yet.
+    const edit = screen.getByRole("button", { name: /edit workflow/i });
+    expect(edit).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /save workflow/i })).not.toBeInTheDocument();
 
-    // Toggling a criterion enables that workflow's Save.
-    fireEvent.click(screen.getAllByText("✓")[0]);
-    expect(screen.getByRole("button", { name: /save workflow/i })).toBeEnabled();
+    // Enter edit mode: Save + Cancel appear.
+    fireEvent.click(edit);
+    expect(screen.getByRole("button", { name: /save workflow/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+  });
+
+  it("makes use cases editable only after entering edit mode", () => {
+    const c = candidate("c1", "AP Invoicing", "Finance", [idea("u1", "c1", "Auto-match")]);
+    wrap(<ScreenMatrix projectId="p" candidates={[c]} />);
+    // Read-only first.
+    expect(screen.queryByRole("button", { name: /add use case/i })).not.toBeInTheDocument();
+    // Enter edit mode → the use-case name becomes an input and an add button appears.
+    fireEvent.click(screen.getByRole("button", { name: /edit workflow/i }));
+    expect(screen.getByRole("button", { name: /add use case/i })).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Auto-match")).toBeInTheDocument();
   });
 });
