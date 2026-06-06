@@ -4,10 +4,11 @@ import { useState } from "react";
 import { useLocale } from "@/lib/locale-context";
 import { useProjectSave } from "@/lib/use-project-save";
 import type { Candidate, VmScores, DdiCounts, RiskAssessment, ScoringMode } from "@/content/sample-data";
-import { cohortMaxDdiRaw } from "@/content/scoring-rubric";
+import { cohortMaxDdiRaw, computeUnitPriority, PRIORITY_FLOOR } from "@/content/scoring-rubric";
 import { ToolDrawer } from "@/components/tool-drawer";
 import { ScoreUnitEditor, ScoringToolReference, type ScoreUnitValue } from "./score-unit-editor";
 import { UseCaseScoring } from "./use-case-scoring";
+import { ScoringSidebar, groupByFunction, type ScoringNavGroup } from "./scoring-sidebar";
 
 interface ScoringEditorProps {
   projectId: string;
@@ -45,8 +46,9 @@ function WorkflowScoring({
   allCandidates,
 }: Omit<ScoringEditorProps, "scoringMode">) {
   const { locale } = useLocale();
+  const en = locale === "en";
   const { status, error, save } = useProjectSave(projectId);
-  const [activeIdx, setActiveIdx] = useState(0);
+  const [selectedId, setSelectedId] = useState<string | null>(candidates[0]?.id ?? null);
   const [dirty, setDirty] = useState(false);
   const [state, setState] = useState<Record<string, CandidateScoringState>>(() => {
     const out: Record<string, CandidateScoringState> = {};
@@ -65,14 +67,14 @@ function WorkflowScoring({
   if (candidates.length === 0) {
     return (
       <p className="rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900">
-        {locale === "en"
+        {en
           ? "No candidates have passed the Readiness Check yet. Complete a candidate's Readiness Check (≥5 of 6) first."
           : "尚无通过准备度检查的候选。请先在准备度检查页完成候选评估(6 项中 ≥5 项)。"}
       </p>
     );
   }
 
-  const candidate = candidates[activeIdx];
+  const candidate = candidates.find((c) => c.id === selectedId) ?? candidates[0];
   const s = state[candidate.id];
 
   const update = (patch: Partial<ScoreUnitValue>) => {
@@ -112,6 +114,16 @@ function WorkflowScoring({
 
   // Normalize DDI against the max raw DDI in the candidate cohort.
   const maxDdiRaw = cohortMaxDdiRaw(candidates.map((c) => state[c.id]));
+
+  const navGroups: ScoringNavGroup[] = groupByFunction(candidates, en ? "Unassigned" : "未分配").map(
+    (g) => ({
+      fn: g.fn,
+      rows: g.items.map((c) => {
+        const p = computeUnitPriority(state[c.id], maxDdiRaw);
+        return { id: c.id, name: c.name, priority: p, passesFloor: p >= PRIORITY_FLOOR };
+      }),
+    }),
+  );
 
   return (
     <div className="space-y-4">
@@ -155,25 +167,18 @@ function WorkflowScoring({
         </p>
       )}
 
-      {/* candidate switcher */}
-      <div className="flex flex-wrap gap-1">
-        {candidates.map((c, idx) => (
-          <button
-            key={c.id}
-            type="button"
-            onClick={() => setActiveIdx(idx)}
-            className={
-              idx === activeIdx
-                ? "rounded-md bg-indigo-600 px-3 py-1 text-xs font-medium text-white"
-                : "rounded-md bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-            }
-          >
-            {c.name}
-          </button>
-        ))}
+      <div className="flex flex-col gap-4 lg:flex-row">
+        <ScoringSidebar groups={navGroups} selectedId={candidate.id} onSelect={setSelectedId} />
+        <div className="min-w-0 flex-1 space-y-3">
+          <div>
+            <h3 className="text-sm font-semibold">{candidate.name}</h3>
+            {candidate.businessFunction && (
+              <p className="text-xs text-slate-500">{candidate.businessFunction}</p>
+            )}
+          </div>
+          <ScoreUnitEditor value={s} maxDdiRaw={maxDdiRaw} onChange={update} />
+        </div>
       </div>
-
-      <ScoreUnitEditor value={s} maxDdiRaw={maxDdiRaw} onChange={update} />
     </div>
   );
 }

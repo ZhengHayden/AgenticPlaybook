@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import type { ReactNode } from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { LocaleProvider } from "@/lib/locale-context";
 import type { Candidate, ProjectUseCase } from "@/content/sample-data";
 import { ScoringEditor } from "./scoring-editor";
@@ -74,5 +74,24 @@ describe("ScoringEditor — mode branching", () => {
     expect(screen.getByText(/Value Magnitude/i)).toBeInTheDocument();
     // workflow rollup badge present
     expect(screen.getByText(/Top/i)).toBeInTheDocument();
+  });
+
+  it("workflow mode: the sidebar search exists and selecting a workflow swaps the detail", () => {
+    const c1 = candidate("c1");
+    const c2 = candidate("c2");
+    wrap(
+      <ScoringEditor
+        projectId="p"
+        scoringMode="workflow"
+        candidates={[c1, c2]}
+        allCandidates={[c1, c2]}
+      />,
+    );
+    // Searchable master list + first workflow shown in the detail pane by default.
+    expect(screen.getByRole("textbox", { name: /search workflows/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "WF c1" })).toBeInTheDocument();
+    // Selecting the second workflow in the sidebar swaps the detail header.
+    fireEvent.click(screen.getByRole("button", { name: /WF c2/i }));
+    expect(screen.getByRole("heading", { level: 3, name: "WF c2" })).toBeInTheDocument();
   });
 });
