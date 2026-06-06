@@ -29,7 +29,8 @@ const T = {
     rationale: "Impact rationale",
     kpis: "Expected KPIs (comma-separated)",
     remove: "Remove",
-    details: "Edit details",
+    edit: "Edit use case",
+    done: "Done",
     empty: "No use-case ideas yet.",
     untitled: "Untitled",
   },
@@ -42,7 +43,8 @@ const T = {
     rationale: "影响理由",
     kpis: "预期 KPI(逗号分隔)",
     remove: "移除",
-    details: "编辑详情",
+    edit: "编辑用例",
+    done: "完成",
     empty: "暂无用例想法。",
     untitled: "未命名",
   },
@@ -134,17 +136,23 @@ export function UseCaseIdeasPanel({
                 className="rounded-md border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900"
               >
                 <div className="flex items-center gap-2">
-                  <input
-                    aria-label={t.name}
-                    value={uc.name}
-                    placeholder={t.name}
-                    onChange={(e) => patchAt(i, { name: e.target.value })}
-                    className="flex-1 rounded-md border border-slate-300 px-2 py-1 text-sm font-medium dark:border-slate-700 dark:bg-slate-950"
-                  />
+                  {open ? (
+                    <input
+                      aria-label={t.name}
+                      value={uc.name}
+                      placeholder={t.name}
+                      onChange={(e) => patchAt(i, { name: e.target.value })}
+                      className="flex-1 rounded-md border border-slate-300 px-2 py-1 text-sm font-medium dark:border-slate-700 dark:bg-slate-950"
+                    />
+                  ) : (
+                    <span className="flex-1 truncate text-sm font-medium text-slate-700 dark:text-slate-300">
+                      {uc.name || t.untitled}
+                    </span>
+                  )}
                   <button
                     type="button"
-                    aria-label={t.details}
-                    title={t.details}
+                    aria-label={open ? t.done : t.edit}
+                    title={open ? t.done : t.edit}
                     onClick={() => setOpenIdx(open ? null : i)}
                     className={open ? `${iconButtonClass} bg-slate-100 dark:bg-slate-800` : iconButtonClass}
                   >

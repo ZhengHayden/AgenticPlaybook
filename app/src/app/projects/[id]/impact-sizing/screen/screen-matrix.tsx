@@ -10,7 +10,7 @@ import { screenCriteria, SCREEN_PASS_THRESHOLD, SCREEN_TOTAL, type ScreenCriteri
 import { ToolDrawer } from "@/components/tool-drawer";
 import { InlineAnchor } from "@/components/inline-anchor";
 import { UseCaseIdeasPanel } from "../_components/use-case-ideas-panel";
-import { ChevronDown, ChevronRight, Sparkles, FileText, Upload, X, Pencil, Check } from "lucide-react";
+import { ChevronDown, ChevronRight, Sparkles, FileText, Upload, X, Pencil, Check, Trash2 } from "lucide-react";
 
 interface ScreenMatrixProps {
   projectId: string;
@@ -168,6 +168,18 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
     setUseCasesByCandidate((prev) => ({ ...prev, [c.id]: c.useCases ? [...c.useCases] : [] }));
     setBizFnByCandidate((prev) => ({ ...prev, [c.id]: c.businessFunction }));
     setEditingId(null);
+  };
+
+  /** Delete a workflow after explicit confirmation; preserves other rows' in-flight edits. */
+  const deleteWorkflow = async (c: Candidate) => {
+    const label = c.name || (en ? "this workflow" : "该工作流");
+    const confirmed = window.confirm(
+      en ? `Delete "${label}"? This cannot be undone.` : `删除「${label}」?此操作不可撤销。`,
+    );
+    if (!confirmed) return;
+    const merged = buildMerged(answers, sopByCandidate, useCasesByCandidate, bizFnByCandidate);
+    await save({ candidates: merged.filter((x) => x.id !== c.id) });
+    if (editingId === c.id) setEditingId(null);
   };
 
   const scoreFor = (candidateId: string): number =>
@@ -368,16 +380,28 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                           </button>
                         </div>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={() => enterEdit(c.id)}
-                          disabled={status === "saving"}
-                          aria-label={en ? "Edit workflow" : "编辑工作流"}
-                          title={en ? "Edit workflow" : "编辑工作流"}
-                          className={`${iconBtn} hover:text-indigo-600 dark:hover:text-indigo-400`}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
+                        <div className="inline-flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => enterEdit(c.id)}
+                            disabled={status === "saving"}
+                            aria-label={en ? "Edit workflow" : "编辑工作流"}
+                            title={en ? "Edit workflow" : "编辑工作流"}
+                            className={`${iconBtn} hover:text-indigo-600 dark:hover:text-indigo-400`}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteWorkflow(c)}
+                            disabled={status === "saving"}
+                            aria-label={en ? "Delete workflow" : "删除工作流"}
+                            title={en ? "Delete workflow" : "删除工作流"}
+                            className={`${iconBtn} hover:text-rose-600 dark:hover:text-rose-400`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>

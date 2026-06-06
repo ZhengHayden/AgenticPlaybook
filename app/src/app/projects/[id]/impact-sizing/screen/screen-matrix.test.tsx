@@ -99,14 +99,28 @@ describe("ScreenMatrix", () => {
     expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
   });
 
-  it("makes use cases editable only after entering edit mode", () => {
+  it("loads stored use cases display-only in edit mode until the per-item pen is clicked", () => {
     const c = candidate("c1", "AP Invoicing", "Finance", [idea("u1", "c1", "Auto-match")]);
     wrap(<ScreenMatrix projectId="p" candidates={[c]} />);
-    // Read-only first.
+    // Read-only first (no add control).
     expect(screen.queryByRole("button", { name: /add use case/i })).not.toBeInTheDocument();
-    // Enter edit mode → the use-case name becomes an input and an add button appears.
+
+    // Enter workflow edit mode → add control appears, but the stored use case is still text.
     fireEvent.click(screen.getByRole("button", { name: /edit workflow/i }));
     expect(screen.getByRole("button", { name: /add use case/i })).toBeInTheDocument();
+    expect(screen.getByText("Auto-match")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Auto-match")).not.toBeInTheDocument();
+
+    // Click the use case's own edit pen → its name becomes editable.
+    fireEvent.click(screen.getByRole("button", { name: /edit use case/i }));
     expect(screen.getByDisplayValue("Auto-match")).toBeInTheDocument();
+  });
+
+  it("confirms before deleting a workflow", () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
+    wrap(<ScreenMatrix projectId="p" candidates={[candidate("c1", "AP Invoicing", "Finance")]} />);
+    fireEvent.click(screen.getByRole("button", { name: /delete workflow/i }));
+    expect(confirmSpy).toHaveBeenCalled();
+    confirmSpy.mockRestore();
   });
 });
