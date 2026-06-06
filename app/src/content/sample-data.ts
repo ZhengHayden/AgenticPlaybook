@@ -43,6 +43,33 @@ export type RiskAssessment = Record<RiskCategoryId, RiskLevel>;
 /** The disposition chosen for a candidate during Impact-Sizing. */
 export type SolutionProposal = "rpa" | "agent" | "legacy" | "defer";
 
+/** Active prioritization grain for a project. Undefined ⇒ "workflow". */
+export type ScoringMode = "workflow" | "useCase";
+
+/**
+ * A discrete agentic opportunity within a workflow (one workflow → 1…N).
+ * Distinct from the cross-project KnowledgeUseCase in the Knowledge Library.
+ * The Layer-3 scoring fields are present only once the use case has been scored.
+ */
+export interface ProjectUseCase {
+  id: string;
+  /** Parent workflow (the owning Candidate). */
+  candidateId: string;
+  name: string;
+  description: string;
+  /** Why this is worth doing — captured during the Readiness check. */
+  impactRationale: string;
+  expectedKpis?: string[];
+  vm?: VmScores;
+  ddi?: DdiCounts;
+  totalSteps?: number;
+  risk?: RiskAssessment;
+  scoringNotes?: string;
+  solutionProposal?: SolutionProposal;
+  /** Reserved for a future Knowledge-Library link; no UI in v1. */
+  knowledgeUseCaseId?: string;
+}
+
 /** Lifecycle status of a workflow as it moves through Design → Production. */
 export type WorkflowStatus = "notStarted" | "inDesign" | "built" | "live" | "onHold";
 
@@ -89,6 +116,11 @@ export interface Candidate {
   quadrantOverride?: QuadrantId;
   /** Uploaded SOP PDF reference, if any. */
   sopFile?: SopFileRef;
+  /**
+   * Use-case ideas captured for this workflow. Scored individually when the
+   * project is in "useCase" mode; documentation-only in "workflow" mode.
+   */
+  useCases?: ProjectUseCase[];
 }
 
 /** A named member of the engagement team shown on the project overview. */
@@ -158,6 +190,8 @@ export interface Workflow {
   name: string;
   /** Origin Impact-Sizing candidate (drives the portfolio priority). */
   candidateId?: string;
+  /** The use case this workflow was built from, in use-case scoring mode. */
+  useCaseId?: string;
   description?: string;
   steps: WorkflowStep[];
   a2aPattern?: A2APatternId;
@@ -166,6 +200,12 @@ export interface Workflow {
   canvas?: WorkflowCanvas;
   /** Lifecycle status; feeds MVP/Production phase KPIs. */
   status?: WorkflowStatus;
+  /**
+   * Explicit 1-based roadmap order override. When any workflow in a project
+   * carries this, the Agentic Roadmap honors it instead of recomputing from the
+   * candidate rubric. Optional — most projects leave it unset.
+   */
+  priorityRank?: number;
 }
 
 export interface GateCriterion {
@@ -189,6 +229,8 @@ export interface Project {
   updatedAt: Date;
   currentPhase: PhaseId;
   phaseProgress: Record<PhaseId, number>;
+  /** Active prioritization grain; undefined ⇒ "workflow" (back-compat). */
+  scoringMode?: ScoringMode;
   candidates: Candidate[];
   workflows: Workflow[];
   p1Gate: GateCriterion[];

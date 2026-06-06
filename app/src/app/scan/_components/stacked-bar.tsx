@@ -28,7 +28,7 @@ const LABEL_THRESHOLD = 8;
 export function StackedBar({ title, segments }: StackedBarProps) {
   return (
     <div className="flex flex-1 flex-col items-center gap-2">
-      <div className="flex h-64 w-20 flex-col overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
+      <div className="flex h-64 w-20 flex-col overflow-hidden rounded-md border border-slate-200 dark:border-slate-800">
         {segments.map((seg) => (
           <div
             key={seg.key}
@@ -42,7 +42,7 @@ export function StackedBar({ title, segments }: StackedBarProps) {
           </div>
         ))}
       </div>
-      <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">{title}</span>
+      <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{title}</span>
     </div>
   );
 }

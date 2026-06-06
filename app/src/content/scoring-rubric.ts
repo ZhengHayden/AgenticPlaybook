@@ -229,3 +229,50 @@ export function interpretDdi(normalized: number): DdiInterpretation {
     ddiInterpretations[ddiInterpretations.length - 1]
   );
 }
+
+// ─── two-mode scoring: cohort + workflow rollup ──────────────
+
+/**
+ * A unit that can be scored on the Layer-3 rubric — either a candidate
+ * (workflow mode) or a {@link ProjectUseCase} (use-case mode). Defined with the
+ * rubric's own id types so this module stays self-contained (no cross-import).
+ */
+export interface ScorableUnit {
+  vm: Record<VmDimensionId, number>;
+  ddi: Record<DecisionTypeId, number>;
+  totalSteps: number;
+  risk: Record<RiskCategoryId, RiskLevel>;
+}
+
+/** Largest raw DDI across a cohort; floored to a tiny positive to avoid /0. */
+export function cohortMaxDdiRaw(units: ReadonlyArray<ScorableUnit>): number {
+  return Math.max(0.0001, ...units.map((u) => computeDdiRaw(u.ddi, u.totalSteps)));
+}
+
+/** Full Priority for one unit, normalized against the cohort's max raw DDI. */
+export function computeUnitPriority(unit: ScorableUnit, maxDdiRaw: number): number {
+  const vm = computeVm(unit.vm);
+  const ddiNormalized = maxDdiRaw > 0 ? computeDdiRaw(unit.ddi, unit.totalSteps) / maxDdiRaw : 0;
+  const ras = computeRas(vm, computeRiskPenalty(unit.risk));
+  return computePriority(ras, ddiNormalized);
+}
+
+/** A workflow's roll-up over its use-case priorities (use-case mode). */
+export interface WorkflowRollup {
+  /** Max of the use-case priorities; 0 when none are scored. */
+  priority: number;
+  /** Number of scored use cases. */
+  total: number;
+  /** Count of use-case priorities at or above {@link PRIORITY_FLOOR}. */
+  aboveFloor: number;
+}
+
+/** Roll a workflow's use-case priorities up to a single ranking record. */
+export function rollupWorkflow(useCasePriorities: ReadonlyArray<number>): WorkflowRollup {
+  if (useCasePriorities.length === 0) return { priority: 0, total: 0, aboveFloor: 0 };
+  return {
+    priority: Math.max(...useCasePriorities),
+    total: useCasePriorities.length,
+    aboveFloor: useCasePriorities.filter((p) => p >= PRIORITY_FLOOR).length,
+  };
+}

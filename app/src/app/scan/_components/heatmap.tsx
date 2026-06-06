@@ -9,6 +9,7 @@ interface HeatmapProps {
   model: ScanModel;
   mode: ScanMode;
   onCellClick: (functionKey: string) => void;
+  showShare?: boolean;
 }
 
 /** indigo-600 as RGB, for the intensity ramp. */
@@ -23,7 +24,7 @@ function cellStyle(ratio: number): React.CSSProperties {
   };
 }
 
-export function Heatmap({ model, mode, onCellClick }: HeatmapProps) {
+export function Heatmap({ model, mode, onCellClick, showShare = true }: HeatmapProps) {
   const { t } = useLocale();
 
   const { cellByKey, rowTotals, colTotals, maxCell, grandTotal } = useMemo(() => {
@@ -42,13 +43,13 @@ export function Heatmap({ model, mode, onCellClick }: HeatmapProps) {
 
   // function-label column + one column per BG + a Total column.
   const gridCols = `minmax(9rem, 1.4fr) repeat(${model.bgs.length}, minmax(5rem, 1fr)) minmax(5rem, 0.9fr)`;
-  const headCls = "px-2 py-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400";
+  const headCls = "px-2 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400";
 
   return (
     <div className="overflow-x-auto">
       <div className="min-w-[640px]">
         {/* Header row */}
-        <div className="grid items-stretch border-b border-zinc-200 dark:border-zinc-800" style={{ gridTemplateColumns: gridCols }}>
+        <div className="grid items-stretch border-b border-slate-200 dark:border-slate-800" style={{ gridTemplateColumns: gridCols }}>
           <div className={`${headCls} text-left`}>{t.scan.function}</div>
           {model.bgs.map((bg) => (
             <div key={bg} className={`${headCls} text-center`}>
@@ -64,13 +65,13 @@ export function Heatmap({ model, mode, onCellClick }: HeatmapProps) {
           return (
             <div
               key={fn.key}
-              className="grid items-stretch border-b border-zinc-100 dark:border-zinc-900"
+              className="grid items-stretch border-b border-slate-100 dark:border-slate-900"
               style={{ gridTemplateColumns: gridCols }}
             >
               <button
                 type="button"
                 onClick={() => onCellClick(fn.key)}
-                className="px-2 py-2 text-left text-sm font-medium text-zinc-800 hover:text-indigo-600 dark:text-zinc-200"
+                className="px-2 py-2 text-left text-sm font-medium text-slate-800 hover:text-indigo-600 dark:text-slate-200"
               >
                 {fn.label}
               </button>
@@ -83,20 +84,22 @@ export function Heatmap({ model, mode, onCellClick }: HeatmapProps) {
                     key={bg}
                     type="button"
                     onClick={() => onCellClick(fn.key)}
-                    className="flex flex-col items-center justify-center border-l border-white/40 px-1 py-2 text-center transition-colors dark:border-zinc-900"
+                    className="flex flex-col items-center justify-center border-l border-white/40 px-1 py-2 text-center transition-colors dark:border-slate-900"
                     style={cellStyle(ratio)}
                     title={`${fn.label} × ${bg}`}
                   >
                     <span className="text-xs font-semibold tabular-nums">{v > 0 ? formatValue(v, mode) : "—"}</span>
-                    {v > 0 && (
+                    {showShare && v > 0 && (
                       <span className="text-[10px] opacity-80 tabular-nums">{formatShare(v, grandTotal)}</span>
                     )}
                   </button>
                 );
               })}
-              <div className="flex flex-col items-center justify-center border-l border-zinc-200 px-1 py-2 text-center dark:border-zinc-800">
+              <div className="flex flex-col items-center justify-center border-l border-slate-200 px-1 py-2 text-center dark:border-slate-800">
                 <span className="text-xs font-semibold tabular-nums">{formatValue(rowTotal, mode)}</span>
-                <span className="text-[10px] text-zinc-500 tabular-nums">{formatShare(rowTotal, grandTotal)}</span>
+                {showShare && (
+                  <span className="text-[10px] text-slate-500 tabular-nums">{formatShare(rowTotal, grandTotal)}</span>
+                )}
               </div>
             </div>
           );
@@ -104,14 +107,16 @@ export function Heatmap({ model, mode, onCellClick }: HeatmapProps) {
 
         {/* Total row */}
         <div
-          className="grid items-stretch border-t-2 border-zinc-300 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/60"
+          className="grid items-stretch border-t-2 border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60"
           style={{ gridTemplateColumns: gridCols }}
         >
           <div className="px-2 py-2 text-left text-sm font-semibold">{t.scan.total}</div>
           {model.bgs.map((bg) => (
             <div key={bg} className="flex flex-col items-center justify-center px-1 py-2 text-center">
               <span className="text-xs font-semibold tabular-nums">{formatValue(colTotals.get(bg) ?? 0, mode)}</span>
-              <span className="text-[10px] text-zinc-500 tabular-nums">{formatShare(colTotals.get(bg) ?? 0, grandTotal)}</span>
+              {showShare && (
+                <span className="text-[10px] text-slate-500 tabular-nums">{formatShare(colTotals.get(bg) ?? 0, grandTotal)}</span>
+              )}
             </div>
           ))}
           <div className="flex items-center justify-center px-1 py-2 text-center">

@@ -4,6 +4,17 @@ import type { CreateProjectInput, ProjectPatchInput } from "@/db/validation";
 import type { UnderstandingResult } from "@/lib/understanding-agent";
 import type { ScanInputs, ScanManifest, ScanModel } from "@/lib/scan/types";
 import type { BenchmarkSnapshot, BenchmarkVersion, BenchmarkVersionMeta } from "@/lib/benchmark/types";
+import type { KnowledgeLibrary, KnowledgeUseCase } from "@/content/knowledge";
+import type {
+  CreateUseCaseInput,
+  UpdateUseCaseInput,
+  ValidationPatchInput,
+} from "@/db/knowledge-validation";
+import type { KnowledgeArtifact } from "@/content/knowledge-artifacts";
+import type {
+  CreateLinkArtifactInput,
+  UpdateArtifactInput,
+} from "@/db/knowledge-artifacts-validation";
 
 /**
  * Everything a scan needs: the company identity plus the source files. HC is
@@ -173,6 +184,57 @@ export async function deleteBenchmarkVersion(
   return parse<{ versionId: string }>(res);
 }
 
+// ─── Knowledge library ────────────────────────────────────────
+/** Fetch the full Agentic Use Case Library. */
+export async function fetchKnowledgeLibrary(): Promise<KnowledgeLibrary> {
+  const res = await fetch("/api/knowledge", { method: "GET" });
+  return parse<KnowledgeLibrary>(res);
+}
+
+/** Create a use case under an existing workflow. */
+export async function createUseCase(input: CreateUseCaseInput): Promise<KnowledgeUseCase> {
+  const res = await fetch("/api/knowledge", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  return parse<KnowledgeUseCase>(res);
+}
+
+/** Edit a use case's editable fields. */
+export async function updateUseCase(
+  id: string,
+  patch: UpdateUseCaseInput,
+): Promise<KnowledgeUseCase> {
+  const res = await fetch(`/api/knowledge/use-cases/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(patch),
+  });
+  return parse<KnowledgeUseCase>(res);
+}
+
+/** Delete a use case. */
+export async function deleteUseCase(id: string): Promise<{ id: string }> {
+  const res = await fetch(`/api/knowledge/use-cases/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  return parse<{ id: string }>(res);
+}
+
+/** Set a use case's validation status + note. */
+export async function setUseCaseValidation(
+  id: string,
+  patch: ValidationPatchInput,
+): Promise<KnowledgeUseCase> {
+  const res = await fetch(`/api/knowledge/use-cases/${encodeURIComponent(id)}/validation`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(patch),
+  });
+  return parse<KnowledgeUseCase>(res);
+}
+
 /** Run the Understanding Agent over a candidate's uploaded SOP. */
 export async function requestUnderstanding(
   projectId: string,
@@ -184,4 +246,81 @@ export async function requestUnderstanding(
     body: JSON.stringify({ candidateId }),
   });
   return parse<UnderstandingResult>(res);
+}
+
+// ─── knowledge artifacts ──────────────────────────────────────
+
+/** List all artifacts for a use case. */
+export async function listArtifacts(useCaseId: string): Promise<KnowledgeArtifact[]> {
+  const res = await fetch(
+    `/api/knowledge/use-cases/${encodeURIComponent(useCaseId)}/artifacts`,
+    { method: "GET" },
+  );
+  return parse<KnowledgeArtifact[]>(res);
+}
+
+/** Create a link artifact (JSON body). */
+export async function createLinkArtifact(
+  useCaseId: string,
+  input: CreateLinkArtifactInput,
+): Promise<KnowledgeArtifact> {
+  const res = await fetch(
+    `/api/knowledge/use-cases/${encodeURIComponent(useCaseId)}/artifacts`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    },
+  );
+  return parse<KnowledgeArtifact>(res);
+}
+
+/** Create a file artifact (multipart; browser sets the boundary). */
+export async function createFileArtifact(
+  useCaseId: string,
+  form: FormData,
+): Promise<KnowledgeArtifact> {
+  const res = await fetch(
+    `/api/knowledge/use-cases/${encodeURIComponent(useCaseId)}/artifacts`,
+    { method: "POST", body: form },
+  );
+  return parse<KnowledgeArtifact>(res);
+}
+
+/** Update artifact metadata (JSON patch). */
+export async function updateArtifact(
+  id: string,
+  patch: UpdateArtifactInput,
+): Promise<KnowledgeArtifact> {
+  const res = await fetch(`/api/knowledge/artifacts/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(patch),
+  });
+  return parse<KnowledgeArtifact>(res);
+}
+
+/** Replace the current file of a file artifact (multipart). */
+export async function replaceArtifactFile(
+  id: string,
+  form: FormData,
+): Promise<KnowledgeArtifact> {
+  const res = await fetch(`/api/knowledge/artifacts/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: form,
+  });
+  return parse<KnowledgeArtifact>(res);
+}
+
+/** Delete an artifact. */
+export async function deleteArtifact(id: string): Promise<{ id: string }> {
+  const res = await fetch(`/api/knowledge/artifacts/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  return parse<{ id: string }>(res);
+}
+
+/** Build the download URL for a file artifact (no fetch needed — used directly in hrefs). */
+export function artifactDownloadUrl(id: string): string {
+  return `/api/knowledge/artifacts/${encodeURIComponent(id)}/download`;
 }

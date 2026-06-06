@@ -49,3 +49,6 @@ next-env.d.ts
 
 # database export bundles (contain project data — moved out-of-band, not committed)
 /exports/
+
+# Brainstorming visual-companion mockups (local only)
+.superpowers/

@@ -69,14 +69,14 @@ export function AddWorkflowModal({
     onClose();
   };
 
-  const labelCls = "block text-xs text-zinc-500";
+  const labelCls = "block text-xs text-slate-500";
   const inputCls =
-    "mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950";
+    "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950";
   const tabCls = (active: boolean): string =>
     `flex-1 rounded-md px-3 py-1.5 text-sm font-medium ${
       active
         ? "bg-indigo-600 text-white"
-        : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900"
+        : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900"
     }`;
 
   return (
@@ -87,7 +87,7 @@ export function AddWorkflowModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md space-y-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
+        className="w-full max-w-md space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-base font-semibold">
@@ -154,7 +154,7 @@ export function AddWorkflowModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+            className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
           >
             {locale === "en" ? "Cancel" : "取消"}
           </button>

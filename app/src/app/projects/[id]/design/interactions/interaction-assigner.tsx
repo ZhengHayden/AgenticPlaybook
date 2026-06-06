@@ -47,7 +47,7 @@ export function InteractionAssigner({ projectId, workflows, workflow }: Interact
     if (id === "autopilot") return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300";
     if (id === "copilot") return "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300";
     if (id === "guardian") return "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300";
-    return "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300";
+    return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
   };
 
   return (
@@ -70,9 +70,9 @@ export function InteractionAssigner({ projectId, workflows, workflow }: Interact
         </p>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-sm">
-          <thead className="bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500 dark:bg-zinc-950">
+          <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
             <tr>
               <th className="px-4 py-2 font-medium">{t.design.step}</th>
               <th className="px-4 py-2 font-medium">{locale === "en" ? "Failure cost" : "失败代价"}</th>
@@ -80,7 +80,7 @@ export function InteractionAssigner({ projectId, workflows, workflow }: Interact
               <th className="px-4 py-2 font-medium">{t.design.mode}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
             {steps.map((step) => {
               const mode = step.interactionMode;
               const stepLabel = step.name || `${locale === "en" ? "step" : "步骤"} ${step.seq}`;
@@ -94,7 +94,7 @@ export function InteractionAssigner({ projectId, workflows, workflow }: Interact
                       value={step.failureCost ?? "low"}
                       onChange={(e) => update(step.id, { failureCost: e.target.value as FailureCost })}
                       aria-label={locale === "en" ? `Failure cost for ${stepLabel}` : `${stepLabel} 的失败代价`}
-                      className="rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-950"
+                      className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs dark:border-slate-700 dark:bg-slate-950"
                     >
                       {severityOptions.map((o) => (
                         <option key={o.value} value={o.value}>
@@ -117,7 +117,7 @@ export function InteractionAssigner({ projectId, workflows, workflow }: Interact
                       value={mode ?? ""}
                       onChange={(e) => update(step.id, { interactionMode: e.target.value as InteractionId })}
                       aria-label={locale === "en" ? `Interaction mode for ${stepLabel}` : `${stepLabel} 的交互模式`}
-                      className={`rounded-md border border-zinc-200 px-2 py-1 text-xs font-medium dark:border-zinc-700 ${modeColor(mode)}`}
+                      className={`rounded-md border border-slate-200 px-2 py-1 text-xs font-medium dark:border-slate-700 ${modeColor(mode)}`}
                     >
                       <option value="">—</option>
                       {interactionModes.map((m) => (
@@ -132,7 +132,7 @@ export function InteractionAssigner({ projectId, workflows, workflow }: Interact
             })}
             {steps.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-sm text-zinc-500">
+                <td colSpan={4} className="px-4 py-6 text-center text-sm text-slate-500">
                   {locale === "en" ? "No steps. Add steps on the Workflow tab." : "无步骤。请在工作流 Tab 添加。"}
                 </td>
               </tr>
@@ -141,16 +141,16 @@ export function InteractionAssigner({ projectId, workflows, workflow }: Interact
         </table>
       </div>
 
-      <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
         <h3 className="mb-3 text-sm font-semibold">
           {locale === "en" ? "Risk → Mode guidance" : "风险 → 模式指引"}
         </h3>
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-slate-500">
           {locale === "en"
             ? "High failure cost + irreversible → Guardian. Medium → Co-Pilot. Low + reversible → Autopilot."
             : "高失败代价 + 不可逆 → Guardian;中等 → Co-Pilot;低 + 可逆 → Autopilot。"}
         </p>
-        <div className="mt-3 flex flex-wrap gap-3 text-xs text-zinc-500">
+        <div className="mt-3 flex flex-wrap gap-3 text-xs text-slate-500">
           <span>● {t.modes.guardian}</span>
           <span>◉ {t.modes.copilot}</span>
           <span>○ {t.modes.autopilot}</span>

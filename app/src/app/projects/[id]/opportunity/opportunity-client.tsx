@@ -31,7 +31,7 @@ export function OpportunityClient({ client, initialModel }: OpportunityClientPro
           <button
             type="button"
             onClick={() => setWizardOpen(true)}
-            className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+            className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
           >
             {t.scan.recompute}
           </button>
@@ -52,11 +52,11 @@ export function OpportunityClient({ client, initialModel }: OpportunityClientPro
   }
 
   return (
-    <section className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-10 text-center dark:border-zinc-700 dark:bg-zinc-900/40">
-      <Radar className="h-8 w-8 text-zinc-400" />
+    <section className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center dark:border-slate-700 dark:bg-slate-900/40">
+      <Radar className="h-8 w-8 text-slate-400" />
       <div className="space-y-1">
-        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{t.scan.noScanYet}</p>
-        <p className="text-xs text-zinc-500">{t.scan.noScanYetHint}</p>
+        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{t.scan.noScanYet}</p>
+        <p className="text-xs text-slate-500">{t.scan.noScanYetHint}</p>
       </div>
       <button
         type="button"

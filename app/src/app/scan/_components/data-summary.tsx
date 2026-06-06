@@ -2,7 +2,18 @@
 
 import { useMemo } from "react";
 import { useLocale } from "@/lib/locale-context";
+import { StatCard } from "@/components/ui/stat-card";
 import type { ScanModel } from "@/lib/scan/types";
+
+/** Accent bar colors cycled across the KPI StatCards. */
+const KPI_ACCENTS = [
+  "bg-indigo-500",
+  "bg-violet-500",
+  "bg-emerald-500",
+  "bg-sky-500",
+  "bg-amber-500",
+  "bg-rose-500",
+] as const;
 
 interface DataSummaryProps {
   model: ScanModel;
@@ -23,16 +34,16 @@ function HBarList({ rows }: { rows: ReadonlyArray<BarRow> }) {
     <div className="space-y-1.5">
       {rows.map((r) => (
         <div key={r.label} className="flex items-center gap-2">
-          <span className="w-28 shrink-0 truncate text-xs text-zinc-500" title={r.label}>
+          <span className="w-28 shrink-0 truncate text-xs text-slate-500" title={r.label}>
             {r.label}
           </span>
-          <div className="h-4 flex-1 overflow-hidden rounded-sm bg-zinc-100 dark:bg-zinc-800">
+          <div className="h-4 flex-1 overflow-hidden rounded-sm bg-slate-100 dark:bg-slate-800">
             <div
               className="h-full rounded-sm bg-indigo-500/80"
               style={{ width: max > 0 ? `${(r.value / max) * 100}%` : "0%" }}
             />
           </div>
-          <span className="w-14 shrink-0 text-right text-xs tabular-nums text-zinc-600 dark:text-zinc-300">
+          <span className="w-14 shrink-0 text-right text-xs tabular-nums text-slate-600 dark:text-slate-300">
             {Math.round(r.value).toLocaleString()}
           </span>
         </div>
@@ -76,33 +87,30 @@ export function DataSummary({ model }: DataSummaryProps) {
     { label: t.scan.kpiAvgReleased, value: `${(avgReleased * 100).toFixed(1)}%` },
   ];
 
-  const cardCls = "rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900";
+  const cardCls = "rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900";
 
   return (
     <section className="space-y-4">
-      <h2 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{t.scan.dataSummary}</h2>
+      <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t.scan.dataSummary}</h2>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {kpis.map((k) => (
-          <div key={k.label} className={cardCls}>
-            <div className="text-lg font-semibold tabular-nums">{k.value}</div>
-            <div className="mt-0.5 text-[11px] text-zinc-500">{k.label}</div>
-          </div>
+        {kpis.map((k, i) => (
+          <StatCard key={k.label} label={k.label} value={k.value} accent={KPI_ACCENTS[i % KPI_ACCENTS.length]} />
         ))}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className={cardCls}>
-          <h3 className="mb-3 text-xs font-semibold text-zinc-600 dark:text-zinc-400">{t.scan.hcByBg}</h3>
+          <h3 className="mb-3 text-xs font-semibold text-slate-600 dark:text-slate-400">{t.scan.hcByBg}</h3>
           <HBarList rows={hcByBg} />
         </div>
         <div className={cardCls}>
-          <h3 className="mb-3 text-xs font-semibold text-zinc-600 dark:text-zinc-400">{t.scan.hcByFunction}</h3>
+          <h3 className="mb-3 text-xs font-semibold text-slate-600 dark:text-slate-400">{t.scan.hcByFunction}</h3>
           <HBarList rows={hcByFunction} />
         </div>
       </div>
 
-      <p className="text-xs text-zinc-500">
+      <p className="text-xs text-slate-500">
         {t.scan.coverage}: {withInsight} {t.scan.functionsWithInsight}.
       </p>
     </section>

@@ -205,7 +205,7 @@ export const quadrants: ReadonlyArray<Quadrant> = [
       zh: ["对 AI 抗拒的营销团队 + 创意活动构思", "无明确 sponsor 的战略规划", "跨部门、跨条线协调"],
     },
     hi: { ods: false, ors: false },
-    color: "zinc",
+    color: "slate",
   },
 ];
 

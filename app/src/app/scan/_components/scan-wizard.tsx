@@ -64,13 +64,13 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
     }
   };
 
-  const labelCls = "block text-xs text-zinc-500";
+  const labelCls = "block text-xs text-slate-500";
   const inputCls =
-    "mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950";
+    "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950";
   const fileInputCls =
-    "mt-1 block w-full text-xs text-zinc-600 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-zinc-400 dark:file:bg-indigo-950 dark:file:text-indigo-300";
+    "mt-1 block w-full text-xs text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-slate-400 dark:file:bg-indigo-950 dark:file:text-indigo-300";
   const stepDotCls = (active: boolean): string =>
-    `h-1.5 w-8 rounded-full ${active ? "bg-indigo-600" : "bg-zinc-200 dark:bg-zinc-700"}`;
+    `h-1.5 w-8 rounded-full ${active ? "bg-indigo-600" : "bg-slate-200 dark:bg-slate-700"}`;
 
   return (
     <div
@@ -80,7 +80,7 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md space-y-4 rounded-xl border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
+        className="w-full max-w-md space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -102,7 +102,7 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
                 placeholder={locale === "en" ? "e.g. Acme Corp" : "例如:Acme 公司"}
                 className={inputCls}
               />
-              <span className="mt-1 block text-[11px] text-zinc-400">{t.scan.companyNameHint}</span>
+              <span className="mt-1 block text-[11px] text-slate-400">{t.scan.companyNameHint}</span>
             </label>
             <label className={labelCls}>
               {t.scan.sector} *
@@ -148,19 +148,19 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
         ) : (
           <div className="space-y-3">
             <label className="block">
-              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{t.scan.uploadHc} *</span>
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t.scan.uploadHc} *</span>
               <input ref={hcRef} type="file" accept=".xlsx" className={fileInputCls} />
-              <span className="mt-1 block text-[11px] text-zinc-400">{t.scan.uploadHcHint}</span>
+              <span className="mt-1 block text-[11px] text-slate-400">{t.scan.uploadHcHint}</span>
             </label>
             <label className="block">
-              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{t.scan.uploadLabor}</span>
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t.scan.uploadLabor}</span>
               <input ref={laborRef} type="file" accept=".xlsx" className={fileInputCls} />
-              <span className="mt-1 block text-[11px] text-zinc-400">{t.scan.uploadOptionalHint}</span>
+              <span className="mt-1 block text-[11px] text-slate-400">{t.scan.uploadOptionalHint}</span>
             </label>
             <label className="block">
-              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{t.scan.uploadAutomation}</span>
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t.scan.uploadAutomation}</span>
               <input ref={autoRef} type="file" accept=".md,.markdown,.txt" className={fileInputCls} />
-              <span className="mt-1 block text-[11px] text-zinc-400">{t.scan.uploadOptionalHint}</span>
+              <span className="mt-1 block text-[11px] text-slate-400">{t.scan.uploadOptionalHint}</span>
             </label>
           </div>
         )}
@@ -177,7 +177,7 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
               type="button"
               onClick={() => setStep("identity")}
               disabled={busy}
-              className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-40 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+              className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 disabled:opacity-40 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
               {t.common.back}
             </button>
@@ -185,7 +185,7 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+            className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
           >
             {t.common.cancel}
           </button>

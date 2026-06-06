@@ -1,5 +1,19 @@
 export type Locale = "en" | "zh";
 
+/**
+ * The locale the user selects in the UI. `zh-Hant` (Traditional Chinese) reuses
+ * the Simplified (`zh`) content dictionary — its characters are converted to
+ * Traditional at display time (see TraditionalConverter) rather than maintained
+ * as a separate dictionary. So `SelectedLocale` drives the switcher and storage,
+ * while {@link Locale} stays the *content* locale used for dictionary lookup.
+ */
+export type SelectedLocale = "en" | "zh" | "zh-Hant";
+
+/** Map a user-selected locale onto the content locale used for dictionaries. */
+export function contentLocale(selected: SelectedLocale): Locale {
+  return selected === "en" ? "en" : "zh";
+}
+
 export type Dictionary = {
   app: {
     name: string;
@@ -37,6 +51,8 @@ export type Dictionary = {
     recommended: string;
     selected: string;
     loading: string;
+    close: string;
+    saved: string;
   };
   phases: {
     impactSizing: string;
@@ -245,6 +261,109 @@ export type Dictionary = {
     readOnlyHint: string;
     noVersions: string;
   };
+  knowledge: {
+    title: string;
+    subtitle: string;
+    sector: string;
+    industry: string;
+    company: string;
+    useCases: string;
+    workflows: string;
+    proven: string;
+    emerging: string;
+    pilot: string;
+    validated: string;
+    search: string;
+    searchPlaceholder: string;
+    view: string;
+    viewGrouped: string;
+    viewCards: string;
+    viewTable: string;
+    filters: string;
+    allFunctions: string;
+    allMaturity: string;
+    allTech: string;
+    allValidation: string;
+    clearFilters: string;
+    noResults: string;
+    maturityProven: string;
+    maturityEmerging: string;
+    maturityPilot: string;
+    statusValidated: string;
+    statusPartial: string;
+    statusNotYet: string;
+    description: string;
+    impactKpis: string;
+    references: string;
+    agenticDesign: string;
+    archetypesUsed: string;
+    interactionMode: string;
+    a2aPattern: string;
+    sponsors: string;
+    businessObjectives: string;
+    validation: string;
+    validationNote: string;
+    notePlaceholder: string;
+    viewDetails: string;
+    colUseCase: string;
+    colFunction: string;
+    colWorkflow: string;
+    colMaturity: string;
+    colTech: string;
+    colStatus: string;
+    addUseCase: string;
+    editUseCase: string;
+    fieldName: string;
+    fieldDomain: string;
+    fieldWorkflow: string;
+    fieldDescription: string;
+    fieldKpis: string;
+    fieldTechTag: string;
+    fieldMaturity: string;
+    fieldObjectives: string;
+    fieldSponsors: string;
+    fieldReferences: string;
+    kpisHint: string;
+    objectivesHint: string;
+    deleteConfirm: string;
+    saveError: string;
+    tabOverview: string;
+    tabImpact: string;
+    tabAgentic: string;
+    tabReferences: string;
+    tabValidation: string;
+    refName: string;
+    refDetail: string;
+    addReference: string;
+    removeReference: string;
+    noReferences: string;
+    unsavedChanges: string;
+    tabEvidence: string;
+    tabArtifacts: string;
+    artifacts: string;
+    addArtifact: string;
+    editArtifact: string;
+    replaceFile: string;
+    download: string;
+    openLink: string;
+    artifactTitle: string;
+    artifactKind: string;
+    artifactKindFile: string;
+    artifactKindLink: string;
+    artifactType: string;
+    artifactStatus: string;
+    artifactOwner: string;
+    artifactVersion: string;
+    artifactUrl: string;
+    changeNote: string;
+    changeLog: string;
+    noArtifacts: string;
+    statusDraft: string;
+    statusPublished: string;
+    statusDeprecated: string;
+    hasArtifacts: string;
+    publishedAssets: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -285,6 +404,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       recommended: "Recommended",
       selected: "Selected",
       loading: "Loading…",
+      close: "Close",
+      saved: "Saved",
     },
     phases: {
       impactSizing: "Roadmap Prioritization",
@@ -491,6 +612,109 @@ export const dictionaries: Record<Locale, Dictionary> = {
       readOnlyHint: "The shipped default is read-only. Edits and uploads create a company version.",
       noVersions: "No saved versions yet.",
     },
+    knowledge: {
+      title: "Agentic Use Case Library",
+      subtitle: "Sector-based catalogue of agentic use cases — intelligence, agentic design and validation in one place.",
+      sector: "Sector",
+      industry: "Industry",
+      company: "Company",
+      useCases: "Use cases",
+      workflows: "Workflows",
+      proven: "Proven",
+      emerging: "Emerging",
+      pilot: "Pilot",
+      validated: "Validated",
+      search: "Search",
+      searchPlaceholder: "Search use cases, domains, KPIs…",
+      view: "View",
+      viewGrouped: "Grouped",
+      viewCards: "Cards",
+      viewTable: "Table",
+      filters: "Filters",
+      allFunctions: "All functions",
+      allMaturity: "All maturity",
+      allTech: "All tech",
+      allValidation: "All status",
+      clearFilters: "Clear filters",
+      noResults: "No use cases match the current filters.",
+      maturityProven: "Proven",
+      maturityEmerging: "Emerging",
+      maturityPilot: "Pilot",
+      statusValidated: "Validated",
+      statusPartial: "Partial",
+      statusNotYet: "Not yet",
+      description: "Description",
+      impactKpis: "Impact KPIs",
+      references: "References & Intelligence",
+      agenticDesign: "Agentic Design",
+      archetypesUsed: "Archetypes",
+      interactionMode: "Interaction mode",
+      a2aPattern: "A2A pattern",
+      sponsors: "Sponsors",
+      businessObjectives: "Business objectives",
+      validation: "Validation",
+      validationNote: "Validation note",
+      notePlaceholder: "Evidence, caveats, who validated and when…",
+      viewDetails: "View details",
+      colUseCase: "Use case",
+      colFunction: "Function",
+      colWorkflow: "Workflow",
+      colMaturity: "Maturity",
+      colTech: "Tech",
+      colStatus: "Status",
+      addUseCase: "Add use case",
+      editUseCase: "Edit use case",
+      fieldName: "Name",
+      fieldDomain: "Domain",
+      fieldWorkflow: "Workflow",
+      fieldDescription: "Description",
+      fieldKpis: "Impact KPIs",
+      fieldTechTag: "Tech tag",
+      fieldMaturity: "Maturity",
+      fieldObjectives: "Business objectives",
+      fieldSponsors: "Sponsors",
+      fieldReferences: "References & Intelligence",
+      kpisHint: "One KPI per line.",
+      objectivesHint: "One objective per line.",
+      deleteConfirm: "Delete this use case? This cannot be undone.",
+      saveError: "Could not save the use case.",
+      tabOverview: "Overview",
+      tabImpact: "Impact",
+      tabAgentic: "Agentic Design",
+      tabReferences: "References",
+      tabValidation: "Validation",
+      refName: "Source / competitor",
+      refDetail: "Intelligence detail",
+      addReference: "Add reference",
+      removeReference: "Remove",
+      noReferences: "No references yet — add market or competitor intelligence.",
+      unsavedChanges: "Unsaved changes",
+      tabEvidence: "Evidence",
+      tabArtifacts: "Artifacts",
+      artifacts: "Artifacts",
+      addArtifact: "Add artifact",
+      editArtifact: "Edit artifact",
+      replaceFile: "Replace",
+      download: "Download",
+      openLink: "Open",
+      artifactTitle: "Title",
+      artifactKind: "Kind",
+      artifactKindFile: "Upload file",
+      artifactKindLink: "External link",
+      artifactType: "Type",
+      artifactStatus: "Status",
+      artifactOwner: "Owner",
+      artifactVersion: "Version",
+      artifactUrl: "URL",
+      changeNote: "Change note",
+      changeLog: "Change log",
+      noArtifacts: "No artifacts yet.",
+      statusDraft: "Draft",
+      statusPublished: "Published",
+      statusDeprecated: "Deprecated",
+      hasArtifacts: "Has artifacts",
+      publishedAssets: "Published",
+    },
   },
   zh: {
     app: {
@@ -529,6 +753,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       recommended: "推荐",
       selected: "已选",
       loading: "加载中…",
+      close: "关闭",
+      saved: "已保存",
     },
     phases: {
       impactSizing: "路线图优先级",
@@ -734,6 +960,109 @@ export const dictionaries: Record<Locale, Dictionary> = {
       loadError: "无法加载基准。",
       readOnlyHint: "内置默认值为只读。编辑与上传将创建公司版本。",
       noVersions: "暂无已保存的版本。",
+    },
+    knowledge: {
+      title: "Agentic 用例库",
+      subtitle: "基于行业板块的 Agentic 用例目录 —— 情报洞察、智能体设计与验证状态一站汇集。",
+      sector: "板块",
+      industry: "行业",
+      company: "公司",
+      useCases: "用例",
+      workflows: "工作流",
+      proven: "成熟",
+      emerging: "新兴",
+      pilot: "试点",
+      validated: "已验证",
+      search: "搜索",
+      searchPlaceholder: "搜索用例、领域、KPI…",
+      view: "视图",
+      viewGrouped: "分组",
+      viewCards: "卡片",
+      viewTable: "表格",
+      filters: "筛选",
+      allFunctions: "全部职能",
+      allMaturity: "全部成熟度",
+      allTech: "全部技术",
+      allValidation: "全部状态",
+      clearFilters: "清除筛选",
+      noResults: "没有符合当前筛选条件的用例。",
+      maturityProven: "成熟",
+      maturityEmerging: "新兴",
+      maturityPilot: "试点",
+      statusValidated: "已验证",
+      statusPartial: "部分验证",
+      statusNotYet: "尚未验证",
+      description: "描述",
+      impactKpis: "影响 KPI",
+      references: "参考与情报",
+      agenticDesign: "智能体设计",
+      archetypesUsed: "原型",
+      interactionMode: "交互模式",
+      a2aPattern: "A2A 模式",
+      sponsors: "发起人",
+      businessObjectives: "业务目标",
+      validation: "验证",
+      validationNote: "验证说明",
+      notePlaceholder: "证据、注意事项、由谁验证及时间…",
+      viewDetails: "查看详情",
+      colUseCase: "用例",
+      colFunction: "职能",
+      colWorkflow: "工作流",
+      colMaturity: "成熟度",
+      colTech: "技术",
+      colStatus: "状态",
+      addUseCase: "新增用例",
+      editUseCase: "编辑用例",
+      fieldName: "名称",
+      fieldDomain: "领域",
+      fieldWorkflow: "工作流",
+      fieldDescription: "描述",
+      fieldKpis: "影响 KPI",
+      fieldTechTag: "技术标签",
+      fieldMaturity: "成熟度",
+      fieldObjectives: "业务目标",
+      fieldSponsors: "发起人",
+      fieldReferences: "参考与情报",
+      kpisHint: "每行一个 KPI。",
+      objectivesHint: "每行一个目标。",
+      deleteConfirm: "确定删除此用例？此操作无法撤销。",
+      saveError: "无法保存该用例。",
+      tabOverview: "概览",
+      tabImpact: "影响",
+      tabAgentic: "智能体设计",
+      tabReferences: "参考情报",
+      tabValidation: "验证",
+      refName: "来源 / 竞品",
+      refDetail: "情报详情",
+      addReference: "新增参考",
+      removeReference: "移除",
+      noReferences: "暂无参考 —— 添加市场或竞品情报。",
+      unsavedChanges: "未保存的更改",
+      tabEvidence: "佐证",
+      tabArtifacts: "知识资产",
+      artifacts: "知识资产",
+      addArtifact: "添加资产",
+      editArtifact: "编辑资产",
+      replaceFile: "替换",
+      download: "下载",
+      openLink: "打开",
+      artifactTitle: "标题",
+      artifactKind: "类型",
+      artifactKindFile: "上传文件",
+      artifactKindLink: "外部链接",
+      artifactType: "分类",
+      artifactStatus: "状态",
+      artifactOwner: "负责人",
+      artifactVersion: "版本",
+      artifactUrl: "链接",
+      changeNote: "变更说明",
+      changeLog: "变更记录",
+      noArtifacts: "暂无知识资产。",
+      statusDraft: "草稿",
+      statusPublished: "已发布",
+      statusDeprecated: "已弃用",
+      hasArtifacts: "含资产",
+      publishedAssets: "已发布",
     },
   },
 };

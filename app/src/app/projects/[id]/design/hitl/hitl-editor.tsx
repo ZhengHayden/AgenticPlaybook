@@ -61,7 +61,7 @@ export function HitlEditor({ projectId, workflows, workflow }: HitlEditorProps) 
           <h2 className="text-base font-semibold">
             {en ? "Human-in-the-Loop Integration" : "人工介入 (HITL) 集成"}
           </h2>
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-slate-500">
             {en
               ? "Define checkpoints, confidence thresholds, SLAs, and escalation for oversight steps."
               : "为需监督的步骤定义介入时机、置信度阈值、SLA 与升级路径。"}
@@ -84,18 +84,18 @@ export function HitlEditor({ projectId, workflows, workflow }: HitlEditorProps) 
       )}
 
       <div className="grid grid-cols-3 gap-2">
-        <div className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="text-xs text-zinc-500">{en ? "Oversight steps" : "监督步骤"}</div>
+        <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+          <div className="text-xs text-slate-500">{en ? "Oversight steps" : "监督步骤"}</div>
           <div className="text-lg font-semibold tabular-nums">{coverage.oversightTotal}</div>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="text-xs text-zinc-500">{en ? "Configured" : "已配置"}</div>
+        <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+          <div className="text-xs text-slate-500">{en ? "Configured" : "已配置"}</div>
           <div className="text-lg font-semibold tabular-nums">
             {coverage.configured}/{coverage.oversightTotal}
           </div>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="text-xs text-zinc-500">{en ? "Risk gaps" : "风险缺口"}</div>
+        <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+          <div className="text-xs text-slate-500">{en ? "Risk gaps" : "风险缺口"}</div>
           <div
             className={
               coverage.gaps > 0
@@ -142,7 +142,7 @@ export function HitlEditor({ projectId, workflows, workflow }: HitlEditorProps) 
           />
         ))}
         {oversightSteps.length === 0 && (
-          <p className="rounded-md border border-zinc-200 bg-white p-4 text-sm text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900">
             {en
               ? "No oversight steps yet. Assign Co-Pilot or Guardian modes on the Interactions tab."
               : "尚无监督步骤。请在交互模式 Tab 分配 Co-Pilot 或 Guardian。"}

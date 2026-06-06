@@ -73,8 +73,8 @@ export function WorkflowMapper({ projectId, workflows, workflow }: WorkflowMappe
 
   const saving = status === "saving";
   const fieldCls =
-    "w-full rounded-md border border-zinc-200 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-950";
-  const microLabel = "block text-[10px] uppercase tracking-wide text-zinc-500";
+    "w-full rounded-md border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950";
+  const microLabel = "block text-[10px] uppercase tracking-wide text-slate-500";
 
   return (
     <div className="space-y-4">
@@ -83,7 +83,7 @@ export function WorkflowMapper({ projectId, workflows, workflow }: WorkflowMappe
           <h2 className="text-base font-semibold">
             {en ? "Workflow Steps" : "工作流步骤"} ({editing ? steps.length : workflow.steps.length})
           </h2>
-          <p className="mt-0.5 text-xs text-zinc-500">
+          <p className="mt-0.5 text-xs text-slate-500">
             {editing
               ? en
                 ? "Drag to reorder; edit fields inline."
@@ -106,7 +106,7 @@ export function WorkflowMapper({ projectId, workflows, workflow }: WorkflowMappe
               type="button"
               onClick={onCancel}
               disabled={saving}
-              className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium hover:bg-zinc-50 disabled:opacity-40 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+              className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium hover:bg-slate-50 disabled:opacity-40 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
               <X className="h-4 w-4" /> {en ? "Cancel" : "取消"}
             </button>
@@ -123,7 +123,7 @@ export function WorkflowMapper({ projectId, workflows, workflow }: WorkflowMappe
           <button
             type="button"
             onClick={onEdit}
-            className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+            className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
           >
             <Pencil className="h-4 w-4" /> {en ? "Edit" : "编辑"}
           </button>
@@ -142,7 +142,7 @@ export function WorkflowMapper({ projectId, workflows, workflow }: WorkflowMappe
             <StepCard key={step.id} step={step} locale={locale} />
           ))}
           {workflow.steps.length === 0 && (
-            <li className="rounded-xl border border-dashed border-zinc-300 bg-white p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900">
+            <li className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900">
               {en ? "No steps yet. Click “Edit” to add the first step." : "尚无步骤。点击「编辑」添加第一个步骤。"}
             </li>
           )}
@@ -164,16 +164,16 @@ export function WorkflowMapper({ projectId, workflows, workflow }: WorkflowMappe
                 setHoverIdx(null);
               }}
               className={
-                "flex items-start gap-3 rounded-xl border bg-white p-4 dark:bg-zinc-900 " +
+                "flex items-start gap-3 rounded-xl border bg-white p-4 dark:bg-slate-900 " +
                 (hoverIdx === idx && dragIdx !== idx
                   ? "border-indigo-400 ring-2 ring-indigo-100 dark:ring-indigo-900/30"
-                  : "border-zinc-200 dark:border-zinc-800")
+                  : "border-slate-200 dark:border-slate-800")
               }
             >
-              <GripVertical className="mt-2 h-4 w-4 shrink-0 cursor-grab text-zinc-400 active:cursor-grabbing" />
+              <GripVertical className="mt-2 h-4 w-4 shrink-0 cursor-grab text-slate-400 active:cursor-grabbing" />
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-zinc-100 text-xs font-semibold dark:bg-zinc-800">
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-slate-100 text-xs font-semibold dark:bg-slate-800">
                     {step.seq}
                   </span>
                   <input
@@ -186,7 +186,7 @@ export function WorkflowMapper({ projectId, workflows, workflow }: WorkflowMappe
                     type="button"
                     onClick={() => removeStep(step.id)}
                     aria-label={en ? "Delete step" : "删除步骤"}
-                    className="shrink-0 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400"
+                    className="shrink-0 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -212,7 +212,7 @@ export function WorkflowMapper({ projectId, workflows, workflow }: WorkflowMappe
             </li>
           ))}
           {steps.length === 0 && (
-            <li className="rounded-xl border border-dashed border-zinc-300 bg-white p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900">
+            <li className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900">
               {en ? "No steps yet. Click “Add Step” to begin." : "尚无步骤。点击「添加步骤」开始。"}
             </li>
           )}

@@ -10,5 +10,11 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
   const { id } = await params;
   const project = await getProject(id);
   if (!project) notFound();
-  return <PortfolioView projectId={project.id} candidates={project.candidates} />;
+  return (
+    <PortfolioView
+      projectId={project.id}
+      scoringMode={project.scoringMode ?? "workflow"}
+      candidates={project.candidates}
+    />
+  );
 }

@@ -14,7 +14,7 @@ interface HeadcountEditorProps {
 const cellKey = (levelCode: string, bg: string): string => `${levelCode}|${bg}`;
 
 const inputCls =
-  "mt-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950";
+  "mt-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950";
 
 /**
  * Headcount override editor: pick a function, then edit the aggregated FTE per
@@ -66,7 +66,7 @@ export function HeadcountEditor({ rows, onChange }: HeadcountEditorProps) {
 
   return (
     <div className="space-y-3">
-      <label className="block text-xs text-zinc-500">
+      <label className="block text-xs text-slate-500">
         {t.scan.selectFunction}
         <select value={selected} onChange={(e) => setActiveFn(e.target.value)} className={`${inputCls} block`}>
           {functions.map((f) => (
@@ -88,7 +88,7 @@ export function HeadcountEditor({ rows, onChange }: HeadcountEditorProps) {
           step={1}
         />
       ) : (
-        <p className="text-sm text-zinc-400">—</p>
+        <p className="text-sm text-slate-400">—</p>
       )}
     </div>
   );

@@ -129,21 +129,21 @@ export function BenchmarkClient() {
     setVersionsNonce((n) => n + 1);
   };
 
-  const labelCls = "block text-xs text-zinc-500";
+  const labelCls = "block text-xs text-slate-500";
   const inputCls =
-    "mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950";
+    "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950";
   const tabCls = (active: boolean): string =>
-    `rounded-md px-3 py-1.5 text-sm font-medium ${
+    `rounded-lg px-3.5 py-2 text-sm font-semibold shadow-sm transition ${
       active
         ? "bg-indigo-600 text-white"
-        : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900"
+        : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900"
     }`;
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-6 py-8">
       <header className="space-y-1">
         <h1 className="text-xl font-semibold tracking-tight">{t.benchmark.title}</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">{t.benchmark.subtitle}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t.benchmark.subtitle}</p>
       </header>
 
       <div className="grid gap-3 sm:grid-cols-3">
@@ -190,7 +190,7 @@ export function BenchmarkClient() {
       </div>
 
       {!ready ? (
-        <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900/40">
+        <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900/40">
           {t.benchmark.selectPrompt}
         </p>
       ) : (
@@ -215,7 +215,7 @@ export function BenchmarkClient() {
               type="button"
               onClick={() => setUploadOpen(true)}
               disabled={!companyKey}
-              className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm hover:bg-zinc-50 disabled:opacity-40 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+              className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold shadow-sm transition hover:bg-slate-50 disabled:opacity-40 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
               {t.benchmark.upload}
             </button>
@@ -223,13 +223,13 @@ export function BenchmarkClient() {
               type="button"
               onClick={handleDelete}
               disabled={!selectedVersionId}
-              className="rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 disabled:opacity-40 dark:border-red-900/50 dark:bg-zinc-900 dark:text-red-300"
+              className="rounded-lg border border-rose-200 bg-white px-3.5 py-2 text-sm font-semibold text-rose-700 shadow-sm transition hover:bg-rose-50 disabled:opacity-40 dark:border-rose-900/50 dark:bg-slate-900 dark:text-rose-300"
             >
               {t.benchmark.deleteVersion}
             </button>
           </div>
 
-          <p className="text-[11px] text-zinc-400">{t.benchmark.readOnlyHint}</p>
+          <p className="text-[11px] text-slate-400">{t.benchmark.readOnlyHint}</p>
 
           {error && (
             <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
@@ -238,9 +238,9 @@ export function BenchmarkClient() {
           )}
 
           {!snapshot ? (
-            <p className="py-8 text-center text-sm text-zinc-500">{t.common.loading}</p>
+            <p className="py-8 text-center text-sm text-slate-500">{t.common.loading}</p>
           ) : (
-            <div className="space-y-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
               <div className="flex flex-wrap gap-2">
                 <button type="button" className={tabCls(tab === "labor")} onClick={() => setTab("labor")}>
                   {t.benchmark.laborTab}
@@ -258,7 +258,7 @@ export function BenchmarkClient() {
                 )}
               </div>
 
-              <div className="flex flex-wrap items-end justify-end gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+              <div className="flex flex-wrap items-end justify-end gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
                 <label className={labelCls}>
                   {t.benchmark.versionName}
                   <input
@@ -272,7 +272,7 @@ export function BenchmarkClient() {
                   type="button"
                   onClick={handleSave}
                   disabled={!canSave || saving}
-                  className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-40"
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-40"
                 >
                   {saving ? t.benchmark.saving : t.benchmark.saveAsVersion}
                 </button>
