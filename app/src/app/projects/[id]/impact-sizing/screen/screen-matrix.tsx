@@ -17,10 +17,15 @@ interface ScreenMatrixProps {
   candidates: ReadonlyArray<Candidate>;
 }
 
+/** Sentinel filter value for candidates with no business function set. */
+const UNASSIGNED = "__unassigned__";
+
 export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
   const { locale } = useLocale();
+  const en = locale === "en";
   const { status, error, save } = useProjectSave(projectId);
-  const [dirty, setDirty] = useState(false);
+  // Per-workflow unsaved-changes tracking — editing is workflow-scoped.
+  const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
   const [answers, setAnswers] = useState<Record<string, Record<ScreenCriterionId, ScreenAnswer>>>(() => {
     const out: Record<string, Record<ScreenCriterionId, ScreenAnswer>> = {};
     candidates.forEach((c) => {
@@ -29,6 +34,7 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
     return out;
   });
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [fnFilter, setFnFilter] = useState<string>("all");
   const [sopByCandidate, setSopByCandidate] = useState<Record<string, SopFileRef | undefined>>(() => {
     const out: Record<string, SopFileRef | undefined> = {};
     candidates.forEach((c) => {
@@ -43,24 +49,47 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
     });
     return out;
   });
+  const [bizFnByCandidate, setBizFnByCandidate] = useState<Record<string, string | undefined>>(() => {
+    const out: Record<string, string | undefined> = {};
+    candidates.forEach((c) => {
+      out[c.id] = c.businessFunction;
+    });
+    return out;
+  });
 
-  /** Merge current screen answers, SOP refs, and use-case ideas back onto the candidates (immutably). */
+  const markDirty = (candidateId: string) =>
+    setDirtyIds((prev) => (prev.has(candidateId) ? prev : new Set(prev).add(candidateId)));
+
+  /** Merge current screen answers, SOP refs, use-case ideas, and business function back onto candidates (immutably). */
   const buildMerged = (
     answersSnap: Record<string, Record<ScreenCriterionId, ScreenAnswer>>,
     sopsSnap: Record<string, SopFileRef | undefined>,
     useCasesSnap: Record<string, ProjectUseCase[]>,
+    bizFnSnap: Record<string, string | undefined>,
   ): Candidate[] =>
     candidates.map((c) => {
-      const { sopFile: _prev, ...rest } = c;
+      const { sopFile: _prevSop, businessFunction: _prevFn, ...rest } = c;
       const sop = sopsSnap[c.id];
       const ideas = useCasesSnap[c.id] ?? c.useCases ?? [];
+      const fn = bizFnSnap[c.id]?.trim();
       return {
         ...rest,
         screen: answersSnap[c.id] ?? c.screen,
         ...(sop ? { sopFile: sop } : {}),
         ...(ideas.length > 0 ? { useCases: ideas } : {}),
+        ...(fn ? { businessFunction: fn } : {}),
       };
     });
+
+  /** Persist the full current state (PATCH replaces all candidates) and clear unsaved flags. */
+  const persist = async (
+    sopsSnap = sopByCandidate,
+    useCasesSnap = useCasesByCandidate,
+    bizFnSnap = bizFnByCandidate,
+  ) => {
+    await save({ candidates: buildMerged(answers, sopsSnap, useCasesSnap, bizFnSnap) });
+    setDirtyIds(new Set());
+  };
 
   const toggleYes = (candidateId: string, key: ScreenCriterionId) => {
     setAnswers((prev) => ({
@@ -70,7 +99,7 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
         [key]: { ...prev[candidateId][key], yes: !prev[candidateId][key].yes },
       },
     }));
-    setDirty(true);
+    markDirty(candidateId);
   };
 
   const updateField = (
@@ -85,25 +114,24 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
         [key]: { ...prev[candidateId][key], ...patch },
       },
     }));
-    setDirty(true);
-  };
-
-  const onSave = async () => {
-    await save({ candidates: buildMerged(answers, sopByCandidate, useCasesByCandidate) });
-    setDirty(false);
+    markDirty(candidateId);
   };
 
   /** Persist a SOP upload/removal immediately so the stored file is never orphaned. */
   const onSopChange = async (candidateId: string, ref: SopFileRef | undefined) => {
     const nextSops = { ...sopByCandidate, [candidateId]: ref };
     setSopByCandidate(nextSops);
-    await save({ candidates: buildMerged(answers, nextSops, useCasesByCandidate) });
-    setDirty(false);
+    await persist(nextSops);
   };
 
   const updateUseCases = (candidateId: string, next: ProjectUseCase[]) => {
     setUseCasesByCandidate((prev) => ({ ...prev, [candidateId]: next }));
-    setDirty(true);
+    markDirty(candidateId);
+  };
+
+  const updateBizFn = (candidateId: string, value: string | undefined) => {
+    setBizFnByCandidate((prev) => ({ ...prev, [candidateId]: value }));
+    markDirty(candidateId);
   };
 
   /** Apply grounded agent suggestions to local answers; null dimensions are left untouched. */
@@ -123,61 +151,51 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
       }
       return { ...prev, [candidateId]: next };
     });
-    setDirty(true);
+    markDirty(candidateId);
   };
-
-  const saveLabel =
-    status === "saving"
-      ? locale === "en"
-        ? "Saving…"
-        : "保存中…"
-      : status === "saved" && !dirty
-        ? locale === "en"
-          ? "Saved ✓"
-          : "已保存 ✓"
-        : locale === "en"
-          ? "Save"
-          : "保存";
 
   const scoreFor = (candidateId: string): number =>
     screenCriteria.reduce((sum, cr) => sum + (answers[candidateId][cr.id].yes ? 1 : 0), 0);
 
   const passCount = candidates.filter((c) => scoreFor(c.id) >= SCREEN_PASS_THRESHOLD).length;
 
+  // Business-function filter: distinct values + an "unassigned" bucket when relevant.
+  const fnOf = (c: Candidate): string => bizFnByCandidate[c.id]?.trim() || "";
+  const distinctFns = Array.from(new Set(candidates.map(fnOf).filter(Boolean))).sort();
+  const hasUnassigned = candidates.some((c) => !fnOf(c));
+  const visible = candidates.filter((c) => {
+    if (fnFilter === "all") return true;
+    if (fnFilter === UNASSIGNED) return !fnOf(c);
+    return fnOf(c) === fnFilter;
+  });
+
+  // expand col is rendered as an empty cell; the colspan covers the remaining columns.
+  const SUBROW_COLSPAN = screenCriteria.length + 4;
+
   return (
     <div className="space-y-4">
       <header className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold">
-            {locale === "en" ? "Layer 1 · Binary Readiness Screen" : "Layer 1 · 二元准备度筛选"}
+            {en ? "Layer 1 · Binary Readiness Screen" : "Layer 1 · 二元准备度筛选"}
           </h2>
           <p className="mt-1 text-xs text-slate-500">
-            {locale === "en"
+            {en
               ? `6 binary gates · Pass threshold: ${SCREEN_PASS_THRESHOLD} of ${SCREEN_TOTAL} Yes (one allowed exception requires mitigation plan)`
               : `6 项二元判断 · 通过门槛: ${SCREEN_TOTAL} 项中 ≥${SCREEN_PASS_THRESHOLD} 项 Yes(可有 1 项例外,需附缓解方案)`}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={onSave}
-            disabled={status === "saving" || !dirty}
-            className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
-          >
-            {saveLabel}
-          </button>
-          <ToolDrawer
-            buttonLabel={locale === "en" ? "Tool Reference" : "工具参考"}
-            title={locale === "en" ? "Binary Readiness Screen Guide" : "二元准备度筛选指南"}
-            subtitle={
-              locale === "en"
-                ? "Detailed criteria definitions, pass/fail examples, interview protocol."
-                : "详细判定定义、Pass/Fail 样例、访谈协议。"
-            }
-          >
-            <ScreenToolReference />
-          </ToolDrawer>
-        </div>
+        <ToolDrawer
+          buttonLabel={en ? "Tool Reference" : "工具参考"}
+          title={en ? "Binary Readiness Screen Guide" : "二元准备度筛选指南"}
+          subtitle={
+            en
+              ? "Detailed criteria definitions, pass/fail examples, interview protocol."
+              : "详细判定定义、Pass/Fail 样例、访谈协议。"
+          }
+        >
+          <ScreenToolReference />
+        </ToolDrawer>
       </header>
 
       {error && (
@@ -186,14 +204,39 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
         </p>
       )}
 
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="text-xs font-medium text-slate-600 dark:text-slate-400">
+          {en ? "Business function" : "业务职能"}
+        </label>
+        <select
+          value={fnFilter}
+          onChange={(e) => setFnFilter(e.target.value)}
+          className="rounded-md border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+        >
+          <option value="all">{en ? "All functions" : "全部职能"}</option>
+          {distinctFns.map((f) => (
+            <option key={f} value={f}>
+              {f}
+            </option>
+          ))}
+          {hasUnassigned && <option value={UNASSIGNED}>{en ? "Unassigned" : "未分配"}</option>}
+        </select>
+        {fnFilter !== "all" && (
+          <span className="text-xs text-slate-400">
+            {en ? `${visible.length} shown` : `显示 ${visible.length} 个`}
+          </span>
+        )}
+      </div>
+
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <table className="w-full min-w-[720px] text-sm">
+        <table className="w-full min-w-[820px] text-sm">
           <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
             <tr>
               <th className="w-8 px-3 py-2">
-                <span className="sr-only">{locale === "en" ? "Expand" : "展开"}</span>
+                <span className="sr-only">{en ? "Expand" : "展开"}</span>
               </th>
-              <th className="px-3 py-2 font-medium">{locale === "en" ? "Workflow" : "工作流"}</th>
+              <th className="px-3 py-2 font-medium">{en ? "Business function" : "业务职能"}</th>
+              <th className="px-3 py-2 font-medium">{en ? "Workflow" : "工作流"}</th>
               {screenCriteria.map((cr) => (
                 <th key={cr.id} className="px-3 py-2 font-medium" title={cr.shortLabel[locale]}>
                   <div className="flex items-center gap-1">
@@ -202,10 +245,10 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                       label={cr.question[locale]}
                       body={
                         <>
-                          <span className="font-semibold">{locale === "en" ? "Pass:" : "通过:"}</span>{" "}
+                          <span className="font-semibold">{en ? "Pass:" : "通过:"}</span>{" "}
                           {cr.passExamples[locale][0]}
                           <br />
-                          <span className="font-semibold">{locale === "en" ? "Fail:" : "未通过:"}</span>{" "}
+                          <span className="font-semibold">{en ? "Fail:" : "未通过:"}</span>{" "}
                           {cr.failExamples[locale][0]}
                         </>
                       }
@@ -213,36 +256,40 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                   </div>
                 </th>
               ))}
-              <th className="px-3 py-2 text-right font-medium">{locale === "en" ? "Score" : "得分"}</th>
-              <th className="px-3 py-2 font-medium">{locale === "en" ? "Status" : "状态"}</th>
+              <th className="px-3 py-2 text-right font-medium">{en ? "Score" : "得分"}</th>
+              <th className="px-3 py-2 font-medium">{en ? "Status" : "状态"}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-            {candidates.map((c) => {
+            {visible.map((c) => {
               const score = scoreFor(c.id);
               const pass = score >= SCREEN_PASS_THRESHOLD;
               const expanded = expandedRow === c.id;
+              const wfDirty = dirtyIds.has(c.id);
               return (
                 <Fragment key={c.id}>
                   <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                    <td className="px-3 py-3">
+                    <td className="px-3 py-3 align-top">
                       <button
                         type="button"
                         onClick={() => setExpandedRow(expanded ? null : c.id)}
                         className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                        aria-label="Toggle evidence"
+                        aria-label={en ? "Toggle evidence" : "切换证据"}
                       >
                         {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                       </button>
                     </td>
-                    <td className="px-3 py-3">
+                    <td className="px-3 py-3 align-top text-slate-600 dark:text-slate-300">
+                      {fnOf(c) || <span className="text-slate-400">—</span>}
+                    </td>
+                    <td className="px-3 py-3 align-top">
                       <div className="font-medium">{c.name}</div>
                       <div className="text-xs text-slate-500">{c.sourceSystem}</div>
                     </td>
                     {screenCriteria.map((cr) => {
                       const a = answers[c.id][cr.id];
                       return (
-                        <td key={cr.id} className="px-3 py-3">
+                        <td key={cr.id} className="px-3 py-3 align-top">
                           <button
                             type="button"
                             onClick={() => toggleYes(c.id, cr.id)}
@@ -258,10 +305,10 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                         </td>
                       );
                     })}
-                    <td className="px-3 py-3 text-right font-mono">
+                    <td className="px-3 py-3 text-right align-top font-mono">
                       {score}/{SCREEN_TOTAL}
                     </td>
-                    <td className="px-3 py-3">
+                    <td className="px-3 py-3 align-top">
                       <span
                         className={
                           pass
@@ -273,10 +320,20 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                       </span>
                     </td>
                   </tr>
+
                   {expanded && (
                     <tr className="bg-slate-50/60 dark:bg-slate-950/40">
                       <td></td>
-                      <td colSpan={screenCriteria.length + 3} className="px-3 py-4">
+                      <td colSpan={SUBROW_COLSPAN} className="px-3 py-4">
+                        <label className="mb-3 block max-w-sm text-xs">
+                          <span className="text-slate-500">{en ? "Business function" : "业务职能"}</span>
+                          <input
+                            value={bizFnByCandidate[c.id] ?? ""}
+                            onChange={(e) => updateBizFn(c.id, e.target.value || undefined)}
+                            placeholder={en ? "e.g. Accounts Payable" : "例如:应付账款"}
+                            className="mt-0.5 w-full rounded border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+                          />
+                        </label>
                         <EvidencePanel
                           projectId={projectId}
                           candidate={c}
@@ -286,16 +343,37 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                           onSopChange={(ref) => onSopChange(c.id, ref)}
                           onApplySuggestions={(s) => applySuggestions(c.id, s)}
                         />
-                        <div className="mt-4">
+                      </td>
+                    </tr>
+                  )}
+
+                  {/* Always-visible use-case list + per-workflow save. */}
+                  <tr className="bg-white dark:bg-slate-900">
+                    <td></td>
+                    <td colSpan={SUBROW_COLSPAN} className="px-3 pb-4 pt-0">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
                           <UseCaseIdeasPanel
                             candidateId={c.id}
                             useCases={useCasesByCandidate[c.id] ?? []}
                             onChange={(next) => updateUseCases(c.id, next)}
                           />
                         </div>
-                      </td>
-                    </tr>
-                  )}
+                        <button
+                          type="button"
+                          onClick={() => persist()}
+                          disabled={!wfDirty || status === "saving"}
+                          className="shrink-0 rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
+                        >
+                          {status === "saving"
+                            ? en ? "Saving…" : "保存中…"
+                            : !wfDirty && status === "saved"
+                              ? en ? "Saved ✓" : "已保存 ✓"
+                              : en ? "Save workflow" : "保存此工作流"}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
                 </Fragment>
               );
             })}
@@ -305,7 +383,7 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
 
       <div className="flex items-center justify-between rounded-md border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-800 dark:bg-slate-900">
         <span className="text-slate-600 dark:text-slate-400">
-          {locale === "en"
+          {en
             ? `${passCount} of ${candidates.length} advance to Layer 2 (2x2 Funnel)`
             : `${candidates.length} 个候选中有 ${passCount} 个进入 Layer 2 (2x2 漏斗)`}
         </span>

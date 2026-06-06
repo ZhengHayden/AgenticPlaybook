@@ -1,9 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useLocale } from "@/lib/locale-context";
 import type { ProjectUseCase } from "@/content/sample-data";
-import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 
 interface UseCaseIdeasPanelProps {
   /** Parent workflow these ideas belong to. */
@@ -19,7 +19,7 @@ function newId(): string {
 
 const T = {
   en: {
-    title: "Use-case ideas",
+    title: "Use cases",
     hint: "Discrete agentic opportunities within this workflow. Scored individually in use-case mode.",
     add: "Add use case",
     name: "Name",
@@ -27,10 +27,11 @@ const T = {
     rationale: "Impact rationale",
     kpis: "Expected KPIs (comma-separated)",
     remove: "Remove",
+    details: "Edit details",
     empty: "No use-case ideas yet.",
   },
   zh: {
-    title: "用例想法",
+    title: "用例",
     hint: "此工作流中的独立智能体机会。在用例模式下单独评分。",
     add: "添加用例",
     name: "名称",
@@ -38,13 +39,24 @@ const T = {
     rationale: "影响理由",
     kpis: "预期 KPI(逗号分隔)",
     remove: "移除",
+    details: "编辑详情",
     empty: "暂无用例想法。",
   },
 };
 
+const iconButtonClass =
+  "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-slate-200 text-slate-500 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800";
+
+/**
+ * Compact, always-visible list of a workflow's use-case ideas. Each idea shows
+ * an inline name plus small icon buttons to edit its details or delete it; a
+ * single add button appends a new idea. Pure and immutable — edits return new
+ * arrays and call `onChange`; the host persists.
+ */
 export function UseCaseIdeasPanel({ candidateId, useCases, onChange }: UseCaseIdeasPanelProps) {
   const { locale } = useLocale();
   const t = T[locale];
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   const patchAt = (index: number, patch: Partial<ProjectUseCase>) => {
     onChange(useCases.map((uc, i) => (i === index ? { ...uc, ...patch } : uc)));
@@ -55,82 +67,105 @@ export function UseCaseIdeasPanel({ candidateId, useCases, onChange }: UseCaseId
       ...useCases,
       { id: newId(), candidateId, name: "", description: "", impactRationale: "" },
     ]);
+    setOpenIdx(useCases.length);
   };
 
   const removeAt = (index: number) => {
     onChange(useCases.filter((_, i) => i !== index));
+    setOpenIdx(null);
   };
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900/40">
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <div>
-          <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100">{t.title}</h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400">{t.hint}</p>
-        </div>
-        <Button variant="secondary" onClick={addIdea} className="shrink-0">
+    <section>
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          {t.title}
+        </span>
+        <button
+          type="button"
+          aria-label={t.add}
+          title={t.add}
+          onClick={addIdea}
+          className={iconButtonClass}
+        >
           <Plus className="h-4 w-4" />
-          {t.add}
-        </Button>
+        </button>
       </div>
 
       {useCases.length === 0 ? (
-        <p className="py-2 text-sm text-slate-400">{t.empty}</p>
+        <p className="text-xs text-slate-400">{t.empty}</p>
       ) : (
-        <ul className="space-y-3">
-          {useCases.map((uc, i) => (
-            <li
-              key={uc.id}
-              className="rounded-md border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900"
-            >
-              <div className="flex items-start gap-2">
-                <input
-                  aria-label={t.name}
-                  value={uc.name}
-                  placeholder={t.name}
-                  onChange={(e) => patchAt(i, { name: e.target.value })}
-                  className="flex-1 rounded-md border border-slate-300 px-2 py-1 text-sm font-medium dark:border-slate-700 dark:bg-slate-950"
-                />
-                <Button
-                  variant="ghost"
-                  aria-label={t.remove}
-                  onClick={() => removeAt(i)}
-                  className="shrink-0 px-2 text-rose-600"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              <textarea
-                aria-label={t.description}
-                value={uc.description}
-                placeholder={t.description}
-                rows={2}
-                onChange={(e) => patchAt(i, { description: e.target.value })}
-                className="mt-2 w-full rounded-md border border-slate-300 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
-              />
-              <textarea
-                aria-label={t.rationale}
-                value={uc.impactRationale}
-                placeholder={t.rationale}
-                rows={2}
-                onChange={(e) => patchAt(i, { impactRationale: e.target.value })}
-                className="mt-2 w-full rounded-md border border-slate-300 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
-              />
-              <input
-                aria-label={t.kpis}
-                value={(uc.expectedKpis ?? []).join(", ")}
-                placeholder={t.kpis}
-                onChange={(e) => {
-                  const kpis = e.target.value
-                    .split(",")
-                    .map((s) => s.trim())
-                    .filter(Boolean);
-                  patchAt(i, { expectedKpis: kpis.length > 0 ? kpis : undefined });
-                }}
-                className="mt-2 w-full rounded-md border border-slate-300 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
-              />
-            </li>
-          ))}
+        <ul className="space-y-1.5">
+          {useCases.map((uc, i) => {
+            const open = openIdx === i;
+            return (
+              <li
+                key={uc.id}
+                className="rounded-md border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900"
+              >
+                <div className="flex items-center gap-2">
+                  <input
+                    aria-label={t.name}
+                    value={uc.name}
+                    placeholder={t.name}
+                    onChange={(e) => patchAt(i, { name: e.target.value })}
+                    className="flex-1 rounded-md border border-slate-300 px-2 py-1 text-sm font-medium dark:border-slate-700 dark:bg-slate-950"
+                  />
+                  <button
+                    type="button"
+                    aria-label={t.details}
+                    title={t.details}
+                    onClick={() => setOpenIdx(open ? null : i)}
+                    className={open ? `${iconButtonClass} bg-slate-100 dark:bg-slate-800` : iconButtonClass}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={t.remove}
+                    title={t.remove}
+                    onClick={() => removeAt(i)}
+                    className={`${iconButtonClass} hover:text-rose-600`}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                {open && (
+                  <div className="mt-2 space-y-2">
+                    <textarea
+                      aria-label={t.description}
+                      value={uc.description}
+                      placeholder={t.description}
+                      rows={2}
+                      onChange={(e) => patchAt(i, { description: e.target.value })}
+                      className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+                    />
+                    <textarea
+                      aria-label={t.rationale}
+                      value={uc.impactRationale}
+                      placeholder={t.rationale}
+                      rows={2}
+                      onChange={(e) => patchAt(i, { impactRationale: e.target.value })}
+                      className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+                    />
+                    <input
+                      aria-label={t.kpis}
+                      value={(uc.expectedKpis ?? []).join(", ")}
+                      placeholder={t.kpis}
+                      onChange={(e) => {
+                        const kpis = e.target.value
+                          .split(",")
+                          .map((s) => s.trim())
+                          .filter(Boolean);
+                        patchAt(i, { expectedKpis: kpis.length > 0 ? kpis : undefined });
+                      }}
+                      className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+                    />
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>
