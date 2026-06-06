@@ -3,7 +3,7 @@
 import { Fragment, useState } from "react";
 import { useLocale } from "@/lib/locale-context";
 import { useProjectSave } from "@/lib/use-project-save";
-import type { Candidate, SolutionProposal, ScoringMode, ProjectUseCase } from "@/content/sample-data";
+import type { Candidate, SolutionProposal, ScoringMode } from "@/content/sample-data";
 import {
   odsIndicators,
   orsIndicators,
@@ -18,10 +18,6 @@ import {
   computeRiskPenalty,
   computeRas,
   computePriority,
-  cohortMaxDdiRaw,
-  computeUnitPriority,
-  rollupWorkflow,
-  type WorkflowRollup,
   PRIORITY_FLOOR,
 } from "@/content/scoring-rubric";
 import {
@@ -31,6 +27,7 @@ import {
   isDesignEligible,
 } from "@/content/solution-proposal";
 import { ChevronDown, ChevronRight, Download } from "lucide-react";
+import { UseCasePortfolio } from "./use-case-portfolio";
 
 interface PortfolioViewProps {
   projectId: string;
@@ -38,9 +35,21 @@ interface PortfolioViewProps {
   candidates: ReadonlyArray<Candidate>;
 }
 
-interface RankedUseCase {
-  name: string;
-  priority: number;
+/**
+ * Mode dispatcher. Renders the active prioritization grain. Each branch is a
+ * self-contained component owning its own hooks, so toggling the project's
+ * `scoringMode` swaps the whole subtree rather than changing a hook count.
+ */
+export function PortfolioView({ projectId, scoringMode, candidates }: PortfolioViewProps) {
+  if (scoringMode === "useCase") {
+    return <UseCasePortfolio projectId={projectId} candidates={candidates} />;
+  }
+  return <WorkflowPortfolio projectId={projectId} candidates={candidates} />;
+}
+
+interface WorkflowPortfolioProps {
+  projectId: string;
+  candidates: ReadonlyArray<Candidate>;
 }
 
 interface RankedCandidate {
@@ -51,10 +60,6 @@ interface RankedCandidate {
   computedQuadrant?: QuadrantId;
   priorityScore: number;
   vm: number;
-  /** Use-case mode only: rollup over the workflow's scored use cases. */
-  rollup?: WorkflowRollup;
-  /** Use-case mode only: the workflow's use cases ranked by priority. */
-  rankedUseCases?: RankedUseCase[];
 }
 
 /** The subset of candidate fields editable from the portfolio. */
@@ -90,10 +95,10 @@ function pickEdit(c: Candidate): CandidateEdit {
   };
 }
 
-export function PortfolioView({ projectId, scoringMode, candidates }: PortfolioViewProps) {
+/** Workflow-grain portfolio: ranks candidates by their Priority score. */
+function WorkflowPortfolio({ projectId, candidates }: WorkflowPortfolioProps) {
   const { locale } = useLocale();
   const en = locale === "en";
-  const useCaseMode = scoringMode === "useCase";
   const { status, error, save } = useProjectSave(projectId);
   const [dirty, setDirty] = useState(false);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
@@ -126,34 +131,7 @@ export function PortfolioView({ projectId, scoringMode, candidates }: PortfolioV
   const screenPassed = (c: Candidate): boolean =>
     screenCriteria.reduce((s, cr) => s + (c.screen[cr.id].yes ? 1 : 0), 0) >= SCREEN_PASS_THRESHOLD;
 
-  // Use-case mode: rank workflows by their rollup over scored use cases, with the
-  // DDI cohort spanning all scored use cases project-wide (matches the scoring page).
-  const isScored = (u: ProjectUseCase) => Boolean(u.vm && u.ddi && u.risk && u.totalSteps);
-  const ucMaxDdiRaw = useCaseMode
-    ? cohortMaxDdiRaw(
-        candidates
-          .flatMap((c) => c.useCases ?? [])
-          .filter(isScored)
-          .map((u) => ({ vm: u.vm!, ddi: u.ddi!, totalSteps: u.totalSteps!, risk: u.risk! })),
-      )
-    : 0;
-  const rollupFor = (c: Candidate): { rollup: WorkflowRollup; ranked: RankedUseCase[] } => {
-    const withPriority = (c.useCases ?? [])
-      .filter(isScored)
-      .map((u) => ({
-        name: u.name,
-        priority: computeUnitPriority(
-          { vm: u.vm!, ddi: u.ddi!, totalSteps: u.totalSteps!, risk: u.risk! },
-          ucMaxDdiRaw,
-        ),
-      }));
-    return {
-      rollup: rollupWorkflow(withPriority.map((x) => x.priority)),
-      ranked: [...withPriority].sort((a, b) => b.priority - a.priority),
-    };
-  };
-
-  const all = candidates.map<RankedCandidate>((c) => {
+  const all = candidates.map<RankedCandidate & { _ddiRaw?: number; _ras?: number }>((c) => {
     if (!screenPassed(c)) {
       return { candidate: c, quadrant: "failed", priorityScore: 0, vm: 0 };
     }
@@ -161,19 +139,6 @@ export function PortfolioView({ projectId, scoringMode, candidates }: PortfolioV
     const ors = orsIndicators.reduce((s, i) => s + c.ors[i.id] * i.weight, 0);
     const computedQuadrant = quadrantFromScores(ods, ors);
     const vm = computeVm(c.vm);
-
-    if (useCaseMode) {
-      const { rollup, ranked } = rollupFor(c);
-      return {
-        candidate: c,
-        quadrant: c.quadrantOverride ?? computedQuadrant,
-        computedQuadrant,
-        priorityScore: rollup.priority,
-        vm,
-        rollup,
-        rankedUseCases: ranked,
-      };
-    }
 
     const ddiRaw = computeDdiRaw(c.ddi, c.totalSteps);
     const ras = computeRas(vm, computeRiskPenalty(c.risk));
@@ -185,8 +150,8 @@ export function PortfolioView({ projectId, scoringMode, candidates }: PortfolioV
       vm,
       _ddiRaw: ddiRaw,
       _ras: ras,
-    } as RankedCandidate & { _ddiRaw: number; _ras: number };
-  }) as Array<RankedCandidate & { _ddiRaw?: number; _ras?: number }>;
+    };
+  });
 
   const maxDdiRaw = Math.max(...all.map((r) => r._ddiRaw ?? 0), 0.0001);
   all.forEach((r) => {
@@ -258,18 +223,9 @@ export function PortfolioView({ projectId, scoringMode, candidates }: PortfolioV
             {r.quadrant === "failed" ? (
               <span className="text-slate-400">—</span>
             ) : (
-              <div className="flex flex-col items-end">
-                <span className={passesFloor ? "font-mono text-emerald-700 dark:text-emerald-300" : "font-mono text-rose-700 dark:text-rose-300"}>
-                  {r.priorityScore.toFixed(2)}
-                </span>
-                {useCaseMode && r.rollup && (
-                  <span className="text-[10px] text-slate-500">
-                    {en
-                      ? `${r.rollup.aboveFloor} of ${r.rollup.total} ≥ ${PRIORITY_FLOOR}`
-                      : `${r.rollup.total} 个中 ${r.rollup.aboveFloor} 个 ≥ ${PRIORITY_FLOOR}`}
-                  </span>
-                )}
-              </div>
+              <span className={passesFloor ? "font-mono text-emerald-700 dark:text-emerald-300" : "font-mono text-rose-700 dark:text-rose-300"}>
+                {r.priorityScore.toFixed(2)}
+              </span>
             )}
           </td>
           <td className="px-3 py-3">
@@ -294,35 +250,6 @@ export function PortfolioView({ projectId, scoringMode, candidates }: PortfolioV
           <tr className="bg-slate-50/60 dark:bg-slate-950/40">
             <td></td>
             <td colSpan={COLSPAN - 1} className="px-3 py-4">
-              {useCaseMode && r.rankedUseCases && r.rankedUseCases.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                    {en ? "Use cases by priority" : "用例(按优先级)"}
-                  </h4>
-                  <ul className="mt-1 space-y-1">
-                    {r.rankedUseCases.map((uc, i) => {
-                      const floor = uc.priority >= PRIORITY_FLOOR;
-                      return (
-                        <li key={`${uc.name}-${i}`} className="flex items-center justify-between text-sm">
-                          <span className="truncate">
-                            {i + 1}. {uc.name || (en ? "Untitled" : "未命名")}
-                          </span>
-                          <span
-                            className={
-                              "font-mono text-xs " +
-                              (floor
-                                ? "text-emerald-700 dark:text-emerald-300"
-                                : "text-rose-700 dark:text-rose-300")
-                            }
-                          >
-                            {uc.priority.toFixed(2)}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
               <CandidateEditor
                 edit={edit}
                 onUpdate={(patch) => updateEdit(c.id, patch)}
