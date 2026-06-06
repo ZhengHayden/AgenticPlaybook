@@ -72,14 +72,14 @@ describe("PortfolioView — use-case mode", () => {
       <PortfolioView projectId="p" scoringMode="useCase" candidates={[c1, c2]} />,
     );
 
-    // Both use cases are listed (in the table and the bars chart).
-    expect(screen.getAllByText("Auto-match").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Dup detection").length).toBeGreaterThan(0);
-    // Parent workflow shown as context.
-    expect(screen.getByText("Vendor Mgmt")).toBeInTheDocument();
-    expect(screen.getByText("AP Invoicing")).toBeInTheDocument();
+    // Both use cases are listed.
+    expect(screen.getByText("Auto-match")).toBeInTheDocument();
+    expect(screen.getByText("Dup detection")).toBeInTheDocument();
+    // Parent workflow shown as context (and also in the workflow filter dropdown).
+    expect(screen.getAllByText("Vendor Mgmt").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("AP Invoicing").length).toBeGreaterThan(0);
 
-    // Ranked by use-case priority: the higher-VM use case comes first.
+    // Ranked by use-case priority: the higher-VM use case row comes before the lower one.
     const text = container.textContent ?? "";
     expect(text.indexOf("Auto-match")).toBeLessThan(text.indexOf("Dup detection"));
   });
@@ -96,6 +96,21 @@ describe("PortfolioView — use-case mode", () => {
     ]);
     wrap(<PortfolioView projectId="p" scoringMode="useCase" candidates={[c]} />);
     expect(screen.getByText(/design-eligible/i)).toBeInTheDocument();
+  });
+
+  it("filters the use-case list by workflow", () => {
+    const c1 = candidate("c1", "AP Invoicing", [uc("u1", "c1", "Auto-match", 4)]);
+    const c2 = candidate("c2", "Vendor Mgmt", [uc("u2", "c2", "Vendor onboarding", 3)]);
+    wrap(<PortfolioView projectId="p" scoringMode="useCase" candidates={[c1, c2]} />);
+    expect(screen.getByText("Auto-match")).toBeInTheDocument();
+    expect(screen.getByText("Vendor onboarding")).toBeInTheDocument();
+
+    // Filtering to one workflow hides the other workflow's use cases.
+    fireEvent.change(screen.getByRole("combobox", { name: /filter by workflow/i }), {
+      target: { value: "c1" },
+    });
+    expect(screen.getByText("Auto-match")).toBeInTheDocument();
+    expect(screen.queryByText("Vendor onboarding")).not.toBeInTheDocument();
   });
 
   it("still ranks workflows in workflow mode (unchanged behavior)", () => {

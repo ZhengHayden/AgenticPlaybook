@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getProject } from "@/db/projects-repo";
 import { PhaseSubNav } from "../_components/phase-sub-nav";
-import { ScoringModeSwitch } from "./_components/scoring-mode-switch";
+import { ScoringModeSwitchSlot } from "./_components/scoring-mode-switch-slot";
 
 interface ImpactSizingLayoutProps {
   children: React.ReactNode;
@@ -26,7 +26,7 @@ export default async function ImpactSizingLayout({ children, params }: ImpactSiz
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PhaseSubNav phase="impactSizing" variant={project.p1Variant} tabs={tabs} />
-        <ScoringModeSwitch projectId={project.id} mode={project.scoringMode ?? "workflow"} />
+        <ScoringModeSwitchSlot projectId={project.id} mode={project.scoringMode ?? "workflow"} />
       </div>
       <div className="mt-4">{children}</div>
     </div>

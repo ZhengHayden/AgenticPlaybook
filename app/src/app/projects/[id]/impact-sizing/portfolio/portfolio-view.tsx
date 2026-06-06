@@ -165,7 +165,6 @@ function WorkflowPortfolio({ projectId, candidates }: WorkflowPortfolioProps) {
     .sort((a, b) => b.priorityScore - a.priorityScore);
   const failed = all.filter((r) => r.quadrant === "failed");
 
-  const maxScore = Math.max(...ranked.map((r) => r.priorityScore), 5);
   const COLSPAN = 7;
 
   const renderRow = (r: RankedCandidate, index: number | null) => {
@@ -318,34 +317,6 @@ function WorkflowPortfolio({ projectId, candidates }: WorkflowPortfolioProps) {
           </tbody>
         </table>
       </div>
-
-      <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-        <h3 className="mb-3 text-sm font-semibold">{en ? "Priority bars" : "优先级条形图"}</h3>
-        <div className="space-y-2">
-          {ranked.map((r) => {
-            const pct = (r.priorityScore / maxScore) * 100;
-            const passesFloor = r.priorityScore >= PRIORITY_FLOOR;
-            const barStyle: React.CSSProperties = { width: `${pct}%` };
-            return (
-              <div key={r.candidate.id} className="flex items-center gap-3 text-sm">
-                <span className="w-44 shrink-0 truncate">{r.candidate.name}</span>
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                  <div
-                    className={passesFloor ? "h-full bg-emerald-500" : "h-full bg-rose-500"}
-                    style={barStyle}
-                  />
-                </div>
-                <span className="w-12 shrink-0 text-right font-mono text-xs">{r.priorityScore.toFixed(2)}</span>
-              </div>
-            );
-          })}
-        </div>
-        <p className="mt-3 text-xs text-slate-500">
-          {en
-            ? `Bars in green clear the ${PRIORITY_FLOOR} Design-entry floor; bars in red do not.`
-            : `绿色条形通过 ${PRIORITY_FLOOR} Design 进入门槛;红色未通过。`}
-        </p>
-      </section>
     </div>
   );
 }

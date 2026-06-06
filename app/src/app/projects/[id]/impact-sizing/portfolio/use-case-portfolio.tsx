@@ -85,6 +85,8 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
     return out;
   });
 
+  const [wfFilter, setWfFilter] = useState<string>("all");
+
   // DDI cohort spans every scored use case project-wide (matches the scoring page).
   const maxDdiRaw = cohortMaxDdiRaw(
     candidates.flatMap((c) => (c.useCases ?? []).filter(isScored).map(unit)),
@@ -104,9 +106,11 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
     });
   });
 
-  const ranked = rows.filter((r) => r.scored).sort((a, b) => b.priority - a.priority);
-  const unscored = rows.filter((r) => !r.scored);
-  const maxScore = Math.max(...ranked.map((r) => r.priority), 5);
+  // Workflow is a filter: narrow the flat use-case list to one parent workflow.
+  const workflowOptions = candidates.filter((c) => (c.useCases ?? []).length > 0);
+  const visibleRows = wfFilter === "all" ? rows : rows.filter((r) => r.parent.id === wfFilter);
+  const ranked = visibleRows.filter((r) => r.scored).sort((a, b) => b.priority - a.priority);
+  const unscored = visibleRows.filter((r) => !r.scored);
 
   const setDisposition = (useCaseId: string, value: SolutionProposal | undefined) => {
     setEdits((prev) => ({ ...prev, [useCaseId]: value }));
@@ -132,7 +136,7 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
         ? en ? "Saved ✓" : "已保存 ✓"
         : en ? "Save" : "保存";
 
-  const COLSPAN = 8;
+  const COLSPAN = 7;
 
   const renderRow = (r: UseCaseRow, index: number | null) => {
     const u = r.useCase;
@@ -198,7 +202,6 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
               <span className="text-xs text-slate-400">{en ? "Not decided" : "未决定"}</span>
             )}
           </td>
-          <td className="px-3 py-3 text-xs">{u.impactRationale || "—"}</td>
         </tr>
         {expanded && (
           <tr className="bg-slate-50/60 dark:bg-slate-950/40">
@@ -277,7 +280,7 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
         </p>
       )}
 
-      {ranked.length === 0 && unscored.length === 0 ? (
+      {rows.length === 0 ? (
         <p className="rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900">
           {en
             ? "No scored use cases yet. Add use-case ideas in the Readiness Check, then score them under Impact Sizing."
@@ -285,6 +288,30 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
         </p>
       ) : (
         <>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="text-xs font-medium text-slate-600 dark:text-slate-400">
+              {en ? "Workflow" : "工作流"}
+            </label>
+            <select
+              value={wfFilter}
+              onChange={(e) => setWfFilter(e.target.value)}
+              aria-label={en ? "Filter by workflow" : "按工作流筛选"}
+              className="max-w-[18rem] rounded-md border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+            >
+              <option value="all">{en ? "All workflows" : "全部工作流"}</option>
+              {workflowOptions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            {wfFilter !== "all" && (
+              <span className="text-xs text-slate-400">
+                {en ? `${visibleRows.length} shown` : `显示 ${visibleRows.length} 个`}
+              </span>
+            )}
+          </div>
+
           <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <table className="w-full min-w-[820px] text-sm">
               <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
@@ -298,7 +325,6 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
                   <th className="px-3 py-2 font-medium">{en ? "Quadrant" : "象限"}</th>
                   <th className="px-3 py-2 text-right font-medium">Priority</th>
                   <th className="px-3 py-2 font-medium">{en ? "Solution" : "方案决策"}</th>
-                  <th className="px-3 py-2 font-medium">{en ? "Impact rationale" : "影响理由"}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -307,39 +333,6 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
               </tbody>
             </table>
           </div>
-
-          {ranked.length > 0 && (
-            <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-              <h3 className="mb-3 text-sm font-semibold">{en ? "Priority bars" : "优先级条形图"}</h3>
-              <div className="space-y-2">
-                {ranked.map((r) => {
-                  const pct = (r.priority / maxScore) * 100;
-                  const passesFloor = r.priority >= PRIORITY_FLOOR;
-                  return (
-                    <div key={r.useCase.id} className="flex items-center gap-3 text-sm">
-                      <span className="w-44 shrink-0 truncate">
-                        {r.useCase.name || (en ? "Untitled" : "未命名")}
-                      </span>
-                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                        <div
-                          className={passesFloor ? "h-full bg-emerald-500" : "h-full bg-rose-500"}
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                      <span className="w-12 shrink-0 text-right font-mono text-xs">
-                        {r.priority.toFixed(2)}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-              <p className="mt-3 text-xs text-slate-500">
-                {en
-                  ? `Bars in green clear the ${PRIORITY_FLOOR} Design-entry floor; bars in red do not.`
-                  : `绿色条形通过 ${PRIORITY_FLOOR} Design 进入门槛;红色未通过。`}
-              </p>
-            </section>
-          )}
         </>
       )}
     </div>
