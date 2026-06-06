@@ -6,8 +6,10 @@ import type {
   Sector,
   Industry,
   Company,
+  UseCaseSeed,
 } from "./knowledge";
 import { DEFAULT_VALIDATION } from "./knowledge";
+import { utilityBranch } from "./knowledge-utility-seed";
 
 /**
  * Bundled seed for the Agentic Use Case Library. The repository inserts this on
@@ -124,18 +126,26 @@ const workflows: LibraryWorkflow[] = [
   },
 ];
 
-// ─── Use case factory ─────────────────────────────────────────
-type UseCaseSeed = Omit<KnowledgeUseCase, "sectorId" | "industryId" | "companyId" | "functionId">;
+// ─── Branch composition ───────────────────────────────────────
+// Additional sector branches (e.g. Energy & Utilities) live in their own
+// modules and are concatenated here so a single `withParents` pass resolves the
+// denormalized parent ids across the whole taxonomy.
+const sectorsAll: Sector[] = [...sectors, ...utilityBranch.sectors];
+const industriesAll: Industry[] = [...industries, ...utilityBranch.industries];
+const companiesAll: Company[] = [...companies, ...utilityBranch.companies];
+const functionsAll: LibraryFunction[] = [...functions, ...utilityBranch.functions];
+const workflowsAll: LibraryWorkflow[] = [...workflows, ...utilityBranch.workflows];
 
+// ─── Use case factory ─────────────────────────────────────────
 /** Resolve denormalized parent ids by walking workflow → function → company → … */
 function withParents(uc: UseCaseSeed): KnowledgeUseCase {
-  const workflow = workflows.find((w) => w.id === uc.workflowId);
+  const workflow = workflowsAll.find((w) => w.id === uc.workflowId);
   if (!workflow) throw new Error(`Seed: unknown workflowId ${uc.workflowId}`);
-  const fn = functions.find((f) => f.id === workflow.functionId);
+  const fn = functionsAll.find((f) => f.id === workflow.functionId);
   if (!fn) throw new Error(`Seed: unknown functionId ${workflow.functionId}`);
-  const company = companies.find((c) => c.id === fn.companyId);
+  const company = companiesAll.find((c) => c.id === fn.companyId);
   if (!company) throw new Error(`Seed: unknown companyId ${fn.companyId}`);
-  const industry = industries.find((i) => i.id === company.industryId);
+  const industry = industriesAll.find((i) => i.id === company.industryId);
   if (!industry) throw new Error(`Seed: unknown industryId ${company.industryId}`);
   return {
     ...uc,
@@ -518,13 +528,15 @@ const useCaseSeeds: UseCaseSeed[] = [
   },
 ];
 
-const useCases: KnowledgeUseCase[] = useCaseSeeds.map(withParents);
+const useCases: KnowledgeUseCase[] = [...useCaseSeeds, ...utilityBranch.useCaseSeeds].map(
+  withParents,
+);
 
 export const knowledgeSeed: KnowledgeLibrary = {
-  sectors,
-  industries,
-  companies,
-  functions,
-  workflows,
+  sectors: sectorsAll,
+  industries: industriesAll,
+  companies: companiesAll,
+  functions: functionsAll,
+  workflows: workflowsAll,
   useCases,
 };
