@@ -20,6 +20,7 @@ export default async function ScoringPage({ params }: ScoringPageProps) {
   return (
     <ScoringEditor
       projectId={project.id}
+      scoringMode={project.scoringMode ?? "workflow"}
       candidates={eligible}
       allCandidates={project.candidates}
     />
