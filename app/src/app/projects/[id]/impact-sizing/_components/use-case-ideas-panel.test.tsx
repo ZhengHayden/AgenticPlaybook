@@ -17,8 +17,13 @@ const idea = (over: Partial<ProjectUseCase> = {}): ProjectUseCase => ({
 });
 
 describe("UseCaseIdeasPanel", () => {
-  it("renders existing use-case ideas", () => {
+  it("renders existing use-case ideas display-only until their pen is clicked", () => {
     wrap(<UseCaseIdeasPanel candidateId="c1" useCases={[idea()]} onChange={() => {}} />);
+    // Stored ideas show as text first, not an editable input.
+    expect(screen.getByText("Auto-match")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Auto-match")).not.toBeInTheDocument();
+    // The per-item edit pen reveals the editable name field.
+    fireEvent.click(screen.getByRole("button", { name: /edit use case/i }));
     expect(screen.getByDisplayValue("Auto-match")).toBeInTheDocument();
   });
 
@@ -36,6 +41,8 @@ describe("UseCaseIdeasPanel", () => {
     const onChange = vi.fn();
     const original = [idea()];
     wrap(<UseCaseIdeasPanel candidateId="c1" useCases={original} onChange={onChange} />);
+    // Open the item for editing first, then rename it.
+    fireEvent.click(screen.getByRole("button", { name: /edit use case/i }));
     fireEvent.change(screen.getByDisplayValue("Auto-match"), { target: { value: "Renamed" } });
     const next = onChange.mock.calls[0][0] as ProjectUseCase[];
     expect(next[0].name).toBe("Renamed");
