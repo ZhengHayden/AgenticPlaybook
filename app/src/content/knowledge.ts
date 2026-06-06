@@ -127,6 +127,25 @@ export interface KnowledgeLibrary {
   useCases: KnowledgeUseCase[];
 }
 
+/**
+ * A use case as authored in a seed file: the full leaf object minus the four
+ * denormalized parent ids, which are resolved from `workflowId` at build time.
+ */
+export type UseCaseSeed = Omit<
+  KnowledgeUseCase,
+  "sectorId" | "industryId" | "companyId" | "functionId"
+>;
+
+/** A self-contained sector branch contributed to the seed by a content module. */
+export interface KnowledgeBranch {
+  sectors: Sector[];
+  industries: Industry[];
+  companies: Company[];
+  functions: LibraryFunction[];
+  workflows: LibraryWorkflow[];
+  useCaseSeeds: UseCaseSeed[];
+}
+
 /** Fields a client may set when creating a use case (parents derived server-side). */
 export interface CreateUseCaseFields {
   workflowId: string;
