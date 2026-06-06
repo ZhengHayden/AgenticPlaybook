@@ -162,6 +162,8 @@ function main(): void {
 
   const project = JSON.parse(row.data) as Record<string, unknown>;
   project.candidates = candidates;
+  // This benchmark's grain is per-workflow use cases, so rank by use case.
+  project.scoringMode = "useCase";
   project.updatedAt = new Date().toISOString();
 
   db.prepare(
