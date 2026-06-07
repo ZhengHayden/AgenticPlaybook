@@ -18,16 +18,24 @@ APP_DIR="$SCRIPT_DIR/app"
 
 cd "$APP_DIR"
 
-# ── Free the fixed port if something is already listening ───────────
-existing_pid="$(lsof -ti "tcp:${PORT}" 2>/dev/null || true)"
-if [ -n "${existing_pid}" ]; then
-  echo "⚠️  Port ${PORT} is in use (PID ${existing_pid}) — stopping it…"
-  kill "${existing_pid}" 2>/dev/null || true
-  sleep 1
-  existing_pid="$(lsof -ti "tcp:${PORT}" 2>/dev/null || true)"
-  if [ -n "${existing_pid}" ]; then
+# ── Free the fixed port if a server is already LISTENing on it ──────
+# Only target the process that holds the LISTEN socket (never clients
+# such as a browser with an open connection to the port), and kill its
+# whole process group — `next dev` is a supervisor that respawns its
+# server child if you kill the child alone.
+listener_pid="$(lsof -tiTCP:"${PORT}" -sTCP:LISTEN 2>/dev/null | head -1 || true)"
+if [ -n "${listener_pid}" ]; then
+  pgid="$(ps -o pgid= -p "${listener_pid}" 2>/dev/null | tr -d ' ')"
+  echo "⚠️  Port ${PORT} is held by PID ${listener_pid} — stopping that server…"
+  kill -TERM "-${pgid}" 2>/dev/null || kill -TERM "${listener_pid}" 2>/dev/null || true
+  for _ in 1 2 3 4 5 6 7 8 9 10; do
+    lsof -tiTCP:"${PORT}" -sTCP:LISTEN >/dev/null 2>&1 || break
+    sleep 0.5
+  done
+  if lsof -tiTCP:"${PORT}" -sTCP:LISTEN >/dev/null 2>&1; then
     echo "    Still alive — forcing shutdown…"
-    kill -9 "${existing_pid}" 2>/dev/null || true
+    kill -KILL "-${pgid}" 2>/dev/null || kill -KILL "${listener_pid}" 2>/dev/null || true
+    sleep 1
   fi
 fi
 
