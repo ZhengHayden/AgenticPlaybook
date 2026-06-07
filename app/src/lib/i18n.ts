@@ -373,7 +373,7 @@ export type Dictionary = {
 export const dictionaries: Record<Locale, Dictionary> = {
   en: {
     app: {
-      name: "Agentic Workflow Playbook",
+      name: "Frontier Agentic AI Platform",
       tagline: "Roadmap Prioritization → Design → MVP → Production",
     },
     nav: {
@@ -726,7 +726,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
   },
   zh: {
     app: {
-      name: "Agentic 工作流剧本",
+      name: "Frontier Agentic AI Platform",
       tagline: "路线图优先级 → 设计 → MVP → 生产",
     },
     nav: {

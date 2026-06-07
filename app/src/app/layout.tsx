@@ -4,7 +4,7 @@ import { LocaleProvider } from "@/lib/locale-context";
 import { TopNav } from "@/components/top-nav";
 
 export const metadata: Metadata = {
-  title: "Agentic Workflow Playbook",
+  title: "Frontier Agentic AI Platform",
   description: "Impact Sizing → Design methodology engine for consulting teams",
 };
 
