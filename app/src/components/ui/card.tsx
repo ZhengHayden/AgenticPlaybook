@@ -8,12 +8,12 @@ interface CardProps {
   lift?: boolean;
 }
 
-/** Rounded-2xl slate surface — the gameboard's base card. */
+/** Flat white surface with a hairline border — the SLDS base card. */
 export function Card({ children, className, lift = false }: CardProps) {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm",
+        "overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm",
         "dark:border-slate-800 dark:bg-slate-900",
         lift && "card-lift",
         className,
@@ -29,13 +29,13 @@ interface CardHeaderProps {
   className?: string;
 }
 
-/** Gradient header strip used at the top of a Card. */
+/** Flat header strip used at the top of a Card. */
 export function CardHeader({ children, className }: CardHeaderProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-3 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white px-4 py-3",
-        "dark:border-slate-800 dark:from-slate-800/40 dark:to-slate-900",
+        "flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-2.5",
+        "dark:border-slate-800 dark:bg-slate-900",
         className,
       )}
     >

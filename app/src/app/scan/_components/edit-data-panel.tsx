@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useLocale } from "@/lib/locale-context";
 import { fetchScanInputs, updateScanInputs } from "@/lib/api-client";
 import type { FunctionMeta, HcRow, LaborRateRow, ScanInputs, ScanModel } from "@/lib/scan/types";
+import { Button } from "@/components/ui/button";
+import { SegTabs } from "@/components/ui/seg-tabs";
 import { LaborRateEditor } from "./labor-rate-editor";
 import { HeadcountEditor } from "./headcount-editor";
 import { WorkContentEditor } from "./work-content-editor";
@@ -71,13 +73,6 @@ export function EditDataPanel({ companyKey, onClose, onSaved }: EditDataPanelPro
     }
   };
 
-  const tabCls = (active: boolean): string =>
-    `rounded-md px-3 py-1.5 text-sm font-medium ${
-      active
-        ? "bg-indigo-600 text-white"
-        : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900"
-    }`;
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -86,7 +81,7 @@ export function EditDataPanel({ companyKey, onClose, onSaved }: EditDataPanelPro
       onClick={onClose}
     >
       <div
-        className="flex max-h-[90vh] w-full max-w-4xl flex-col gap-4 overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
+        className="flex max-h-[90vh] w-full max-w-4xl flex-col gap-4 overflow-y-auto rounded-md border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between">
@@ -94,13 +89,9 @@ export function EditDataPanel({ companyKey, onClose, onSaved }: EditDataPanelPro
             <h2 className="text-lg font-semibold">{t.scan.editData}</h2>
             <p className="mt-0.5 text-xs text-slate-500">{t.scan.editDataSubtitle}</p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-md border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
-          >
+          <Button variant="ghost" className="px-2 py-1 text-xs" onClick={onClose}>
             {t.scan.close}
-          </button>
+          </Button>
         </div>
 
         {loading ? (
@@ -113,17 +104,16 @@ export function EditDataPanel({ companyKey, onClose, onSaved }: EditDataPanelPro
           <p className="py-8 text-center text-sm text-slate-500">{t.scan.noEditableData}</p>
         ) : (
           <>
-            <div className="flex flex-wrap gap-2">
-              <button type="button" className={tabCls(tab === "labor")} onClick={() => setTab("labor")}>
-                {t.scan.tabLaborRate}
-              </button>
-              <button type="button" className={tabCls(tab === "hc")} onClick={() => setTab("hc")}>
-                {t.scan.tabHeadcount}
-              </button>
-              <button type="button" className={tabCls(tab === "work")} onClick={() => setTab("work")}>
-                {t.scan.tabWorkContent}
-              </button>
-            </div>
+            <SegTabs<Tab>
+              value={tab}
+              onChange={setTab}
+              tabs={[
+                { value: "labor", label: t.scan.tabLaborRate },
+                { value: "hc", label: t.scan.tabHeadcount },
+                { value: "work", label: t.scan.tabWorkContent },
+              ]}
+            />
+
 
             <div className="min-h-[16rem]">
               {tab === "labor" && <LaborRateEditor rows={inputs.laborRows} onChange={setLaborRows} />}
@@ -138,22 +128,12 @@ export function EditDataPanel({ companyKey, onClose, onSaved }: EditDataPanelPro
             )}
 
             <div className="flex justify-end gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={saving}
-                className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 disabled:opacity-40 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
-              >
+              <Button variant="secondary" onClick={onClose} disabled={saving}>
                 {t.common.cancel}
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={saving}
-                className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-40"
-              >
+              </Button>
+              <Button onClick={handleSave} disabled={saving}>
                 {saving ? t.scan.saving : t.scan.saveRecompute}
-              </button>
+              </Button>
             </div>
           </>
         )}

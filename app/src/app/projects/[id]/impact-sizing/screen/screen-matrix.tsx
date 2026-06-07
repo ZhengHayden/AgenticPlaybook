@@ -256,7 +256,7 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
         )}
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <div className="overflow-x-auto rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full min-w-[860px] text-sm">
           <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
             <tr>
@@ -387,7 +387,7 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                             disabled={status === "saving"}
                             aria-label={en ? "Edit workflow" : "编辑工作流"}
                             title={en ? "Edit workflow" : "编辑工作流"}
-                            className={`${iconBtn} hover:text-indigo-600 dark:hover:text-indigo-400`}
+                            className={`${iconBtn} hover:text-brand-600 dark:hover:text-brand-300`}
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
@@ -551,7 +551,7 @@ function EvidencePanel({
                 href={`/api/projects/${projectId}/sop/${sopFile.storedName}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="max-w-[12rem] truncate text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+                className="max-w-[12rem] truncate text-brand-600 hover:text-brand-700 dark:text-brand-300"
                 title={sopFile.filename}
               >
                 {sopFile.filename}
@@ -597,7 +597,7 @@ function EvidencePanel({
               onClick={onRunAgent}
               disabled={!sopFile || agentLoading}
               title={sopFile ? undefined : en ? "Upload a SOP first" : "请先上传 SOP"}
-              className="inline-flex items-center gap-1 rounded-md border border-indigo-200 px-2 py-1 text-xs text-indigo-600 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-indigo-900/50 dark:text-indigo-400 dark:hover:bg-indigo-950/30"
+              className="inline-flex items-center gap-1 rounded-md border border-brand-100 px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-brand-800/50 dark:text-brand-300 dark:hover:bg-brand-800/30"
             >
               <Sparkles className="h-3.5 w-3.5" />
               {agentLoading

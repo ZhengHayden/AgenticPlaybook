@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SegTabs, type SegTab } from "@/components/ui/seg-tabs";
 import { cn } from "@/lib/utils";
+import { Pencil, Check } from "lucide-react";
 import { maturityAccent, maturityLabel, validationDotClass, validationLabel } from "./display";
 import { OverviewTab } from "./editor/overview-tab";
 import { ImpactTab } from "./editor/impact-tab";
@@ -44,8 +45,9 @@ export function UseCaseEditor({
   onSetValidation,
   onDelete,
 }: UseCaseEditorProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [tab, setTab] = useState<EditorTab>("overview");
+  const [editing, setEditing] = useState(false);
 
   const patch = (p: UpdateUseCaseInput) => onPatch(useCase.id, p);
 
@@ -82,6 +84,15 @@ export function UseCaseEditor({
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2">
+          {editing ? (
+            <Button variant="secondary" className="gap-1.5" onClick={() => setEditing(false)}>
+              <Check className="h-4 w-4" /> {locale === "en" ? "Done" : "完成"}
+            </Button>
+          ) : (
+            <Button className="gap-1.5" onClick={() => setEditing(true)}>
+              <Pencil className="h-4 w-4" /> {t.common.edit}
+            </Button>
+          )}
           <Button
             variant="ghost"
             className="px-2.5 py-1 text-xs text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30"
@@ -100,21 +111,21 @@ export function UseCaseEditor({
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-8">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
           <div className={tab === "overview" ? "" : "hidden"}>
-            <OverviewTab useCase={useCase} library={library} onPatch={patch} />
+            <OverviewTab useCase={useCase} library={library} onPatch={patch} editing={editing} />
           </div>
           <div className={tab === "impact" ? "" : "hidden"}>
-            <ImpactTab useCase={useCase} onPatch={patch} />
+            <ImpactTab useCase={useCase} onPatch={patch} editing={editing} />
           </div>
           <div className={tab === "agentic" ? "" : "hidden"}>
-            <AgenticTab useCase={useCase} onPatch={patch} />
+            <AgenticTab useCase={useCase} onPatch={patch} editing={editing} />
           </div>
           <div className={tab === "artifacts" ? "" : "hidden"}>
             <ArtifactsTab useCaseId={useCase.id} />
           </div>
           <div className={tab === "evidence" ? "" : "hidden"}>
-            <EvidenceTab useCase={useCase} onPatch={patch} onSetValidation={onSetValidation} />
+            <EvidenceTab useCase={useCase} onPatch={patch} onSetValidation={onSetValidation} editing={editing} />
           </div>
         </div>
       </div>

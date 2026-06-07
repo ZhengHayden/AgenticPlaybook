@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { maturityLabel } from "./display";
 import { Field, FIELD_CLASS, fromLines, toLines } from "./field";
+import { FormSection } from "./form-section";
 import { workflowsForCompany } from "./filtering";
 
 interface UseCaseModalProps {
@@ -85,129 +86,144 @@ export function UseCaseModal({ library, companyId, existing, onClose, onSubmit }
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <button type="button" aria-label={t.common.cancel} className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900">
+      <div className="relative flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-md bg-white shadow-2xl dark:bg-slate-900">
         <header className="border-b border-slate-100 px-5 py-4 dark:border-slate-800">
           <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
             {existing ? t.knowledge.editUseCase : t.knowledge.addUseCase}
           </h2>
         </header>
 
-        <div className="grid grid-cols-1 gap-4 overflow-y-auto px-5 py-5 md:grid-cols-2">
-          <Field label={t.knowledge.fieldWorkflow} className="md:col-span-2">
-            <select className={FIELD_CLASS} value={workflowId} onChange={(e) => setWorkflowId(e.target.value)}>
-              {workflows.map((w) => (
-                <option key={w.id} value={w.id}>
-                  {w.name}
-                </option>
-              ))}
-            </select>
-          </Field>
+        <div className="space-y-6 overflow-y-auto px-5 py-5">
+          <FormSection title={t.knowledge.secIdentity}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field label={t.knowledge.fieldWorkflow} className="md:col-span-2">
+                <select className={FIELD_CLASS} value={workflowId} onChange={(e) => setWorkflowId(e.target.value)}>
+                  {workflows.map((w) => (
+                    <option key={w.id} value={w.id}>
+                      {w.name}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={t.knowledge.fieldName}>
+                <input className={FIELD_CLASS} value={name} onChange={(e) => setName(e.target.value)} />
+              </Field>
+              <Field label={t.knowledge.fieldDomain}>
+                <input className={FIELD_CLASS} value={domain} onChange={(e) => setDomain(e.target.value)} />
+              </Field>
+            </div>
+          </FormSection>
 
-          <Field label={t.knowledge.fieldName}>
-            <input className={FIELD_CLASS} value={name} onChange={(e) => setName(e.target.value)} />
-          </Field>
-          <Field label={t.knowledge.fieldDomain}>
-            <input className={FIELD_CLASS} value={domain} onChange={(e) => setDomain(e.target.value)} />
-          </Field>
-
-          <Field label={t.knowledge.fieldDescription} className="md:col-span-2">
+          <FormSection title={t.knowledge.fieldDescription}>
             <textarea
               className={FIELD_CLASS}
-              rows={3}
+              rows={6}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-          </Field>
+          </FormSection>
 
-          <Field label={t.knowledge.fieldTechTag}>
-            <select className={FIELD_CLASS} value={techTag} onChange={(e) => setTechTag(e.target.value as TechTag)}>
-              {TECH_TAGS.map((tag) => (
-                <option key={tag} value={tag}>
-                  {tag}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label={t.knowledge.fieldMaturity}>
-            <select
-              className={FIELD_CLASS}
-              value={maturity}
-              onChange={(e) => setMaturity(e.target.value as Maturity)}
-            >
-              {MATURITIES.map((m) => (
-                <option key={m} value={m}>
-                  {maturityLabel(t, m)}
-                </option>
-              ))}
-            </select>
-          </Field>
-
-          <Field label={t.knowledge.fieldKpis} hint={t.knowledge.kpisHint} className="md:col-span-2">
-            <textarea className={FIELD_CLASS} rows={3} value={kpis} onChange={(e) => setKpis(e.target.value)} />
-          </Field>
-          <Field label={t.knowledge.fieldObjectives} hint={t.knowledge.objectivesHint} className="md:col-span-2">
-            <textarea
-              className={FIELD_CLASS}
-              rows={3}
-              value={objectives}
-              onChange={(e) => setObjectives(e.target.value)}
-            />
-          </Field>
-
-          <Field label={t.knowledge.archetypesUsed} className="md:col-span-2">
-            <div className="flex flex-wrap gap-1.5">
-              {archetypes.map((a) => (
-                <button
-                  key={a.id}
-                  type="button"
-                  onClick={() => toggleArchetype(a.id)}
-                  className={cn(
-                    "rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition",
-                    selectedArchetypes.includes(a.id)
-                      ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
-                      : "border-slate-200 text-slate-500 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800",
-                  )}
+          <FormSection title={t.knowledge.secClassification}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field label={t.knowledge.fieldTechTag}>
+                <select className={FIELD_CLASS} value={techTag} onChange={(e) => setTechTag(e.target.value as TechTag)}>
+                  {TECH_TAGS.map((tag) => (
+                    <option key={tag} value={tag}>
+                      {tag}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={t.knowledge.fieldMaturity}>
+                <select
+                  className={FIELD_CLASS}
+                  value={maturity}
+                  onChange={(e) => setMaturity(e.target.value as Maturity)}
                 >
-                  {a[locale].name}
-                </button>
-              ))}
+                  {MATURITIES.map((m) => (
+                    <option key={m} value={m}>
+                      {maturityLabel(t, m)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={t.knowledge.fieldSponsors} className="md:col-span-2">
+                <input className={FIELD_CLASS} value={sponsors} onChange={(e) => setSponsors(e.target.value)} />
+              </Field>
             </div>
-          </Field>
+          </FormSection>
 
-          <Field label={t.knowledge.interactionMode}>
-            <select
-              className={FIELD_CLASS}
-              value={interactionMode}
-              onChange={(e) => setInteractionMode(e.target.value as InteractionId | "")}
-            >
-              <option value="">—</option>
-              {interactionModes.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m[locale].name}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label={t.knowledge.a2aPattern}>
-            <select
-              className={FIELD_CLASS}
-              value={a2aPattern}
-              onChange={(e) => setA2aPattern(e.target.value as A2APatternId | "")}
-            >
-              <option value="">—</option>
-              {a2aPatterns.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p[locale].name}
-                </option>
-              ))}
-            </select>
-          </Field>
+          <FormSection title={t.knowledge.impactKpis}>
+            <div className="space-y-4">
+              <Field label={t.knowledge.fieldKpis} hint={t.knowledge.kpisHint}>
+                <textarea className={FIELD_CLASS} rows={4} value={kpis} onChange={(e) => setKpis(e.target.value)} />
+              </Field>
+              <Field label={t.knowledge.fieldObjectives} hint={t.knowledge.objectivesHint}>
+                <textarea
+                  className={FIELD_CLASS}
+                  rows={4}
+                  value={objectives}
+                  onChange={(e) => setObjectives(e.target.value)}
+                />
+              </Field>
+            </div>
+          </FormSection>
 
-          <Field label={t.knowledge.fieldSponsors} className="md:col-span-2">
-            <input className={FIELD_CLASS} value={sponsors} onChange={(e) => setSponsors(e.target.value)} />
-          </Field>
+          <FormSection title={t.knowledge.agenticDesign}>
+            <div className="space-y-4">
+              <Field label={t.knowledge.archetypesUsed}>
+                <div className="flex flex-wrap gap-1.5">
+                  {archetypes.map((a) => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      onClick={() => toggleArchetype(a.id)}
+                      className={cn(
+                        "rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition",
+                        selectedArchetypes.includes(a.id)
+                          ? "border-brand-300 bg-brand-50 text-brand-700 dark:border-brand-700 dark:bg-brand-800/40 dark:text-brand-300"
+                          : "border-slate-200 text-slate-500 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800",
+                      )}
+                    >
+                      {a[locale].name}
+                    </button>
+                  ))}
+                </div>
+              </Field>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <Field label={t.knowledge.interactionMode}>
+                  <select
+                    className={FIELD_CLASS}
+                    value={interactionMode}
+                    onChange={(e) => setInteractionMode(e.target.value as InteractionId | "")}
+                  >
+                    <option value="">—</option>
+                    {interactionModes.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m[locale].name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label={t.knowledge.a2aPattern}>
+                  <select
+                    className={FIELD_CLASS}
+                    value={a2aPattern}
+                    onChange={(e) => setA2aPattern(e.target.value as A2APatternId | "")}
+                  >
+                    <option value="">—</option>
+                    {a2aPatterns.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p[locale].name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              </div>
+            </div>
+          </FormSection>
 
-          {error && <p className="text-xs text-rose-600 md:col-span-2">{error}</p>}
+          {error && <p className="text-xs text-rose-600">{error}</p>}
         </div>
 
         <footer className="flex justify-end gap-2 border-t border-slate-100 px-5 py-4 dark:border-slate-800">

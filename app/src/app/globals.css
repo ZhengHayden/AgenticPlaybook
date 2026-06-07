@@ -1,14 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  /* slate-50 base — paired with the slate gradient body in layout.tsx */
-  --background: #f8fafc;
+  /* SLDS canvas grey — flat, paired with the body bg in layout.tsx */
+  --background: #f3f3f3;
   --foreground: #0f172a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Brand — Salesforce Lightning blue ramp. Single accent; color is
+     reserved for actions and state, never decoration. */
+  --color-brand-50: #eaf5fe;
+  --color-brand-100: #cfe9fe;
+  --color-brand-300: #1b96ff; /* focus ring */
+  --color-brand-600: #0176d3; /* primary action / links */
+  --color-brand-700: #014486; /* hover / pressed */
+  --color-brand-800: #032d60; /* darkest accent */
+
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
@@ -61,11 +71,12 @@ select.heat {
   padding-right: 1.4rem;
 }
 
-/* Card hover lift — opt-in via the .card-lift class. */
+/* Card hover — opt-in via the .card-lift class. SLDS-flat: no translate,
+   just a hairline border darken + faint shadow. */
 .card-lift {
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
 }
 .card-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px -8px rgba(15, 23, 42, 0.25);
+  border-color: #cbd5e1; /* slate-300 */
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }

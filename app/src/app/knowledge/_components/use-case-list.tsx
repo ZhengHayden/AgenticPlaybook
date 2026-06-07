@@ -3,7 +3,6 @@
 import type {
   KnowledgeLibrary,
   KnowledgeUseCase,
-  LibraryFunction,
   LibraryWorkflow,
 } from "@/content/knowledge";
 import { useLocale } from "@/lib/locale-context";
@@ -29,7 +28,7 @@ export function UseCaseList({ view, library, useCases, counts, onView, onEdit, o
 
   if (useCases.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-300 py-16 text-center text-sm text-slate-500 dark:border-slate-700">
+      <div className="rounded-md border border-dashed border-slate-300 py-16 text-center text-sm text-slate-500 dark:border-slate-700">
         {t.knowledge.noResults}
       </div>
     );
@@ -74,7 +73,6 @@ function GroupedView({ library, useCases, counts, onView }: GroupedProps) {
       {functions.map((fn) => (
         <FunctionGroup
           key={fn.id}
-          fn={fn}
           workflows={library.workflows.filter((w) => w.functionId === fn.id)}
           useCases={visible.filter((uc) => uc.functionId === fn.id)}
           counts={counts}
@@ -88,7 +86,6 @@ function GroupedView({ library, useCases, counts, onView }: GroupedProps) {
 }
 
 interface FunctionGroupProps {
-  fn: LibraryFunction;
   workflows: LibraryWorkflow[];
   useCases: KnowledgeUseCase[];
   counts?: Record<string, number>;
@@ -97,22 +94,28 @@ interface FunctionGroupProps {
   statusLabel: (uc: KnowledgeUseCase) => string;
 }
 
-function FunctionGroup({ fn, workflows, useCases, counts, onView, fnLabel, statusLabel }: FunctionGroupProps) {
+function FunctionGroup({ workflows, useCases, counts, onView, fnLabel, statusLabel }: FunctionGroupProps) {
   const wfs = workflows
     .filter((w) => useCases.some((uc) => uc.workflowId === w.id))
     .sort((a, b) => a.sort - b.sort);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
-      <header className="flex items-center gap-2 px-4 py-2.5" style={{ backgroundColor: `${fn.color}14` }}>
-        <span className="h-3 w-3 rounded-full" style={{ backgroundColor: fn.color }} />
-        <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">{fnLabel}</h3>
-        <span className="text-xs text-slate-400">{useCases.length}</span>
+    <section className="overflow-hidden rounded-md border border-slate-200 dark:border-slate-800">
+      <header className="flex items-center gap-2 border-b border-slate-200 border-l-[3px] border-l-brand-600 bg-slate-50 px-4 py-2.5 dark:border-slate-800 dark:bg-slate-800/40">
+        <h3 className="text-[13px] font-bold uppercase tracking-wide text-slate-700 dark:text-slate-200">
+          {fnLabel}
+        </h3>
+        <span className="rounded-full bg-brand-100 px-1.5 text-[10px] font-bold tabular-nums text-brand-700 dark:bg-brand-800/40 dark:text-brand-300">
+          {useCases.length}
+        </span>
       </header>
       <div className="divide-y divide-slate-100 dark:divide-slate-800">
         {wfs.map((wf) => (
           <div key={wf.id} className="px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{wf.name}</p>
+            <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500" aria-hidden="true" />
+              {wf.name}
+            </p>
             <ul className="mt-2 space-y-1.5">
               {useCases
                 .filter((uc) => uc.workflowId === wf.id)
@@ -129,7 +132,7 @@ function FunctionGroup({ fn, workflows, useCases, counts, onView, fnLabel, statu
                       />
                       <span className="font-medium text-slate-700 dark:text-slate-200">{uc.name}</span>
                       {counts?.[uc.id] ? (
-                        <span className="ml-1 rounded-full bg-sky-100 px-1.5 text-[10px] font-semibold text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">
+                        <span className="ml-1 rounded-full bg-brand-50 px-1.5 text-[10px] font-semibold text-brand-700 dark:bg-brand-800/40 dark:text-brand-300">
                           ◆ {counts[uc.id]}
                         </span>
                       ) : null}
@@ -162,7 +165,7 @@ function UseCaseTable({ useCases, library, counts, onView }: TableProps) {
   const wfName = (id: string) => library.workflows.find((w) => w.id === id)?.name ?? "—";
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
+    <div className="overflow-hidden rounded-md border border-slate-200 dark:border-slate-800">
       <table className="w-full text-left text-sm">
         <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:bg-slate-800/50">
           <tr>
@@ -185,7 +188,7 @@ function UseCaseTable({ useCases, library, counts, onView }: TableProps) {
                 <div className="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
                   {uc.name}
                   {counts?.[uc.id] ? (
-                    <span className="ml-1 rounded-full bg-sky-100 px-1.5 text-[10px] font-semibold text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">
+                    <span className="ml-1 rounded-full bg-brand-50 px-1.5 text-[10px] font-semibold text-brand-700 dark:bg-brand-800/40 dark:text-brand-300">
                       ◆ {counts[uc.id]}
                     </span>
                   ) : null}

@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useLocale } from "@/lib/locale-context";
 import type { ScanMode, ScanModel } from "@/lib/scan/types";
 import { formatValue, totalValue } from "@/lib/scan/format";
+import { PageHeader } from "@/components/ui/page-header";
+import { Button } from "@/components/ui/button";
+import { SegTabs } from "@/components/ui/seg-tabs";
+import { Radar } from "lucide-react";
 import { DataSummary } from "./data-summary";
 import { Heatmap } from "./heatmap";
 import { FunctionDetailModal } from "./function-detail-modal";
@@ -36,59 +40,38 @@ export function OpportunityDashboard({ model: initialModel, showClientLink = fal
 
   const selectedMeta = selectedFn ? model.detail[selectedFn] : null;
 
-  const modeBtnCls = (active: boolean): string =>
-    `rounded-lg px-3.5 py-2 text-sm font-semibold shadow-sm transition ${
-      active
-        ? "bg-indigo-600 text-white"
-        : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900"
-    }`;
-
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">{model.company}</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {model.sector} · {t.scan.generatedAt} {new Date(model.generatedAt).toLocaleString()}
-          </p>
-        </div>
-        {showClientLink && (
-          <span className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:border-indigo-900/50 dark:bg-indigo-950 dark:text-indigo-300">
-            {t.scan.linkedToClient}: {model.company}
-          </span>
-        )}
-      </header>
-
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={() => setShowEdit(true)}
-          className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
-        >
-          {t.scan.editData}
-        </button>
-      </div>
+      <PageHeader
+        icon={<Radar className="h-5 w-5" />}
+        title={model.company}
+        subtitle={`${model.sector} · ${t.scan.generatedAt} ${new Date(model.generatedAt).toLocaleString()}`}
+        actions={
+          <>
+            {showClientLink && (
+              <span className="rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 dark:border-brand-800/50 dark:bg-brand-800/20 dark:text-brand-300">
+                {t.scan.linkedToClient}: {model.company}
+              </span>
+            )}
+            <Button variant="secondary" onClick={() => setShowEdit(true)}>
+              {t.scan.editData}
+            </Button>
+          </>
+        }
+      />
 
       <DataSummary model={model} />
 
       {!showHeatmap ? (
-        <button
-          type="button"
-          onClick={() => setShowHeatmap(true)}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
-        >
-          {t.scan.runScan}
-        </button>
+        <Button onClick={() => setShowHeatmap(true)}>{t.scan.runScan}</Button>
       ) : (
         <section className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex gap-2">
-              {MODES.map((m) => (
-                <button key={m.id} type="button" className={modeBtnCls(mode === m.id)} onClick={() => setMode(m.id)} title={t.scan[m.descKey]}>
-                  {t.scan[m.labelKey]}
-                </button>
-              ))}
-            </div>
+            <SegTabs<ScanMode>
+              value={mode}
+              onChange={setMode}
+              tabs={MODES.map((m) => ({ value: m.id, label: t.scan[m.labelKey] }))}
+            />
             <span className="text-sm text-slate-500">
               {t.scan[MODES.find((m) => m.id === mode)!.descKey]}:{" "}
               <span className="font-semibold text-slate-800 dark:text-slate-200">
@@ -99,7 +82,7 @@ export function OpportunityDashboard({ model: initialModel, showClientLink = fal
 
           <p className="text-xs text-slate-400">{t.scan.clickHint}</p>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="rounded-md border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <Heatmap model={model} mode={mode} onCellClick={setSelectedFn} />
           </div>
 
@@ -107,7 +90,7 @@ export function OpportunityDashboard({ model: initialModel, showClientLink = fal
             <span>{t.scan.legendLow}</span>
             <span
               className="h-3 w-40 rounded-sm"
-              style={{ background: "linear-gradient(to right, rgba(79,70,229,0.1), rgba(79,70,229,0.95))" }}
+              style={{ background: "linear-gradient(to right, rgba(1,118,211,0.1), rgba(1,118,211,0.95))" }}
             />
             <span>{t.scan.legendHigh}</span>
           </div>

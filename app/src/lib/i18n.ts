@@ -327,6 +327,7 @@ export type Dictionary = {
     objectivesHint: string;
     deleteConfirm: string;
     saveError: string;
+    requiredFields: string;
     tabOverview: string;
     tabImpact: string;
     tabAgentic: string;
@@ -363,6 +364,9 @@ export type Dictionary = {
     statusDeprecated: string;
     hasArtifacts: string;
     publishedAssets: string;
+    secIdentity: string;
+    secClassification: string;
+    browsing: string;
   };
 };
 
@@ -678,6 +682,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       objectivesHint: "One objective per line.",
       deleteConfirm: "Delete this use case? This cannot be undone.",
       saveError: "Could not save the use case.",
+      requiredFields: "Title and Owner are required.",
       tabOverview: "Overview",
       tabImpact: "Impact",
       tabAgentic: "Agentic Design",
@@ -714,6 +719,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       statusDeprecated: "Deprecated",
       hasArtifacts: "Has artifacts",
       publishedAssets: "Published",
+      secIdentity: "Identity",
+      secClassification: "Classification",
+      browsing: "Browsing",
     },
   },
   zh: {
@@ -1027,6 +1035,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       objectivesHint: "每行一个目标。",
       deleteConfirm: "确定删除此用例？此操作无法撤销。",
       saveError: "无法保存该用例。",
+      requiredFields: "标题和负责人为必填项。",
       tabOverview: "概览",
       tabImpact: "影响",
       tabAgentic: "智能体设计",
@@ -1063,6 +1072,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       statusDeprecated: "已弃用",
       hasArtifacts: "含资产",
       publishedAssets: "已发布",
+      secIdentity: "标识",
+      secClassification: "分类",
+      browsing: "浏览",
     },
   },
 };

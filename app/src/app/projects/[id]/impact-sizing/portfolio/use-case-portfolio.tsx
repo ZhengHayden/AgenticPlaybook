@@ -255,7 +255,7 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
             type="button"
             onClick={onSave}
             disabled={status === "saving" || !dirty}
-            className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
+            className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40"
           >
             {saveLabel}
           </button>
@@ -312,7 +312,7 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
             )}
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+          <div className="overflow-x-auto rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <table className="w-full min-w-[820px] text-sm">
               <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
                 <tr>

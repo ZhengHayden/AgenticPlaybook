@@ -12,8 +12,8 @@ interface HeatmapProps {
   showShare?: boolean;
 }
 
-/** indigo-600 as RGB, for the intensity ramp. */
-const RAMP_RGB = "79, 70, 229";
+/** brand-600 (#0176d3) as RGB, for the intensity ramp. */
+const RAMP_RGB = "1, 118, 211";
 
 /** Background + text style for a cell, scaled by its share of the max cell. */
 function cellStyle(ratio: number): React.CSSProperties {
@@ -71,7 +71,7 @@ export function Heatmap({ model, mode, onCellClick, showShare = true }: HeatmapP
               <button
                 type="button"
                 onClick={() => onCellClick(fn.key)}
-                className="px-2 py-2 text-left text-sm font-medium text-slate-800 hover:text-indigo-600 dark:text-slate-200"
+                className="px-2 py-2 text-left text-sm font-medium text-slate-800 hover:text-brand-700 dark:text-slate-200"
               >
                 {fn.label}
               </button>

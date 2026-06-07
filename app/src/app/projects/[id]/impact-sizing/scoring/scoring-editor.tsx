@@ -143,7 +143,7 @@ function WorkflowScoring({
             type="button"
             onClick={onSave}
             disabled={status === "saving" || !dirty}
-            className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
+            className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40"
           >
             {saveLabel}
           </button>

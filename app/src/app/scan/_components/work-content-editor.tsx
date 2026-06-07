@@ -202,7 +202,7 @@ export function WorkContentEditor({ automation, onChange }: WorkContentEditorPro
       <button
         type="button"
         onClick={() => apply(addCategory(meta))}
-        className="rounded-md border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-300"
+        className="rounded-md border border-brand-100 bg-brand-50 px-3 py-1.5 text-xs font-medium text-brand-700 hover:bg-brand-100 dark:border-brand-800 dark:bg-brand-800/30 dark:text-brand-300"
       >
         + {t.scan.addWorkContent}
       </button>

@@ -8,12 +8,15 @@ import { useLocale } from "@/lib/locale-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { FIELD_CLASS, SaveBar } from "../field";
+import { FormSection } from "../form-section";
 import { validationDotClass, validationLabel } from "../display";
 
 interface EvidenceTabProps {
   useCase: KnowledgeUseCase;
   onPatch: (patch: UpdateUseCaseInput) => Promise<void>;
   onSetValidation: (id: string, status: ValidationStatus, note: string) => Promise<void>;
+  /** When false, fields render read-only (no Save bars / add controls). */
+  editing: boolean;
 }
 
 function clean(rows: UseCaseReference[]): UseCaseReference[] {
@@ -21,7 +24,7 @@ function clean(rows: UseCaseReference[]): UseCaseReference[] {
 }
 
 /** Merged Evidence tab: validation status + note, then market/competitor references. */
-export function EvidenceTab({ useCase, onPatch, onSetValidation }: EvidenceTabProps) {
+export function EvidenceTab({ useCase, onPatch, onSetValidation, editing }: EvidenceTabProps) {
   const { t } = useLocale();
 
   // validation half
@@ -62,11 +65,9 @@ export function EvidenceTab({ useCase, onPatch, onSetValidation }: EvidenceTabPr
   }
 
   return (
-    <div className="space-y-8">
-      <section>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
-          {t.knowledge.tabValidation}
-        </p>
+    <fieldset disabled={!editing} className="contents">
+      <div className="space-y-6">
+      <FormSection title={t.knowledge.tabValidation}>
         <div className="flex flex-wrap gap-1.5">
           {VALIDATION_STATUSES.map((s) => (
             <button
@@ -76,7 +77,7 @@ export function EvidenceTab({ useCase, onPatch, onSetValidation }: EvidenceTabPr
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition",
                 status === s
-                  ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
+                  ? "border-brand-300 bg-brand-50 text-brand-700 dark:border-brand-700 dark:bg-brand-800/40 dark:text-brand-300"
                   : "border-slate-200 text-slate-500 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800",
               )}
             >
@@ -89,18 +90,17 @@ export function EvidenceTab({ useCase, onPatch, onSetValidation }: EvidenceTabPr
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder={t.knowledge.notePlaceholder}
-          rows={4}
+          rows={6}
           className={cn(FIELD_CLASS, "mt-3")}
         />
-        <SaveBar dirty={vDirty} saving={vSaving} error={vError} saveLabel={t.common.save} savingLabel={t.common.save + "…"} onSave={saveValidation}>
-          {vDirty ? t.knowledge.unsavedChanges : t.common.saved}
-        </SaveBar>
-      </section>
+        {editing && (
+          <SaveBar dirty={vDirty} saving={vSaving} error={vError} saveLabel={t.common.save} savingLabel={t.common.save + "…"} onSave={saveValidation}>
+            {vDirty ? t.knowledge.unsavedChanges : t.common.saved}
+          </SaveBar>
+        )}
+      </FormSection>
 
-      <section>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
-          {t.knowledge.tabReferences}
-        </p>
+      <FormSection title={t.knowledge.tabReferences}>
         <div className="space-y-3">
           {rows.length === 0 && <p className="text-sm text-slate-400">{t.knowledge.noReferences}</p>}
           {rows.map((row, i) => (
@@ -112,13 +112,15 @@ export function EvidenceTab({ useCase, onPatch, onSetValidation }: EvidenceTabPr
                   value={row.name}
                   onChange={(e) => setRows((prev) => prev.map((r, j) => (j === i ? { ...r, name: e.target.value } : r)))}
                 />
-                <Button
-                  variant="ghost"
-                  className="shrink-0 px-2.5 py-1 text-xs text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30"
-                  onClick={() => setRows((prev) => prev.filter((_, j) => j !== i))}
-                >
-                  {t.knowledge.removeReference}
-                </Button>
+                {editing && (
+                  <Button
+                    variant="ghost"
+                    className="shrink-0 px-2.5 py-1 text-xs text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30"
+                    onClick={() => setRows((prev) => prev.filter((_, j) => j !== i))}
+                  >
+                    {t.knowledge.removeReference}
+                  </Button>
+                )}
               </div>
               <textarea
                 className={FIELD_CLASS}
@@ -129,14 +131,19 @@ export function EvidenceTab({ useCase, onPatch, onSetValidation }: EvidenceTabPr
               />
             </div>
           ))}
-          <Button variant="secondary" className="text-xs" onClick={() => setRows((prev) => [...prev, { name: "", detail: "" }])}>
-            + {t.knowledge.addReference}
-          </Button>
+          {editing && (
+            <Button variant="secondary" className="text-xs" onClick={() => setRows((prev) => [...prev, { name: "", detail: "" }])}>
+              + {t.knowledge.addReference}
+            </Button>
+          )}
         </div>
-        <SaveBar dirty={rDirty} saving={rSaving} error={rError} saveLabel={t.common.save} savingLabel={t.common.save + "…"} onSave={saveReferences}>
-          {rDirty ? t.knowledge.unsavedChanges : t.common.saved}
-        </SaveBar>
-      </section>
-    </div>
+        {editing && (
+          <SaveBar dirty={rDirty} saving={rSaving} error={rError} saveLabel={t.common.save} savingLabel={t.common.save + "…"} onSave={saveReferences}>
+            {rDirty ? t.knowledge.unsavedChanges : t.common.saved}
+          </SaveBar>
+        )}
+      </FormSection>
+      </div>
+    </fieldset>
   );
 }

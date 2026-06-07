@@ -6,6 +6,7 @@ import { computeScan } from "@/lib/api-client";
 import type { ScanModel } from "@/lib/scan/types";
 import { INDUSTRY_SECTORS, OTHER_SECTOR } from "@/lib/scan/sectors";
 import { REGIONS, OTHER_REGION } from "@/lib/scan/regions";
+import { Button } from "@/components/ui/button";
 
 interface ScanWizardProps {
   /** Pre-fills the company name (e.g. a project's client). */
@@ -68,9 +69,9 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
   const inputCls =
     "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950";
   const fileInputCls =
-    "mt-1 block w-full text-xs text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:text-slate-400 dark:file:bg-indigo-950 dark:file:text-indigo-300";
+    "mt-1 block w-full text-xs text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-brand-700 hover:file:bg-brand-100 dark:text-slate-400 dark:file:bg-brand-800/30 dark:file:text-brand-300";
   const stepDotCls = (active: boolean): string =>
-    `h-1.5 w-8 rounded-full ${active ? "bg-indigo-600" : "bg-slate-200 dark:bg-slate-700"}`;
+    `h-1.5 w-8 rounded-full ${active ? "bg-brand-600" : "bg-slate-200 dark:bg-slate-700"}`;
 
   return (
     <div
@@ -80,7 +81,7 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
+        className="w-full max-w-md space-y-4 rounded-md border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -173,40 +174,21 @@ export function ScanWizard({ defaultCompany = "", onClose, onDone }: ScanWizardP
 
         <div className="flex justify-end gap-2 pt-2">
           {step === "upload" && (
-            <button
-              type="button"
-              onClick={() => setStep("identity")}
-              disabled={busy}
-              className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 disabled:opacity-40 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
-            >
+            <Button variant="secondary" onClick={() => setStep("identity")} disabled={busy}>
               {t.common.back}
-            </button>
+            </Button>
           )}
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
-          >
+          <Button variant="secondary" onClick={onClose}>
             {t.common.cancel}
-          </button>
+          </Button>
           {step === "identity" ? (
-            <button
-              type="button"
-              onClick={() => setStep("upload")}
-              disabled={!identityValid}
-              className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-40"
-            >
+            <Button onClick={() => setStep("upload")} disabled={!identityValid}>
               {t.common.next}
-            </button>
+            </Button>
           ) : (
-            <button
-              type="button"
-              onClick={onSubmit}
-              disabled={busy}
-              className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-40"
-            >
+            <Button onClick={onSubmit} disabled={busy}>
               {busy ? t.scan.computing : t.scan.launchScan}
-            </button>
+            </Button>
           )}
         </div>
       </div>

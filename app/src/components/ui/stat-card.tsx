@@ -10,11 +10,11 @@ interface StatCardProps {
 }
 
 /** KPI card with a left accent bar, large value, and muted label. */
-export function StatCard({ label, value, accent = "bg-indigo-500", className }: StatCardProps) {
+export function StatCard({ label, value, accent = "bg-brand-600", className }: StatCardProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm",
+        "flex items-center gap-3 rounded-md border border-slate-200 bg-white px-4 py-3 shadow-sm",
         "dark:border-slate-800 dark:bg-slate-900",
         className,
       )}

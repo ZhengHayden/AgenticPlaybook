@@ -27,7 +27,7 @@ export function TopNav() {
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-black/80">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-6">
         <Link href="/projects" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-base font-bold text-white shadow-md">A</span>
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded bg-brand-600 text-base font-bold text-white">A</span>
           <span className="hidden sm:inline">{t.app.name}</span>
         </Link>
         <nav className="ml-auto flex items-center gap-1 text-sm">
@@ -38,9 +38,9 @@ export function TopNav() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "rounded-lg px-3 py-1.5 font-medium transition-colors",
+                  "rounded px-3 py-1.5 font-medium transition-colors",
                   active
-                    ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300"
+                    ? "bg-brand-50 text-brand-700 dark:bg-brand-800/40 dark:text-brand-300"
                     : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50",
                 )}
               >

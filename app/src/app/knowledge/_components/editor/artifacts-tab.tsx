@@ -114,7 +114,7 @@ export function ArtifactsTab({ useCaseId }: ArtifactsTabProps) {
       {loading ? (
         <p className="text-sm text-slate-400">…</p>
       ) : artifacts.length === 0 && !draft ? (
-        <p className="rounded-xl border border-dashed border-slate-300 py-10 text-center text-sm text-slate-400 dark:border-slate-700">
+        <p className="rounded-md border border-dashed border-slate-300 py-10 text-center text-sm text-slate-400 dark:border-slate-700">
           {t.knowledge.noArtifacts}
         </p>
       ) : (

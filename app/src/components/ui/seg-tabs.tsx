@@ -23,7 +23,7 @@ export function SegTabs<T extends string>({ tabs, value, onChange, className }: 
   return (
     <div
       className={cn(
-        "inline-flex gap-1 rounded-xl border border-slate-200 bg-slate-100/70 p-1",
+        "inline-flex gap-0.5 rounded border border-slate-200 bg-slate-100 p-0.5",
         "dark:border-slate-800 dark:bg-slate-800/40",
         className,
       )}
@@ -36,9 +36,9 @@ export function SegTabs<T extends string>({ tabs, value, onChange, className }: 
             type="button"
             onClick={() => onChange(tab.value)}
             className={cn(
-              "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors",
+              "rounded-[3px] px-3 py-1 text-sm font-semibold transition-colors",
               active
-                ? "bg-white text-indigo-600 shadow-sm dark:bg-slate-900 dark:text-indigo-400"
+                ? "bg-white text-brand-600 shadow-sm dark:bg-slate-900 dark:text-brand-300"
                 : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
             )}
           >

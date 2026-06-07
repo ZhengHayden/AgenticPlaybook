@@ -2,27 +2,19 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Distinct color per function, cycled by position. Full class names so the
- * Tailwind scanner picks them up. White badge text on each.
+ * Neutral ID-chip background. SLDS reserves color for status/meaning, so
+ * function-identity badges are a single restrained slate rather than a
+ * decorative rainbow. Kept as an array for API compatibility.
  */
-export const FN_PALETTE = [
-  "bg-indigo-600",
-  "bg-emerald-600",
-  "bg-amber-500",
-  "bg-sky-600",
-  "bg-rose-500",
-  "bg-violet-600",
-  "bg-teal-600",
-  "bg-orange-500",
-  "bg-fuchsia-600",
-  "bg-cyan-600",
-  "bg-lime-600",
-  "bg-slate-600",
-] as const;
+export const FN_PALETTE = ["bg-slate-600"] as const;
 
-/** Pick a stable palette color by index (wraps around the palette). */
-export function fnPaletteColor(index: number): string {
-  return FN_PALETTE[index % FN_PALETTE.length];
+/**
+ * Palette color for an ID chip. The index is ignored — all function IDs
+ * share one neutral tone — but the signature is retained so existing call
+ * sites keep working.
+ */
+export function fnPaletteColor(_index: number): string {
+  return FN_PALETTE[0];
 }
 
 interface IdBadgeProps {
@@ -33,7 +25,7 @@ interface IdBadgeProps {
 }
 
 /** Compact code chip (function/workflow IDs) with white text. */
-export function IdBadge({ children, bg = "bg-indigo-600", className }: IdBadgeProps) {
+export function IdBadge({ children, bg = "bg-slate-600", className }: IdBadgeProps) {
   return (
     <span
       className={cn(

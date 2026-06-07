@@ -5,16 +5,6 @@ import { useLocale } from "@/lib/locale-context";
 import { StatCard } from "@/components/ui/stat-card";
 import type { ScanModel } from "@/lib/scan/types";
 
-/** Accent bar colors cycled across the KPI StatCards. */
-const KPI_ACCENTS = [
-  "bg-indigo-500",
-  "bg-violet-500",
-  "bg-emerald-500",
-  "bg-sky-500",
-  "bg-amber-500",
-  "bg-rose-500",
-] as const;
-
 interface DataSummaryProps {
   model: ScanModel;
 }
@@ -39,7 +29,7 @@ function HBarList({ rows }: { rows: ReadonlyArray<BarRow> }) {
           </span>
           <div className="h-4 flex-1 overflow-hidden rounded-sm bg-slate-100 dark:bg-slate-800">
             <div
-              className="h-full rounded-sm bg-indigo-500/80"
+              className="h-full rounded-sm bg-brand-600/80"
               style={{ width: max > 0 ? `${(r.value / max) * 100}%` : "0%" }}
             />
           </div>
@@ -87,15 +77,15 @@ export function DataSummary({ model }: DataSummaryProps) {
     { label: t.scan.kpiAvgReleased, value: `${(avgReleased * 100).toFixed(1)}%` },
   ];
 
-  const cardCls = "rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900";
+  const cardCls = "rounded-md border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900";
 
   return (
     <section className="space-y-4">
       <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t.scan.dataSummary}</h2>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {kpis.map((k, i) => (
-          <StatCard key={k.label} label={k.label} value={k.value} accent={KPI_ACCENTS[i % KPI_ACCENTS.length]} />
+        {kpis.map((k) => (
+          <StatCard key={k.label} label={k.label} value={k.value} />
         ))}
       </div>
 

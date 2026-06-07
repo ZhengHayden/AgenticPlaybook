@@ -94,7 +94,7 @@ export function EditableGate({ title, initialCriteria, defaults }: EditableGateP
                   />
                   <button
                     onClick={() => saveEdit(c.id)}
-                    className="rounded-md bg-indigo-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-indigo-700"
+                    className="rounded-md bg-brand-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-brand-700"
                   >
                     {locale === "en" ? "Save" : "保存"}
                   </button>
@@ -137,7 +137,7 @@ export function EditableGate({ title, initialCriteria, defaults }: EditableGateP
           />
           <button
             onClick={addCriterion}
-            className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+            className="inline-flex items-center gap-1 rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
           >
             <Plus className="h-3.5 w-3.5" /> {locale === "en" ? "Add" : "添加"}
           </button>

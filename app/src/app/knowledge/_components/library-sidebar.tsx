@@ -65,7 +65,7 @@ export function LibrarySidebar({
         />
       </div>
 
-      <div className="space-y-2.5 rounded-xl border border-slate-200 p-3 dark:border-slate-800">
+      <div className="space-y-2.5 rounded-md border border-slate-200 p-3 dark:border-slate-800">
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t.knowledge.filters}</p>
 
         <FilterSelect

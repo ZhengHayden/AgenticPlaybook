@@ -106,7 +106,7 @@ export function EditableGrid({
                   {formatTotal(colTotal(c.key))}
                 </td>
               ))}
-              <td className={`${totalCls} text-indigo-600 dark:text-indigo-400`}>{formatTotal(grandTotal())}</td>
+              <td className={`${totalCls} text-brand-700 dark:text-brand-300`}>{formatTotal(grandTotal())}</td>
             </tr>
           )}
         </tbody>

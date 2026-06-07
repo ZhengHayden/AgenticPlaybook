@@ -9,8 +9,9 @@ import type {
 } from "@/content/knowledge";
 import type { UpdateUseCaseInput } from "@/db/knowledge-validation";
 import { useLocale } from "@/lib/locale-context";
-import { StatCard } from "@/components/ui/stat-card";
+import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
+import { Library } from "lucide-react";
 import {
   createUseCase as apiCreateUseCase,
   deleteUseCase as apiDeleteUseCase,
@@ -29,7 +30,8 @@ import {
   scopedUseCases,
   workflowsForCompany,
 } from "./_components/filtering";
-import { localized } from "./_components/display";
+import { localized, maturityAccent } from "./_components/display";
+import { cn } from "@/lib/utils";
 import { LibrarySidebar } from "./_components/library-sidebar";
 import { UseCaseList, type LibraryView } from "./_components/use-case-list";
 import { UseCaseEditor } from "./_components/use-case-editor";
@@ -40,7 +42,7 @@ interface KnowledgeClientProps {
 }
 
 const SCOPE_SELECT_CLASS =
-  "rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium dark:border-slate-700 dark:bg-slate-800";
+  "rounded border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium focus:border-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 dark:border-slate-700 dark:bg-slate-800";
 
 export function KnowledgeClient({ library: initial }: KnowledgeClientProps) {
   const { t, locale } = useLocale();
@@ -139,20 +141,33 @@ export function KnowledgeClient({ library: initial }: KnowledgeClientProps) {
     setDetail(saved);
   }
 
-  return (
-    <section className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{t.knowledge.title}</h1>
-          <p className="mt-1 text-sm text-slate-500">{t.knowledge.subtitle}</p>
-        </div>
-        <Button onClick={() => setModalOpen(true)} disabled={!scope.companyId}>
-          + {t.knowledge.addUseCase}
-        </Button>
-      </div>
+  const artifactTotal = Object.values(artifactCounts).reduce((a, b) => a + b, 0);
 
-      {/* scope bar */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
+  return (
+    <section className="space-y-5">
+      <PageHeader
+        icon={<Library className="h-5 w-5" />}
+        title={t.knowledge.title}
+        subtitle={t.knowledge.subtitle}
+        actions={
+          <Button onClick={() => setModalOpen(true)} disabled={!scope.companyId}>
+            + {t.knowledge.addUseCase}
+          </Button>
+        }
+        highlights={[
+          { label: t.knowledge.useCases, value: stats.total },
+          { label: t.knowledge.validated, value: stats.validated },
+          { label: t.knowledge.artifacts, value: artifactTotal },
+          { label: t.knowledge.workflows, value: stats.workflows },
+        ]}
+      />
+
+      {/* context bar: scope hierarchy + maturity breakdown */}
+      <div className="flex flex-wrap items-center gap-3 rounded-md border border-brand-100 bg-brand-50 px-4 py-3 dark:border-brand-800/50 dark:bg-brand-800/20">
+        <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-brand-700 dark:text-brand-300">
+          <Library className="h-3.5 w-3.5" />
+          {t.knowledge.browsing}
+        </span>
         <ScopeSelect
           label={t.knowledge.sector}
           value={scope.sectorId}
@@ -176,25 +191,13 @@ export function KnowledgeClient({ library: initial }: KnowledgeClientProps) {
           onChange={selectCompany}
           options={companies.map((c) => ({ value: c.id, label: c.name }))}
         />
-      </div>
 
-      {/* scoped stats */}
-      {(() => {
-        const artifactTotal = Object.values(artifactCounts).reduce((a, b) => a + b, 0);
-        return (
-          <>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <StatCard label={t.knowledge.useCases} value={stats.total} accent="bg-indigo-500" />
-              <StatCard label={t.knowledge.validated} value={stats.validated} accent="bg-emerald-500" />
-              <StatCard label={t.knowledge.artifacts} value={artifactTotal} accent="bg-sky-500" />
-              <StatCard label={t.knowledge.workflows} value={stats.workflows} accent="bg-violet-500" />
-            </div>
-            <p className="text-xs text-slate-400">
-              {t.knowledge.maturityProven}: {stats.proven} · {t.knowledge.maturityEmerging}: {stats.emerging} · {t.knowledge.maturityPilot}: {stats.pilot}
-            </p>
-          </>
-        );
-      })()}
+        <div className="ml-auto flex items-center gap-3 border-l border-brand-200 pl-3 text-xs text-slate-600 dark:border-brand-800/50 dark:text-slate-300">
+          <MaturityStat color={maturityAccent("proven")} label={t.knowledge.maturityProven} value={stats.proven} />
+          <MaturityStat color={maturityAccent("emerging")} label={t.knowledge.maturityEmerging} value={stats.emerging} />
+          <MaturityStat color={maturityAccent("pilot")} label={t.knowledge.maturityPilot} value={stats.pilot} />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[16rem_1fr]">
         <LibrarySidebar
@@ -244,6 +247,22 @@ interface ScopeSelectProps {
   value: string;
   onChange: (value: string) => void;
   options: ReadonlyArray<{ value: string; label: string }>;
+}
+
+interface MaturityStatProps {
+  color: string;
+  label: string;
+  value: number;
+}
+
+function MaturityStat({ color, label, value }: MaturityStatProps) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className={cn("h-2 w-2 rounded-full", color)} aria-hidden="true" />
+      <span>{label}</span>
+      <span className="font-semibold tabular-nums text-slate-700 dark:text-slate-200">{value}</span>
+    </span>
+  );
 }
 
 function ScopeSelect({ label, value, onChange, options }: ScopeSelectProps) {

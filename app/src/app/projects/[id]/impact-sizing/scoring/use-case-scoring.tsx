@@ -178,7 +178,7 @@ export function UseCaseScoring({ projectId, candidates, allCandidates }: UseCase
             type="button"
             onClick={onSave}
             disabled={status === "saving" || !dirty}
-            className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
+            className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40"
           >
             {saveLabel}
           </button>
@@ -242,7 +242,7 @@ export function UseCaseScoring({ projectId, candidates, allCandidates }: UseCase
                       onClick={() => setActiveId(uc.id)}
                       className={
                         active
-                          ? "rounded-md bg-indigo-600 px-3 py-1 text-xs font-medium text-white"
+                          ? "rounded-md bg-brand-600 px-3 py-1 text-xs font-medium text-white"
                           : "rounded-md bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                       }
                     >

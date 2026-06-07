@@ -106,7 +106,7 @@ export function CandidatesTable({ projectId, candidates }: CandidatesTableProps)
           <button
             type="button"
             onClick={() => setShowAdd(true)}
-            className="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+            className="inline-flex items-center gap-1.5 rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
           >
             <Plus className="h-4 w-4" /> {t.impactSizing.addCandidate}
           </button>
@@ -119,7 +119,7 @@ export function CandidatesTable({ projectId, candidates }: CandidatesTableProps)
         </p>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <div className="overflow-hidden rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
             <tr>
@@ -142,7 +142,7 @@ export function CandidatesTable({ projectId, candidates }: CandidatesTableProps)
                   <td className="px-4 py-3">
                     <Link
                       href={`/projects/${projectId}/impact-sizing/screen`}
-                      className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+                      className="font-medium text-brand-600 hover:underline dark:text-brand-300"
                       title={locale === "en" ? "Open Readiness Check" : "打开准备度检查"}
                     >
                       {c.name}
@@ -165,7 +165,7 @@ export function CandidatesTable({ projectId, candidates }: CandidatesTableProps)
                     <div className="inline-flex items-center justify-end gap-3">
                       <button
                         type="button"
-                        className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+                        className="inline-flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 dark:text-brand-300"
                       >
                         <Sparkles className="h-3.5 w-3.5" /> {t.common.suggest}
                       </button>
@@ -175,7 +175,7 @@ export function CandidatesTable({ projectId, candidates }: CandidatesTableProps)
                         disabled={saveStatus === "saving"}
                         aria-label={locale === "en" ? "Edit candidate" : "编辑候选"}
                         title={locale === "en" ? "Edit candidate" : "编辑候选"}
-                        className="inline-flex items-center text-xs text-slate-400 hover:text-indigo-600 disabled:opacity-40 dark:hover:text-indigo-400"
+                        className="inline-flex items-center text-xs text-slate-400 hover:text-brand-600 disabled:opacity-40 dark:hover:text-brand-300"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
@@ -256,7 +256,7 @@ function CandidateModal({ title, submitLabel, initial, saving, onCancel, onSubmi
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-md space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
+        className="w-full max-w-md space-y-4 rounded-md border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-base font-semibold">{title}</h2>
@@ -333,7 +333,7 @@ function CandidateModal({ title, submitLabel, initial, saving, onCancel, onSubmi
             type="button"
             onClick={() => onSubmit({ ...form, name: form.name.trim() })}
             disabled={!canSubmit}
-            className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-40"
+            className="rounded-md bg-brand-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40"
           >
             {saving ? (locale === "en" ? "Saving…" : "保存中…") : submitLabel}
           </button>

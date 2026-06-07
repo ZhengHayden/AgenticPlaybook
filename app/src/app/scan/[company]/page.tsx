@@ -15,11 +15,11 @@ export default async function ScanCompanyPage({ params }: ScanCompanyPageProps) 
   if (!model) notFound();
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 px-6 py-8">
-      <Link href="/scan" className="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-slate-100">
+    <section className="space-y-4">
+      <Link href="/scan" className="text-sm text-slate-500 hover:text-brand-700 dark:hover:text-brand-300">
         ‹ Opportunity Scans
       </Link>
       <OpportunityDashboard model={model} />
-    </div>
+    </section>
   );
 }

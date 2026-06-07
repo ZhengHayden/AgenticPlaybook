@@ -69,7 +69,7 @@ export function ScoreUnitEditor({ value: s, maxDdiRaw, onChange }: ScoreUnitEdit
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
       <div className="space-y-4">
         {/* VM section */}
-        <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+        <section className="rounded-md border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
           <header className="flex items-center justify-between">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               {locale === "en" ? "Value Magnitude (VM)" : "价值量 (VM)"}
@@ -94,7 +94,7 @@ export function ScoreUnitEditor({ value: s, maxDdiRaw, onChange }: ScoreUnitEdit
                           onClick={() => setVm(d.id, v as 1 | 2 | 3 | 4 | 5)}
                           className={
                             current === v
-                              ? "bg-indigo-600 px-2 py-0.5 text-white"
+                              ? "bg-brand-600 px-2 py-0.5 text-white"
                               : "bg-white px-2 py-0.5 text-slate-600 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
                           }
                         >
@@ -105,7 +105,7 @@ export function ScoreUnitEditor({ value: s, maxDdiRaw, onChange }: ScoreUnitEdit
                   </div>
                   {anchor && (
                     <div className="mt-1 flex items-baseline gap-2 text-[11px]">
-                      <span className="rounded bg-indigo-50 px-1.5 py-0.5 font-semibold text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">
+                      <span className="rounded bg-brand-50 px-1.5 py-0.5 font-semibold text-brand-700 dark:bg-brand-800/40 dark:text-brand-300">
                         {anchor.label[locale]}
                       </span>
                       <span className="text-slate-500">{anchor.range[locale]}</span>
@@ -124,7 +124,7 @@ export function ScoreUnitEditor({ value: s, maxDdiRaw, onChange }: ScoreUnitEdit
         </section>
 
         {/* DDI section */}
-        <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+        <section className="rounded-md border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
           <header className="flex items-center justify-between">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               {locale === "en" ? "Decision Density Index (DDI)" : "决策密度指数 (DDI)"}
@@ -166,8 +166,8 @@ export function ScoreUnitEditor({ value: s, maxDdiRaw, onChange }: ScoreUnitEdit
                 className="mt-1 w-full rounded border border-slate-200 bg-white px-2 py-1 font-mono text-sm dark:border-slate-700 dark:bg-slate-950"
               />
             </label>
-            <div className="rounded-md border border-indigo-200 bg-indigo-50 p-2 text-xs dark:border-indigo-900/50 dark:bg-indigo-950/30">
-              <div className="font-semibold text-indigo-700 dark:text-indigo-300">
+            <div className="rounded-md border border-brand-100 bg-brand-50 p-2 text-xs dark:border-brand-800/50 dark:bg-brand-800/30">
+              <div className="font-semibold text-brand-700 dark:text-brand-300">
                 {locale === "en" ? "DDI normalized" : "DDI 归一化"}
               </div>
               <div className="mt-1 font-mono text-base font-semibold">{ddiNormalized.toFixed(2)}</div>
@@ -179,7 +179,7 @@ export function ScoreUnitEditor({ value: s, maxDdiRaw, onChange }: ScoreUnitEdit
         </section>
 
         {/* Risk section */}
-        <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+        <section className="rounded-md border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
           <header className="flex items-center justify-between">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               {locale === "en" ? "Risk Assessment" : "风险评估"}
@@ -232,7 +232,7 @@ export function ScoreUnitEditor({ value: s, maxDdiRaw, onChange }: ScoreUnitEdit
         </section>
 
         {/* Notes */}
-        <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+        <section className="rounded-md border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
           <label className="block">
             <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               {locale === "en" ? "Scoring notes" : "评分备注"}
@@ -256,7 +256,7 @@ export function ScoreUnitEditor({ value: s, maxDdiRaw, onChange }: ScoreUnitEdit
       <aside className="space-y-3">
         <div
           className={
-            "rounded-xl border-2 p-4 " +
+            "rounded-md border-2 p-4 " +
             (passesFloor
               ? "border-emerald-300 bg-emerald-50 dark:border-emerald-900/40 dark:bg-emerald-950/30"
               : "border-rose-300 bg-rose-50 dark:border-rose-900/40 dark:bg-rose-950/30")
@@ -282,7 +282,7 @@ export function ScoreUnitEditor({ value: s, maxDdiRaw, onChange }: ScoreUnitEdit
           <p className="mt-2 text-[11px] text-slate-600 dark:text-slate-400">{interp.action[locale]}</p>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 text-xs dark:border-slate-800 dark:bg-slate-900">
+        <div className="rounded-md border border-slate-200 bg-white p-4 text-xs dark:border-slate-800 dark:bg-slate-900">
           <h4 className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
             {locale === "en" ? "Breakdown" : "拆解"}
           </h4>
@@ -408,12 +408,12 @@ export function ScoringToolReference() {
         </p>
       </section>
 
-      <section className="rounded-md border border-indigo-200 bg-indigo-50 p-3 text-xs dark:border-indigo-900/50 dark:bg-indigo-950/20">
-        <h3 className="font-semibold text-indigo-700 dark:text-indigo-300">
+      <section className="rounded-md border border-brand-100 bg-brand-50 p-3 text-xs dark:border-brand-800/50 dark:bg-brand-800/20">
+        <h3 className="font-semibold text-brand-700 dark:text-brand-300">
           {locale === "en" ? "Final Priority Score" : "最终优先级分数"}
         </h3>
         <p className="mt-1 font-mono">PriorityScore = RAS × (1 + 0.25 × DDI_normalized)</p>
-        <p className="mt-1 text-indigo-900 dark:text-indigo-200">
+        <p className="mt-1 text-brand-800 dark:text-brand-100">
           {locale === "en"
             ? `Hard floor for Design entry: ${PRIORITY_FLOOR}.`
             : `进入 Design 阶段的硬性门槛: ${PRIORITY_FLOOR}。`}
@@ -421,7 +421,7 @@ export function ScoringToolReference() {
         <table className="mt-2 w-full text-[11px]">
           <tbody>
             {priorityInterpretations.map((i, idx) => (
-              <tr key={idx} className="border-t border-indigo-200/50 dark:border-indigo-900/40">
+              <tr key={idx} className="border-t border-brand-100/50 dark:border-brand-800/40">
                 <td className="w-20 py-1 font-mono">
                   {i.range[0]}–{i.range[1] === 999 ? "∞" : i.range[1]}
                 </td>

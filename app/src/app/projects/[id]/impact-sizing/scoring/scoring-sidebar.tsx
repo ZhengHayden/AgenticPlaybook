@@ -68,7 +68,7 @@ export function ScoringSidebar({ groups, selectedId, onSelect }: ScoringSidebarP
         />
       </div>
 
-      <div className="max-h-[72vh] overflow-y-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <div className="max-h-[72vh] overflow-y-auto rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         {filtered.length === 0 ? (
           <p className="p-3 text-xs text-slate-400">{en ? "No matches." : "无匹配。"}</p>
         ) : (
@@ -105,7 +105,7 @@ export function ScoringSidebar({ groups, selectedId, onSelect }: ScoringSidebarP
                             onClick={() => onSelect(r.id)}
                             className={
                               active
-                                ? "flex w-full items-center justify-between gap-2 border-l-2 border-indigo-500 bg-indigo-50 px-3 py-1.5 text-left text-xs dark:bg-indigo-950/30"
+                                ? "flex w-full items-center justify-between gap-2 border-l-2 border-brand-600 bg-brand-50 px-3 py-1.5 text-left text-xs dark:bg-brand-800/30"
                                 : "flex w-full items-center justify-between gap-2 border-l-2 border-transparent px-3 py-1.5 text-left text-xs hover:bg-slate-50 dark:hover:bg-slate-800/50"
                             }
                           >

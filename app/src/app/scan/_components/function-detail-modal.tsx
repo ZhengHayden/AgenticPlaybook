@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useLocale } from "@/lib/locale-context";
 import type { FunctionMeta, LevelDetail } from "@/lib/scan/types";
+import { Button } from "@/components/ui/button";
+import { SegTabs } from "@/components/ui/seg-tabs";
 import { StackedBar, type BarSegment } from "./stacked-bar";
 
 interface FunctionDetailModalProps {
@@ -12,7 +14,7 @@ interface FunctionDetailModalProps {
 
 /** Category fill colors, indexed by the category's position in the legend. */
 const CATEGORY_COLORS = [
-  "bg-indigo-500",
+  "bg-brand-600",
   "bg-sky-500",
   "bg-emerald-500",
   "bg-amber-500",
@@ -92,13 +94,6 @@ export function FunctionDetailModal({ meta, onClose }: FunctionDetailModalProps)
   const categoryNames = meta.categories.map((c) => c.name);
   const level = meta.levels[activeLevel];
 
-  const tabCls = (active: boolean): string =>
-    `rounded-md px-2.5 py-1 text-xs font-medium ${
-      active
-        ? "bg-indigo-600 text-white"
-        : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900"
-    }`;
-
   const reduction = level ? largestReduction(level, categoryNames) : null;
 
   return (
@@ -109,28 +104,24 @@ export function FunctionDetailModal({ meta, onClose }: FunctionDetailModalProps)
       onClick={onClose}
     >
       <div
-        className="flex max-h-[90vh] w-full max-w-3xl flex-col gap-4 overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
+        className="flex max-h-[90vh] w-full max-w-3xl flex-col gap-4 overflow-y-auto rounded-md border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between">
           <h2 className="text-lg font-semibold">{meta.functionLabel}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-md border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
-          >
+          <Button variant="ghost" className="px-2 py-1 text-xs" onClick={onClose}>
             {t.scan.close}
-          </button>
+          </Button>
         </div>
 
         {/* Job-grade tabs */}
-        <div className="flex flex-wrap gap-1.5">
-          {meta.levels.map((lvl, i) => (
-            <button key={lvl.levelCode} type="button" className={tabCls(i === activeLevel)} onClick={() => setActiveLevel(i)}>
-              {lvl.levelLabel}
-            </button>
-          ))}
-        </div>
+        {meta.levels.length > 0 && (
+          <SegTabs
+            value={meta.levels[activeLevel]?.levelCode ?? meta.levels[0].levelCode}
+            onChange={(code) => setActiveLevel(meta.levels.findIndex((l) => l.levelCode === code))}
+            tabs={meta.levels.map((lvl) => ({ value: lvl.levelCode, label: lvl.levelLabel }))}
+          />
+        )}
 
         {level && (
           <div className="grid gap-6 md:grid-cols-[auto_1fr]">

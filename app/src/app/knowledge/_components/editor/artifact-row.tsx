@@ -27,7 +27,7 @@ export function ArtifactRow({ artifact, onEdit, onReplace, onDelete, statusLabel
   const isFile = artifact.kind === "file";
 
   return (
-    <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
+    <div className="rounded-md border border-slate-200 p-3 dark:border-slate-800">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
@@ -36,7 +36,7 @@ export function ArtifactRow({ artifact, onEdit, onReplace, onDelete, statusLabel
             <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", STATUS_CLASS[artifact.status])}>
               {statusLabel(artifact.status)}
             </span>
-            <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+            <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-semibold text-brand-700 dark:bg-brand-800/40 dark:text-brand-300">
               {artifact.type}
             </span>
           </div>
@@ -86,7 +86,7 @@ export function ArtifactRow({ artifact, onEdit, onReplace, onDelete, statusLabel
         <div className="mt-2">
           <button
             type="button"
-            className="text-xs font-semibold text-indigo-600 dark:text-indigo-400"
+            className="text-xs font-semibold text-brand-600 dark:text-brand-300"
             onClick={() => setShowLog((v) => !v)}
           >
             {t.knowledge.changeLog} ({artifact.changelog.length})

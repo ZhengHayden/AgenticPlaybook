@@ -5,7 +5,7 @@ import {
   deleteArtifact,
 } from "@/db/knowledge-artifacts-repo";
 import { updateArtifactSchema } from "@/db/knowledge-artifacts-validation";
-import { MAX_ARTIFACT_BYTES, ALLOWED_ARTIFACT_MIME } from "@/content/knowledge-artifacts";
+import { MAX_ARTIFACT_BYTES, isAllowedArtifactFile } from "@/content/knowledge-artifacts";
 import { ok, fail, errorMessage } from "@/lib/api-response";
 
 export const dynamic = "force-dynamic";
@@ -36,7 +36,9 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       const file = form.get("file");
       if (!(file instanceof File)) return fail("file is required", 400);
       if (file.size > MAX_ARTIFACT_BYTES) return fail("File exceeds 25 MB limit", 400);
-      if (!ALLOWED_ARTIFACT_MIME.includes(file.type)) return fail(`Unsupported file type: ${file.type}`, 400);
+      if (!isAllowedArtifactFile(file.type, file.name)) {
+        return fail(`Unsupported file type: ${file.type || file.name}`, 400);
+      }
       const bytes = Buffer.from(await file.arrayBuffer());
       const replaced = await replaceArtifactFile(
         aid,

@@ -27,10 +27,49 @@ export const ALLOWED_ARTIFACT_MIME: readonly string[] = [
   "application/vnd.openxmlformats-officedocument.presentationml.presentation",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  "text/plain", "text/markdown", "text/csv",
+  "text/plain", "text/markdown", "text/csv", "text/html",
+  "application/xhtml+xml",
   "image/png", "image/jpeg", "image/svg+xml",
   "application/json", "application/zip",
 ];
+
+/**
+ * File extensions accepted as a fallback when the browser supplies no usable
+ * MIME type. Kept in step with {@link ALLOWED_ARTIFACT_MIME}.
+ */
+export const ALLOWED_ARTIFACT_EXTENSIONS: readonly string[] = [
+  "pdf", "pptx", "docx", "xlsx",
+  "txt", "md", "markdown", "csv", "html", "htm", "xhtml",
+  "png", "jpg", "jpeg", "svg", "json", "zip",
+];
+
+/** MIME values browsers emit when they cannot determine a file's type. */
+const GENERIC_MIME_TYPES: readonly string[] = [
+  "", "application/octet-stream", "binary/octet-stream",
+];
+
+/** Lowercased extension (without the dot) of a filename, or "" when none. */
+function fileExtension(fileName: string): string {
+  const dot = fileName.lastIndexOf(".");
+  return dot >= 0 ? fileName.slice(dot + 1).toLowerCase() : "";
+}
+
+/**
+ * Whether an uploaded file is an accepted artifact.
+ *
+ * Browser-reported MIME types are unreliable — many `.html`/`.htm` files arrive
+ * as `application/octet-stream` or an empty string depending on OS file
+ * associations and how the file was selected — so when the MIME type is missing
+ * or generic we fall back to the file extension. A file declaring a specific,
+ * disallowed MIME type (e.g. an `.exe`) is still rejected outright.
+ */
+export function isAllowedArtifactFile(mimeType: string, fileName: string): boolean {
+  if (ALLOWED_ARTIFACT_MIME.includes(mimeType)) return true;
+  if (GENERIC_MIME_TYPES.includes(mimeType)) {
+    return ALLOWED_ARTIFACT_EXTENSIONS.includes(fileExtension(fileName));
+  }
+  return false;
+}
 
 export interface ArtifactFile {
   fileName: string;

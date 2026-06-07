@@ -51,7 +51,7 @@ export function ArtifactForm({ draft, onSubmit, onCancel }: ArtifactFormProps) {
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!title.trim() || !owner.trim()) {
-      setError(t.knowledge.saveError);
+      setError(t.knowledge.requiredFields);
       return;
     }
     if (kind === "file" && draft.mode !== "edit" && !file) {
@@ -86,10 +86,10 @@ export function ArtifactForm({ draft, onSubmit, onCancel }: ArtifactFormProps) {
   return (
     <form
       onSubmit={submit}
-      className="space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/40 p-4 dark:border-indigo-800 dark:bg-indigo-900/10"
+      className="space-y-3 rounded-md border border-brand-100 bg-brand-50/40 p-4 dark:border-brand-700 dark:bg-brand-800/10"
     >
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <Field label={t.knowledge.artifactTitle} className="md:col-span-2">
+        <Field label={t.knowledge.artifactTitle} required className="md:col-span-2">
           <input className={FIELD_CLASS} value={title} onChange={(e) => setTitle(e.target.value)} />
         </Field>
         <Field label={t.knowledge.artifactKind}>
@@ -147,7 +147,7 @@ export function ArtifactForm({ draft, onSubmit, onCancel }: ArtifactFormProps) {
             ))}
           </select>
         </Field>
-        <Field label={t.knowledge.artifactOwner}>
+        <Field label={t.knowledge.artifactOwner} required>
           <input className={FIELD_CLASS} value={owner} onChange={(e) => setOwner(e.target.value)} />
         </Field>
         <Field label={t.knowledge.artifactVersion}>

@@ -32,10 +32,31 @@ describe("EvidenceTab", () => {
   it("renders both validation status and references in one tab", () => {
     render(
       <LocaleProvider>
-        <EvidenceTab useCase={useCase} onPatch={vi.fn()} onSetValidation={vi.fn()} />
+        <EvidenceTab useCase={useCase} onPatch={vi.fn()} onSetValidation={vi.fn()} editing />
       </LocaleProvider>,
     );
     expect(screen.getByDisplayValue("some evidence")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Comp A")).toBeInTheDocument();
+  });
+
+  it("renders fields read-only (disabled) when not editing", () => {
+    render(
+      <LocaleProvider>
+        <EvidenceTab useCase={useCase} onPatch={vi.fn()} onSetValidation={vi.fn()} editing={false} />
+      </LocaleProvider>,
+    );
+    // Values are still shown, but the controls are locked.
+    const note = screen.getByDisplayValue("some evidence");
+    expect(note).toBeDisabled();
+    expect(screen.getByDisplayValue("Comp A")).toBeDisabled();
+  });
+
+  it("becomes editable when editing is true", () => {
+    render(
+      <LocaleProvider>
+        <EvidenceTab useCase={useCase} onPatch={vi.fn()} onSetValidation={vi.fn()} editing />
+      </LocaleProvider>,
+    );
+    expect(screen.getByDisplayValue("some evidence")).not.toBeDisabled();
   });
 });

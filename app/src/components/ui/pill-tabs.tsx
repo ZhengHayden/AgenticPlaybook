@@ -17,15 +17,14 @@ interface PillTabsProps {
   className?: string;
 }
 
-/** Segmented pill tabs — the gameboard's primary tab style. */
+/** SLDS underline tabs — bottom-border accent on the active route. */
 export function PillTabs({ tabs, className }: PillTabsProps) {
   const pathname = usePathname();
 
   return (
     <nav
       className={cn(
-        "inline-flex gap-1 rounded-xl border border-slate-200 bg-slate-100/70 p-1",
-        "dark:border-slate-800 dark:bg-slate-800/40",
+        "flex items-center gap-1 border-b border-slate-200 dark:border-slate-800",
         className,
       )}
     >
@@ -36,10 +35,10 @@ export function PillTabs({ tabs, className }: PillTabsProps) {
             key={tab.href}
             href={tab.href}
             className={cn(
-              "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors",
+              "-mb-px border-b-2 px-3 py-2 text-sm font-semibold transition-colors",
               active
-                ? "bg-white text-indigo-600 shadow-sm dark:bg-slate-900 dark:text-indigo-400"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
+                ? "border-brand-600 text-brand-700 dark:border-brand-300 dark:text-brand-300"
+                : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
             )}
           >
             {tab.label}
