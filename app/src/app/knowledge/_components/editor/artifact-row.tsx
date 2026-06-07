@@ -6,6 +6,8 @@ import { useLocale } from "@/lib/locale-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { artifactDownloadUrl } from "@/lib/api-client";
+import { previewKind } from "@/lib/artifact-preview";
+import { ArtifactPreviewModal } from "./artifact-preview-modal";
 
 const STATUS_CLASS: Record<KnowledgeArtifact["status"], string> = {
   draft: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
@@ -24,7 +26,9 @@ interface ArtifactRowProps {
 export function ArtifactRow({ artifact, onEdit, onReplace, onDelete, statusLabel }: ArtifactRowProps) {
   const { t } = useLocale();
   const [showLog, setShowLog] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
   const isFile = artifact.kind === "file";
+  const canPreview = isFile && artifact.file ? previewKind(artifact.file) !== null : false;
 
   return (
     <div className="rounded-md border border-slate-200 p-3 dark:border-slate-800">
@@ -48,6 +52,15 @@ export function ArtifactRow({ artifact, onEdit, onReplace, onDelete, statusLabel
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-1.5 text-xs">
+          {canPreview && (
+            <button
+              type="button"
+              className="rounded-lg border border-slate-200 px-2 py-1 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
+              onClick={() => setPreviewing(true)}
+            >
+              ◉ {t.knowledge.preview}
+            </button>
+          )}
           {isFile ? (
             <a
               className="rounded-lg border border-slate-200 px-2 py-1 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
@@ -106,6 +119,8 @@ export function ArtifactRow({ artifact, onEdit, onReplace, onDelete, statusLabel
           )}
         </div>
       )}
+
+      {previewing && <ArtifactPreviewModal artifact={artifact} onClose={() => setPreviewing(false)} />}
     </div>
   );
 }

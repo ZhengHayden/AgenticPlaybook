@@ -346,6 +346,8 @@ export type Dictionary = {
     editArtifact: string;
     replaceFile: string;
     download: string;
+    preview: string;
+    previewError: string;
     openLink: string;
     artifactTitle: string;
     artifactKind: string;
@@ -701,6 +703,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       editArtifact: "Edit artifact",
       replaceFile: "Replace",
       download: "Download",
+      preview: "Preview",
+      previewError: "Could not load preview",
       openLink: "Open",
       artifactTitle: "Title",
       artifactKind: "Kind",
@@ -1054,6 +1058,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       editArtifact: "编辑资产",
       replaceFile: "替换",
       download: "下载",
+      preview: "预览",
+      previewError: "无法加载预览",
       openLink: "打开",
       artifactTitle: "标题",
       artifactKind: "类型",
