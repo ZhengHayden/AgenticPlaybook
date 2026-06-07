@@ -10,6 +10,7 @@ import type {
 } from "./knowledge";
 import { DEFAULT_VALIDATION } from "./knowledge";
 import { utilityBranch } from "./knowledge-utility-seed";
+import { odmBranch } from "./knowledge-odm-seed";
 
 /**
  * Bundled seed for the Agentic Use Case Library. The repository inserts this on
@@ -130,11 +131,11 @@ const workflows: LibraryWorkflow[] = [
 // Additional sector branches (e.g. Energy & Utilities) live in their own
 // modules and are concatenated here so a single `withParents` pass resolves the
 // denormalized parent ids across the whole taxonomy.
-const sectorsAll: Sector[] = [...sectors, ...utilityBranch.sectors];
-const industriesAll: Industry[] = [...industries, ...utilityBranch.industries];
-const companiesAll: Company[] = [...companies, ...utilityBranch.companies];
-const functionsAll: LibraryFunction[] = [...functions, ...utilityBranch.functions];
-const workflowsAll: LibraryWorkflow[] = [...workflows, ...utilityBranch.workflows];
+const sectorsAll: Sector[] = [...sectors, ...utilityBranch.sectors, ...odmBranch.sectors];
+const industriesAll: Industry[] = [...industries, ...utilityBranch.industries, ...odmBranch.industries];
+const companiesAll: Company[] = [...companies, ...utilityBranch.companies, ...odmBranch.companies];
+const functionsAll: LibraryFunction[] = [...functions, ...utilityBranch.functions, ...odmBranch.functions];
+const workflowsAll: LibraryWorkflow[] = [...workflows, ...utilityBranch.workflows, ...odmBranch.workflows];
 
 // ─── Use case factory ─────────────────────────────────────────
 /** Resolve denormalized parent ids by walking workflow → function → company → … */
@@ -528,7 +529,7 @@ const useCaseSeeds: UseCaseSeed[] = [
   },
 ];
 
-const useCases: KnowledgeUseCase[] = [...useCaseSeeds, ...utilityBranch.useCaseSeeds].map(
+const useCases: KnowledgeUseCase[] = [...useCaseSeeds, ...utilityBranch.useCaseSeeds, ...odmBranch.useCaseSeeds].map(
   withParents,
 );
 
