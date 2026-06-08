@@ -83,6 +83,19 @@ export interface UseCaseReference {
   detail: string;
 }
 
+/**
+ * A structured impact KPI (proposal §5.6): one measurable metric with its
+ * baseline, target, unit, and source. Free-text KPIs live on `kpis` (the Notes
+ * field); this is the structured representation.
+ */
+export interface KpiMetric {
+  metric: string;
+  baseline: string;
+  target: string;
+  unit: string;
+  source: string;
+}
+
 /** Single validation status + free-text note, embedded on the use case. */
 export interface UseCaseValidation {
   status: ValidationStatus;
@@ -102,7 +115,10 @@ export interface KnowledgeUseCase {
   name: string;
   domain: string;
   description: string;
+  /** Free-text KPI notes (one per line). Structured metrics live on `kpiMetrics`. */
   kpis: string[];
+  /** Structured impact KPIs (proposal §5.6); optional for back-compat. */
+  kpiMetrics?: KpiMetric[];
   techTag: TechTag;
   maturity: Maturity;
   businessObjectives: string[];
@@ -153,6 +169,7 @@ export interface CreateUseCaseFields {
   domain: string;
   description: string;
   kpis: string[];
+  kpiMetrics?: KpiMetric[];
   techTag: TechTag;
   maturity: Maturity;
   businessObjectives: string[];

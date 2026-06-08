@@ -1,136 +1,122 @@
 "use client";
 
-import type { KnowledgeLibrary, Maturity, TechTag, ValidationStatus } from "@/content/knowledge";
-import { MATURITIES, TECH_TAGS, VALIDATION_STATUSES } from "@/content/knowledge";
+import type { KnowledgeLibrary, KnowledgeUseCase, Maturity } from "@/content/knowledge";
+import { MATURITIES } from "@/content/knowledge";
 import { useLocale } from "@/lib/locale-context";
-import { Button } from "@/components/ui/button";
-import { SegTabs } from "@/components/ui/seg-tabs";
 import { cn } from "@/lib/utils";
+import { Layers, Boxes, Database, type LucideIcon } from "lucide-react";
 import type { Filters } from "./filtering";
-import { EMPTY_FILTERS, functionsForCompany } from "./filtering";
-import { localized, maturityLabel, validationLabel } from "./display";
-import type { LibraryView } from "./use-case-list";
+import { functionsForCompany } from "./filtering";
+import { localized, maturityLabel } from "./display";
 
 interface LibrarySidebarProps {
   library: KnowledgeLibrary;
   companyId: string;
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
-  view: LibraryView;
-  onViewChange: (view: LibraryView) => void;
+  /** Company-scoped use cases (pre-filter) used for category/maturity counts. */
+  scopedUseCases: ReadonlyArray<KnowledgeUseCase>;
 }
 
-const SELECT_CLASS =
-  "w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-800";
-
+/**
+ * Knowledge filters rail (proposal §5.5, reference mock-up): a clean
+ * Categories (by business function) list and a Maturity Layer list, each with
+ * counts and an active highlight. Search and secondary filters live in the
+ * toolbar above the table.
+ */
 export function LibrarySidebar({
   library,
   companyId,
   filters,
   onFiltersChange,
-  view,
-  onViewChange,
+  scopedUseCases,
 }: LibrarySidebarProps) {
   const { t, locale } = useLocale();
   const functions = functionsForCompany(library, companyId).sort((a, b) => a.sort - b.sort);
-  const hasFilters =
-    filters.search || filters.functionId || filters.maturity || filters.techTag || filters.validationStatus || filters.hasArtifacts;
 
-  function patch(next: Partial<Filters>) {
-    onFiltersChange({ ...filters, ...next });
-  }
+  const fnCount = (id: string) => scopedUseCases.filter((uc) => uc.functionId === id).length;
+  const maturityCount = (m: Maturity) => scopedUseCases.filter((uc) => uc.maturity === m).length;
+
+  const patch = (next: Partial<Filters>) => onFiltersChange({ ...filters, ...next });
 
   return (
-    <aside className="space-y-4">
-      <div>
-        <label className="mb-1 block text-xs font-semibold text-slate-500">{t.knowledge.search}</label>
-        <input
-          className={SELECT_CLASS}
-          value={filters.search}
-          placeholder={t.knowledge.searchPlaceholder}
-          onChange={(e) => patch({ search: e.target.value })}
+    <aside className="rounded-lg border border-slate-200 bg-white p-2 dark:border-slate-800 dark:bg-slate-900">
+      <GroupLabel className="pb-1 pt-2">{t.knowledge.categories}</GroupLabel>
+      <ul className="flex flex-col">
+        <NavItem
+          icon={Layers}
+          label={t.knowledge.allFunctions}
+          count={scopedUseCases.length}
+          active={filters.functionId === ""}
+          onClick={() => patch({ functionId: "" })}
         />
-      </div>
-
-      <div>
-        <label className="mb-1 block text-xs font-semibold text-slate-500">{t.knowledge.view}</label>
-        <SegTabs<LibraryView>
-          value={view}
-          onChange={onViewChange}
-          tabs={[
-            { value: "grouped", label: t.knowledge.viewGrouped },
-            { value: "cards", label: t.knowledge.viewCards },
-            { value: "table", label: t.knowledge.viewTable },
-          ]}
-        />
-      </div>
-
-      <div className="space-y-2.5 rounded-md border border-slate-200 p-3 dark:border-slate-800">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t.knowledge.filters}</p>
-
-        <FilterSelect
-          value={filters.functionId}
-          onChange={(v) => patch({ functionId: v })}
-          allLabel={t.knowledge.allFunctions}
-          options={functions.map((fn) => ({ value: fn.id, label: localized(fn.name, locale) }))}
-        />
-        <FilterSelect
-          value={filters.maturity}
-          onChange={(v) => patch({ maturity: v as Maturity | "" })}
-          allLabel={t.knowledge.allMaturity}
-          options={MATURITIES.map((m) => ({ value: m, label: maturityLabel(t, m) }))}
-        />
-        <FilterSelect
-          value={filters.techTag}
-          onChange={(v) => patch({ techTag: v as TechTag | "" })}
-          allLabel={t.knowledge.allTech}
-          options={TECH_TAGS.map((tag) => ({ value: tag, label: tag }))}
-        />
-        <FilterSelect
-          value={filters.validationStatus}
-          onChange={(v) => patch({ validationStatus: v as ValidationStatus | "" })}
-          allLabel={t.knowledge.allValidation}
-          options={VALIDATION_STATUSES.map((s) => ({ value: s, label: validationLabel(t, s) }))}
-        />
-        <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-          <input
-            type="checkbox"
-            checked={filters.hasArtifacts}
-            onChange={(e) => patch({ hasArtifacts: e.target.checked })}
+        {functions.map((fn) => (
+          <NavItem
+            key={fn.id}
+            icon={Boxes}
+            label={localized(fn.name, locale)}
+            count={fnCount(fn.id)}
+            active={filters.functionId === fn.id}
+            onClick={() => patch({ functionId: filters.functionId === fn.id ? "" : fn.id })}
           />
-          {t.knowledge.hasArtifacts}
-        </label>
+        ))}
+      </ul>
 
-        {hasFilters && (
-          <Button
-            variant="ghost"
-            className="w-full px-2 py-1 text-xs"
-            onClick={() => onFiltersChange(EMPTY_FILTERS)}
-          >
-            {t.knowledge.clearFilters}
-          </Button>
-        )}
-      </div>
+      <GroupLabel className="mt-3 border-t border-slate-100 pb-2 pt-3 dark:border-slate-800">
+        {t.knowledge.maturityLayer}
+      </GroupLabel>
+      <ul className="flex flex-col">
+        {MATURITIES.map((m) => (
+          <NavItem
+            key={m}
+            icon={Database}
+            label={maturityLabel(t, m)}
+            count={maturityCount(m)}
+            active={filters.maturity === m}
+            onClick={() => patch({ maturity: filters.maturity === m ? "" : m })}
+          />
+        ))}
+      </ul>
     </aside>
   );
 }
 
-interface FilterSelectProps {
-  value: string;
-  onChange: (value: string) => void;
-  allLabel: string;
-  options: ReadonlyArray<{ value: string; label: string }>;
+function GroupLabel({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <p className={cn("px-2 text-xs font-medium uppercase tracking-wide text-ink-faint", className)}>
+      {children}
+    </p>
+  );
 }
 
-function FilterSelect({ value, onChange, allLabel, options }: FilterSelectProps) {
+interface NavItemProps {
+  icon: LucideIcon;
+  label: string;
+  count: number;
+  active: boolean;
+  onClick: () => void;
+}
+
+function NavItem({ icon: Icon, label, count, active, onClick }: NavItemProps) {
   return (
-    <select className={cn(SELECT_CLASS)} value={value} onChange={(e) => onChange(e.target.value)}>
-      <option value="">{allLabel}</option>
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>
-          {o.label}
-        </option>
-      ))}
-    </select>
+    <li>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-current={active ? "true" : undefined}
+        className={cn(
+          "flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-sm transition-colors",
+          active
+            ? "bg-slate-100 font-medium text-slate-900 dark:bg-slate-800 dark:text-slate-100"
+            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60",
+        )}
+      >
+        <span className="flex min-w-0 items-center gap-2">
+          <Icon className="h-4 w-4 shrink-0 text-slate-500" />
+          <span className="truncate">{label}</span>
+        </span>
+        <span className="shrink-0 text-xs tabular-nums text-slate-400">{count}</span>
+      </button>
+    </li>
   );
 }

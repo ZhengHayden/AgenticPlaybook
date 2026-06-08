@@ -12,6 +12,8 @@ import {
   replaceArtifactFile,
   deleteArtifact,
 } from "@/lib/api-client";
+import { EmptyState } from "@/components/ui/empty-state";
+import { FileText } from "lucide-react";
 import { ArtifactRow } from "./artifact-row";
 import { ArtifactForm, type ArtifactDraft, type ArtifactSubmit } from "./artifact-form";
 
@@ -114,9 +116,13 @@ export function ArtifactsTab({ useCaseId }: ArtifactsTabProps) {
       {loading ? (
         <p className="text-sm text-slate-400">…</p>
       ) : artifacts.length === 0 && !draft ? (
-        <p className="rounded-md border border-dashed border-slate-300 py-10 text-center text-sm text-slate-400 dark:border-slate-700">
-          {t.knowledge.noArtifacts}
-        </p>
+        <EmptyState
+          icon={<FileText className="h-4 w-4" />}
+          title={t.knowledge.noArtifacts}
+          action={
+            <Button onClick={() => setDraft({ mode: "create" })}>+ {t.knowledge.addArtifact}</Button>
+          }
+        />
       ) : (
         <div className="space-y-2">
           {artifacts.map((a) => (

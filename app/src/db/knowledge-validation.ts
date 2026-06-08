@@ -17,6 +17,14 @@ const referenceSchema = z.object({
   detail: z.string(),
 });
 
+const kpiMetricSchema = z.object({
+  metric: z.string(),
+  baseline: z.string(),
+  target: z.string(),
+  unit: z.string(),
+  source: z.string(),
+});
+
 /** Editable fields of a use case. Parent ids are derived from `workflowId`. */
 const useCaseFieldsSchema = z.object({
   workflowId: z.string().min(1),
@@ -24,6 +32,7 @@ const useCaseFieldsSchema = z.object({
   domain: z.string(),
   description: z.string(),
   kpis: z.array(z.string()),
+  kpiMetrics: z.array(kpiMetricSchema).optional(),
   techTag: techTagSchema,
   maturity: maturitySchema,
   businessObjectives: z.array(z.string()),

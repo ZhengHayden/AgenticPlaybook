@@ -5,13 +5,43 @@ import type {
   KnowledgeUseCase,
   LibraryWorkflow,
 } from "@/content/knowledge";
+import type { TechTag, ValidationStatus } from "@/content/knowledge";
 import { useLocale } from "@/lib/locale-context";
-import { Badge } from "@/components/ui/badge";
+import { Star } from "lucide-react";
+import { StatusChip, type ChipState } from "@/components/ui/status-chip";
 import { cn } from "@/lib/utils";
 import { UseCaseCard } from "./use-case-card";
 import { localized, maturityLabel, validationDotClass, validationLabel } from "./display";
 
 export type LibraryView = "grouped" | "cards" | "table";
+
+/** Validation status → semantic chip state. */
+const VALIDATION_STATE: Record<ValidationStatus, ChipState> = {
+  validated: "ready",
+  partial: "warn",
+  notYet: "neutral",
+};
+
+/** Per-category pill tint (ring-inset, mirrors the reference mock-up). */
+const TECH_PILL: Record<TechTag, string> = {
+  "AI/ML": "bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/30 dark:text-blue-300 dark:ring-blue-900/50",
+  GenAI: "bg-violet-50 text-violet-700 ring-violet-200 dark:bg-violet-950/30 dark:text-violet-300 dark:ring-violet-900/50",
+  Analytics: "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:ring-emerald-900/50",
+  Optimization: "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950/30 dark:text-amber-300 dark:ring-amber-900/50",
+};
+
+function TechPill({ tag }: { tag: TechTag }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2 py-0.5 text-xs ring-1 ring-inset",
+        TECH_PILL[tag],
+      )}
+    >
+      {tag}
+    </span>
+  );
+}
 
 interface UseCaseListProps {
   view: LibraryView;
@@ -162,55 +192,69 @@ function UseCaseTable({ useCases, library, counts, onView }: TableProps) {
     const fn = library.functions.find((f) => f.id === id);
     return fn ? localized(fn.name, locale) : "—";
   };
-  const wfName = (id: string) => library.workflows.find((w) => w.id === id)?.name ?? "—";
 
   return (
-    <div className="overflow-hidden rounded-md border border-slate-200 dark:border-slate-800">
-      <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:bg-slate-800/50">
+    <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <table className="w-full min-w-[760px] text-left text-sm">
+        <thead className="bg-slate-50 text-xs font-medium uppercase tracking-wide text-slate-500 dark:bg-slate-950/50">
           <tr>
-            <th className="px-4 py-2.5">{t.knowledge.colUseCase}</th>
-            <th className="px-4 py-2.5">{t.knowledge.colFunction}</th>
-            <th className="px-4 py-2.5">{t.knowledge.colWorkflow}</th>
-            <th className="px-4 py-2.5">{t.knowledge.colMaturity}</th>
-            <th className="px-4 py-2.5">{t.knowledge.colTech}</th>
-            <th className="px-4 py-2.5">{t.knowledge.colStatus}</th>
+            <th scope="col" className="px-4 py-2.5 font-medium">{t.knowledge.colUseCase}</th>
+            <th scope="col" className="px-4 py-2.5 font-medium">{t.knowledge.colTech}</th>
+            <th scope="col" className="px-4 py-2.5 font-medium">{t.knowledge.colMaturity}</th>
+            <th scope="col" className="px-4 py-2.5 font-medium">{t.knowledge.colOwner}</th>
+            <th scope="col" className="px-4 py-2.5 font-medium">{t.knowledge.colStatus}</th>
+            <th scope="col" className="px-4 py-2.5 text-right font-medium">{t.knowledge.artifacts}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-          {useCases.map((uc) => (
-            <tr
-              key={uc.id}
-              className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60"
-              onClick={() => onView(uc)}
-            >
-              <td className="px-4 py-2.5">
-                <div className="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
-                  {uc.name}
-                  {counts?.[uc.id] ? (
-                    <span className="ml-1 rounded-full bg-brand-50 px-1.5 text-[10px] font-semibold text-brand-700 dark:bg-brand-800/40 dark:text-brand-300">
-                      ◆ {counts[uc.id]}
-                    </span>
-                  ) : null}
-                </div>
-                <div className="text-xs text-slate-400">{uc.domain}</div>
-              </td>
-              <td className="px-4 py-2.5 text-slate-600 dark:text-slate-300">{fnName(uc.functionId)}</td>
-              <td className="px-4 py-2.5 text-slate-600 dark:text-slate-300">{wfName(uc.workflowId)}</td>
-              <td className="px-4 py-2.5 text-slate-600 dark:text-slate-300">{maturityLabel(t, uc.maturity)}</td>
-              <td className="px-4 py-2.5">
-                <Badge>{uc.techTag}</Badge>
-              </td>
-              <td className="px-4 py-2.5">
-                <span className="inline-flex items-center gap-1.5">
-                  <span className={cn("h-2 w-2 rounded-full", validationDotClass(uc.validation.status))} />
-                  <span className="text-xs text-slate-600 dark:text-slate-300">
-                    {validationLabel(t, uc.validation.status)}
+          {useCases.map((uc) => {
+            const validated = uc.validation.status === "validated";
+            return (
+              <tr
+                key={uc.id}
+                className="cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                onClick={() => onView(uc)}
+              >
+                <td className="px-4 py-3">
+                  <div className="flex items-start gap-2">
+                    <Star
+                      className={cn(
+                        "mt-0.5 h-4 w-4 shrink-0",
+                        validated ? "fill-amber-400 text-amber-400" : "text-slate-300 dark:text-slate-600",
+                      )}
+                      aria-hidden
+                    />
+                    <div className="min-w-0">
+                      <div className="truncate font-medium text-slate-900 dark:text-slate-100">{uc.name}</div>
+                      {uc.domain && (
+                        <div className="mt-0.5 truncate text-xs text-slate-500">{uc.domain}</div>
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3">
+                  <TechPill tag={uc.techTag} />
+                </td>
+                <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{maturityLabel(t, uc.maturity)}</td>
+                <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
+                  <span
+                    className="block max-w-[14rem] truncate"
+                    title={uc.sponsors?.trim() || fnName(uc.functionId)}
+                  >
+                    {uc.sponsors?.trim() || fnName(uc.functionId)}
                   </span>
-                </span>
-              </td>
-            </tr>
-          ))}
+                </td>
+                <td className="px-4 py-3">
+                  <StatusChip state={VALIDATION_STATE[uc.validation.status]} size="sm">
+                    {validationLabel(t, uc.validation.status)}
+                  </StatusChip>
+                </td>
+                <td className="px-4 py-3 text-right tabular-nums text-slate-600 dark:text-slate-400">
+                  {counts?.[uc.id] ?? 0}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

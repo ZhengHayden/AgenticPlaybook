@@ -74,7 +74,9 @@ function toUseCaseRow(uc: KnowledgeUseCase): KnowledgeUseCaseRow {
 }
 
 function fromUseCaseRow(row: KnowledgeUseCaseRow): KnowledgeUseCase {
-  return JSON.parse(row.data) as KnowledgeUseCase;
+  const uc = JSON.parse(row.data) as KnowledgeUseCase;
+  // Back-compat: rows stored before structured KPIs lack `kpiMetrics`.
+  return { ...uc, kpiMetrics: uc.kpiMetrics ?? [] };
 }
 
 // ─── seeding ──────────────────────────────────────────────────

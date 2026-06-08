@@ -10,6 +10,7 @@ import { useLocale } from "@/lib/locale-context";
 import { cn } from "@/lib/utils";
 import { Field, FIELD_CLASS, SaveBar } from "../field";
 import { FormSection } from "../form-section";
+import { AgentTopology } from "./agent-topology";
 
 interface AgenticTabProps {
   useCase: KnowledgeUseCase;
@@ -60,6 +61,19 @@ export function AgenticTab({ useCase, onPatch, editing }: AgenticTabProps) {
     <fieldset disabled={!editing} className="contents">
       <FormSection title={t.knowledge.agenticDesign}>
         <div className="space-y-4">
+          {selected.length > 0 && (
+            <div className="rounded-lg border border-slate-200 bg-subtle/40 p-3 dark:border-slate-800 dark:bg-slate-900/40">
+              <AgentTopology
+                archetypeIds={selected}
+                a2aLabel={
+                  a2aPattern
+                    ? a2aPatterns.find((p) => p.id === a2aPattern)?.[locale].name
+                    : undefined
+                }
+                locale={locale}
+              />
+            </div>
+          )}
           <Field label={t.knowledge.archetypesUsed}>
             <div className="flex flex-wrap gap-1.5">
               {archetypes.map((a) => (

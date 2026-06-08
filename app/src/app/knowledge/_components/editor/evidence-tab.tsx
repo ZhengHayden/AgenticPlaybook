@@ -6,10 +6,23 @@ import { VALIDATION_STATUSES } from "@/content/knowledge";
 import type { UpdateUseCaseInput } from "@/db/knowledge-validation";
 import { useLocale } from "@/lib/locale-context";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
+import { BarChart3, Globe, Building2, type LucideIcon } from "lucide-react";
 import { FIELD_CLASS, SaveBar } from "../field";
 import { FormSection } from "../form-section";
 import { validationDotClass, validationLabel } from "../display";
+
+/**
+ * Infer a source-type icon from a reference name (proposal §5.6): analyst
+ * houses, an external vendor/URL, or an internal source by default.
+ */
+function sourceIcon(name: string): LucideIcon {
+  const n = name.toLowerCase();
+  if (/gartner|forrester|idc|mckinsey|bcg|deloitte|analyst/.test(n)) return BarChart3;
+  if (/https?:\/\/|www\.|\.com|\.io|\.ai|vendor/.test(n)) return Globe;
+  return Building2;
+}
 
 interface EvidenceTabProps {
   useCase: KnowledgeUseCase;
@@ -102,10 +115,31 @@ export function EvidenceTab({ useCase, onPatch, onSetValidation, editing }: Evid
 
       <FormSection title={t.knowledge.tabReferences}>
         <div className="space-y-3">
-          {rows.length === 0 && <p className="text-sm text-slate-400">{t.knowledge.noReferences}</p>}
-          {rows.map((row, i) => (
+          {rows.length === 0 && (
+            <EmptyState
+              icon={<Building2 className="h-4 w-4" />}
+              title={t.knowledge.noReferences}
+              action={
+                editing ? (
+                  <Button
+                    variant="secondary"
+                    className="text-xs"
+                    onClick={() => setRows((prev) => [...prev, { name: "", detail: "" }])}
+                  >
+                    + {t.knowledge.addReference}
+                  </Button>
+                ) : undefined
+              }
+            />
+          )}
+          {rows.map((row, i) => {
+            const SourceIcon = sourceIcon(row.name);
+            return (
             <div key={i} className="space-y-2 rounded-lg border border-slate-200 p-3 dark:border-slate-800">
               <div className="flex items-center gap-2">
+                <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-subtle text-ink-faint dark:bg-slate-800">
+                  <SourceIcon className="h-3.5 w-3.5" />
+                </span>
                 <input
                   className={FIELD_CLASS}
                   placeholder={t.knowledge.refName}
@@ -130,8 +164,9 @@ export function EvidenceTab({ useCase, onPatch, onSetValidation, editing }: Evid
                 onChange={(e) => setRows((prev) => prev.map((r, j) => (j === i ? { ...r, detail: e.target.value } : r)))}
               />
             </div>
-          ))}
-          {editing && (
+            );
+          })}
+          {editing && rows.length > 0 && (
             <Button variant="secondary" className="text-xs" onClick={() => setRows((prev) => [...prev, { name: "", detail: "" }])}>
               + {t.knowledge.addReference}
             </Button>
