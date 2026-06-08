@@ -51,7 +51,7 @@ const T = {
 };
 
 const iconButtonClass =
-  "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-slate-200 text-slate-500 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800";
+  "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border text-ink-muted hover:bg-surface-muted";
 
 /**
  * Compact, always-visible list of a workflow's use-case ideas. Each idea shows
@@ -73,14 +73,12 @@ export function UseCaseIdeasPanel({
     return (
       <section>
         <div className="mb-1">
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            {t.title}
-          </span>
+          <span className="eyebrow">{t.title}</span>
         </div>
         {useCases.length === 0 ? (
-          <p className="text-xs text-slate-400">{t.empty}</p>
+          <p className="text-xs text-ink-faint">{t.empty}</p>
         ) : (
-          <ul className="list-disc space-y-0.5 pl-5 text-sm text-slate-700 dark:text-slate-300">
+          <ul className="list-disc space-y-0.5 pl-5 text-sm text-ink-muted">
             {useCases.map((uc) => (
               <li key={uc.id}>{uc.name || t.untitled}</li>
             ))}
@@ -110,9 +108,7 @@ export function UseCaseIdeasPanel({
   return (
     <section>
       <div className="mb-1 flex items-center justify-between gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-          {t.title}
-        </span>
+        <span className="eyebrow">{t.title}</span>
         <button
           type="button"
           aria-label={t.add}
@@ -125,7 +121,7 @@ export function UseCaseIdeasPanel({
       </div>
 
       {useCases.length === 0 ? (
-        <p className="text-xs text-slate-400">{t.empty}</p>
+        <p className="text-xs text-ink-faint">{t.empty}</p>
       ) : (
         <ul className="space-y-1.5">
           {useCases.map((uc, i) => {
@@ -133,7 +129,7 @@ export function UseCaseIdeasPanel({
             return (
               <li
                 key={uc.id}
-                className="rounded-md border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900"
+                className="rounded-lg border border-border bg-surface p-2"
               >
                 <div className="flex items-center gap-2">
                   {open ? (
@@ -142,10 +138,10 @@ export function UseCaseIdeasPanel({
                       value={uc.name}
                       placeholder={t.name}
                       onChange={(e) => patchAt(i, { name: e.target.value })}
-                      className="flex-1 rounded-md border border-slate-300 px-2 py-1 text-sm font-medium dark:border-slate-700 dark:bg-slate-950"
+                      className="flex-1 rounded-md border border-border bg-surface px-2 py-1 text-sm font-medium"
                     />
                   ) : (
-                    <span className="flex-1 truncate text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <span className="flex-1 truncate text-sm font-medium text-foreground">
                       {uc.name || t.untitled}
                     </span>
                   )}
@@ -154,7 +150,7 @@ export function UseCaseIdeasPanel({
                     aria-label={open ? t.done : t.edit}
                     title={open ? t.done : t.edit}
                     onClick={() => setOpenIdx(open ? null : i)}
-                    className={open ? `${iconButtonClass} bg-slate-100 dark:bg-slate-800` : iconButtonClass}
+                    className={open ? `${iconButtonClass} bg-surface-muted` : iconButtonClass}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
@@ -163,7 +159,7 @@ export function UseCaseIdeasPanel({
                     aria-label={t.remove}
                     title={t.remove}
                     onClick={() => removeAt(i)}
-                    className={`${iconButtonClass} hover:text-rose-600`}
+                    className={`${iconButtonClass} hover:text-danger`}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -176,7 +172,7 @@ export function UseCaseIdeasPanel({
                       placeholder={t.description}
                       rows={2}
                       onChange={(e) => patchAt(i, { description: e.target.value })}
-                      className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+                      className="w-full rounded-md border border-border bg-surface px-2 py-1 text-sm"
                     />
                     <textarea
                       aria-label={t.rationale}
@@ -184,7 +180,7 @@ export function UseCaseIdeasPanel({
                       placeholder={t.rationale}
                       rows={2}
                       onChange={(e) => patchAt(i, { impactRationale: e.target.value })}
-                      className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+                      className="w-full rounded-md border border-border bg-surface px-2 py-1 text-sm"
                     />
                     <input
                       aria-label={t.kpis}
@@ -197,7 +193,7 @@ export function UseCaseIdeasPanel({
                           .filter(Boolean);
                         patchAt(i, { expectedKpis: kpis.length > 0 ? kpis : undefined });
                       }}
-                      className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+                      className="w-full rounded-md border border-border bg-surface px-2 py-1 text-sm"
                     />
                   </div>
                 )}

@@ -25,6 +25,7 @@ export type Dictionary = {
     settings: string;
     scan: string;
     benchmark: string;
+    searchPlaceholder: string;
   };
   common: {
     new: string;
@@ -75,6 +76,42 @@ export type Dictionary = {
     createNew: string;
     name: string;
     nameLabel: string;
+  };
+  portfolio: {
+    stage: string;
+    progress: string;
+    updated: string;
+    search: string;
+    allStages: string;
+    allDomains: string;
+    viewTable: string;
+    viewCards: string;
+    viewKanban: string;
+    statProjects: string;
+    statCandidates: string;
+    statInDesign: string;
+    statInProduction: string;
+    noResults: string;
+    owners: string;
+    importLabel: string;
+    domainsLabel: string;
+  };
+  analytics: {
+    title: string;
+    funnelTitle: string;
+    stageCandidates: string;
+    stageScreened: string;
+    stageDesign: string;
+    stageMvp: string;
+    stageProduction: string;
+    byFunctionTitle: string;
+    passed: string;
+    failed: string;
+    scatterTitle: string;
+    axisImpact: string;
+    axisEffort: string;
+    unassigned: string;
+    noData: string;
   };
   impactSizing: {
     title: string;
@@ -311,6 +348,11 @@ export type Dictionary = {
     colMaturity: string;
     colTech: string;
     colStatus: string;
+    colOwner: string;
+    workspace: string;
+    categories: string;
+    maturityLayer: string;
+    entries: string;
     addUseCase: string;
     editUseCase: string;
     fieldName: string;
@@ -325,6 +367,15 @@ export type Dictionary = {
     fieldReferences: string;
     kpisHint: string;
     objectivesHint: string;
+    kpiMetricsTitle: string;
+    kpiMetric: string;
+    kpiBaseline: string;
+    kpiTarget: string;
+    kpiUnit: string;
+    kpiSource: string;
+    addKpi: string;
+    noKpis: string;
+    kpiNotes: string;
     deleteConfirm: string;
     saveError: string;
     requiredFields: string;
@@ -384,6 +435,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       settings: "Settings",
       scan: "Scan",
       benchmark: "Benchmark",
+      searchPlaceholder: "Search projects, use cases…",
     },
     common: {
       new: "New",
@@ -434,6 +486,42 @@ export const dictionaries: Record<Locale, Dictionary> = {
       createNew: "New Project",
       name: "Project",
       nameLabel: "Project name",
+    },
+    portfolio: {
+      stage: "Stage",
+      progress: "Progress",
+      updated: "Updated",
+      search: "Search projects",
+      allStages: "All stages",
+      allDomains: "All domains",
+      viewTable: "Table",
+      viewCards: "Cards",
+      viewKanban: "Kanban",
+      statProjects: "Projects",
+      statCandidates: "Candidates",
+      statInDesign: "In design",
+      statInProduction: "In production",
+      noResults: "No projects match these filters.",
+      owners: "Owners",
+      importLabel: "Import",
+      domainsLabel: "domains",
+    },
+    analytics: {
+      title: "Portfolio analytics",
+      funnelTitle: "Roadmap funnel",
+      stageCandidates: "Candidates",
+      stageScreened: "Screened",
+      stageDesign: "In design",
+      stageMvp: "MVP",
+      stageProduction: "Production",
+      byFunctionTitle: "Candidates by function",
+      passed: "Screened",
+      failed: "Below threshold",
+      scatterTitle: "Impact vs. effort",
+      axisImpact: "Impact",
+      axisEffort: "Effort",
+      unassigned: "Unassigned",
+      noData: "Not enough data yet.",
     },
     impactSizing: {
       title: "Roadmap Prioritization",
@@ -666,8 +754,13 @@ export const dictionaries: Record<Locale, Dictionary> = {
       colFunction: "Function",
       colWorkflow: "Workflow",
       colMaturity: "Maturity",
-      colTech: "Tech",
+      colTech: "Category",
       colStatus: "Status",
+      colOwner: "Owner",
+      workspace: "Workspace",
+      categories: "Categories",
+      maturityLayer: "Maturity layer",
+      entries: "entries",
       addUseCase: "Add use case",
       editUseCase: "Edit use case",
       fieldName: "Name",
@@ -682,6 +775,15 @@ export const dictionaries: Record<Locale, Dictionary> = {
       fieldReferences: "References & Intelligence",
       kpisHint: "One KPI per line.",
       objectivesHint: "One objective per line.",
+      kpiMetricsTitle: "Impact KPIs",
+      kpiMetric: "Metric",
+      kpiBaseline: "Baseline",
+      kpiTarget: "Target",
+      kpiUnit: "Unit",
+      kpiSource: "Source",
+      addKpi: "Add KPI",
+      noKpis: "No KPIs defined yet.",
+      kpiNotes: "Notes",
       deleteConfirm: "Delete this use case? This cannot be undone.",
       saveError: "Could not save the use case.",
       requiredFields: "Title and Owner are required.",
@@ -739,6 +841,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       settings: "设置",
       scan: "扫描",
       benchmark: "基准",
+      searchPlaceholder: "搜索项目、用例…",
     },
     common: {
       new: "新建",
@@ -789,6 +892,42 @@ export const dictionaries: Record<Locale, Dictionary> = {
       createNew: "新建项目",
       name: "项目",
       nameLabel: "项目名称",
+    },
+    portfolio: {
+      stage: "阶段",
+      progress: "进度",
+      updated: "更新于",
+      search: "搜索项目",
+      allStages: "全部阶段",
+      allDomains: "全部领域",
+      viewTable: "表格",
+      viewCards: "卡片",
+      viewKanban: "看板",
+      statProjects: "项目",
+      statCandidates: "候选流程",
+      statInDesign: "设计中",
+      statInProduction: "生产中",
+      noResults: "没有符合筛选条件的项目。",
+      owners: "负责人",
+      importLabel: "导入",
+      domainsLabel: "个领域",
+    },
+    analytics: {
+      title: "组合分析",
+      funnelTitle: "路线图漏斗",
+      stageCandidates: "候选流程",
+      stageScreened: "已筛选",
+      stageDesign: "设计中",
+      stageMvp: "MVP",
+      stageProduction: "生产",
+      byFunctionTitle: "按职能分布",
+      passed: "已通过",
+      failed: "未达标",
+      scatterTitle: "影响 vs 投入",
+      axisImpact: "影响",
+      axisEffort: "投入",
+      unassigned: "未分配",
+      noData: "数据不足。",
     },
     impactSizing: {
       title: "路线图优先级",
@@ -1021,8 +1160,13 @@ export const dictionaries: Record<Locale, Dictionary> = {
       colFunction: "职能",
       colWorkflow: "工作流",
       colMaturity: "成熟度",
-      colTech: "技术",
+      colTech: "类别",
       colStatus: "状态",
+      colOwner: "负责人",
+      workspace: "工作区",
+      categories: "类别",
+      maturityLayer: "成熟度层级",
+      entries: "条目",
       addUseCase: "新增用例",
       editUseCase: "编辑用例",
       fieldName: "名称",
@@ -1037,6 +1181,15 @@ export const dictionaries: Record<Locale, Dictionary> = {
       fieldReferences: "参考与情报",
       kpisHint: "每行一个 KPI。",
       objectivesHint: "每行一个目标。",
+      kpiMetricsTitle: "影响 KPI",
+      kpiMetric: "指标",
+      kpiBaseline: "基线",
+      kpiTarget: "目标值",
+      kpiUnit: "单位",
+      kpiSource: "来源",
+      addKpi: "添加 KPI",
+      noKpis: "尚未定义 KPI。",
+      kpiNotes: "备注",
       deleteConfirm: "确定删除此用例？此操作无法撤销。",
       saveError: "无法保存该用例。",
       requiredFields: "标题和负责人为必填项。",

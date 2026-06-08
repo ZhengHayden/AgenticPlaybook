@@ -9,8 +9,27 @@ import type { ReadinessSuggestions } from "@/lib/understanding-agent";
 import { screenCriteria, SCREEN_PASS_THRESHOLD, SCREEN_TOTAL, type ScreenCriterionId } from "@/content/binary-screen";
 import { ToolDrawer } from "@/components/tool-drawer";
 import { InlineAnchor } from "@/components/inline-anchor";
+import { StatusChip } from "@/components/ui/status-chip";
+import { ScoreCell } from "@/components/ui/score-cell";
+import { Card } from "@/components/ui/card";
 import { UseCaseIdeasPanel } from "../_components/use-case-ideas-panel";
-import { ChevronDown, ChevronRight, Sparkles, FileText, Upload, X, Pencil, Check, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Sparkles,
+  FileText,
+  Upload,
+  X,
+  Pencil,
+  Check,
+  Trash2,
+  Database,
+  Repeat2,
+  UserCheck,
+  BadgeCheck,
+  ShieldCheck,
+  type LucideIcon,
+} from "lucide-react";
 
 interface ScreenMatrixProps {
   projectId: string;
@@ -20,10 +39,25 @@ interface ScreenMatrixProps {
 /** Sentinel filter value for candidates with no business function set. */
 const UNASSIGNED = "__unassigned__";
 
+/**
+ * Per-criterion icon + Latin abbreviation for the compact column headers
+ * (proposal §5.4). The abbreviation stays Latin so it survives EN/中 drift
+ * (§6); the full label is available via the header title + `i` popover.
+ */
+const CRITERION_META: Record<ScreenCriterionId, { icon: LucideIcon; abbr: string }> = {
+  documentability: { icon: FileText, abbr: "DOC" },
+  dataAccessibility: { icon: Database, abbr: "DATA" },
+  executionVolume: { icon: Repeat2, abbr: "VOL" },
+  processOwner: { icon: UserCheck, abbr: "OWN" },
+  outputQuality: { icon: BadgeCheck, abbr: "QLTY" },
+  processStability: { icon: ShieldCheck, abbr: "STAB" },
+};
+
+// Semantic state tokens (§4.1): ready = passed gate, block = failed gate.
 const yesBadge =
-  "inline-flex h-7 w-7 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300";
+  "inline-flex h-7 w-7 items-center justify-center rounded-md bg-state-ready-bg text-state-ready";
 const noBadge =
-  "inline-flex h-7 w-7 items-center justify-center rounded-md bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300";
+  "inline-flex h-7 w-7 items-center justify-center rounded-md bg-state-block-bg text-state-block";
 
 const iconBtn =
   "inline-flex h-7 w-7 items-center justify-center rounded-md text-slate-400 disabled:opacity-40";
@@ -204,10 +238,10 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
     <div className="space-y-4">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold">
+          <h2 className="font-display text-lg font-semibold tracking-tight">
             {en ? "Layer 1 · Binary Readiness Screen" : "Layer 1 · 二元准备度筛选"}
           </h2>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-ink-muted">
             {en
               ? `6 binary gates · Pass threshold: ${SCREEN_PASS_THRESHOLD} of ${SCREEN_TOTAL} Yes (one allowed exception requires mitigation plan)`
               : `6 项二元判断 · 通过门槛: ${SCREEN_TOTAL} 项中 ≥${SCREEN_PASS_THRESHOLD} 项 Yes(可有 1 项例外,需附缓解方案)`}
@@ -227,19 +261,19 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
       </header>
 
       {error && (
-        <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+        <p className="rounded-md border border-danger/30 bg-danger-soft p-2 text-xs text-danger">
           {error}
         </p>
       )}
 
       <div className="flex flex-wrap items-center gap-2">
-        <label className="text-xs font-medium text-slate-600 dark:text-slate-400">
+        <label className="text-xs font-medium text-ink-muted">
           {en ? "Business function" : "业务职能"}
         </label>
         <select
           value={fnFilter}
           onChange={(e) => setFnFilter(e.target.value)}
-          className="rounded-md border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+          className="rounded-md border border-border bg-surface px-2 py-1 text-sm"
         >
           <option value="all">{en ? "All functions" : "全部职能"}</option>
           {distinctFns.map((f) => (
@@ -250,40 +284,58 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
           {hasUnassigned && <option value={UNASSIGNED}>{en ? "Unassigned" : "未分配"}</option>}
         </select>
         {fnFilter !== "all" && (
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-ink-faint">
             {en ? `${visible.length} shown` : `显示 ${visible.length} 个`}
           </span>
         )}
       </div>
 
-      <div className="overflow-x-auto rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <Card className="overflow-x-auto">
         <table className="w-full min-w-[860px] text-sm">
-          <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
+          <thead className="border-b border-border bg-surface-muted/50 text-left eyebrow">
             <tr>
               <th className="w-8 px-3 py-2">
                 <span className="sr-only">{en ? "Expand" : "展开"}</span>
               </th>
               <th className="px-3 py-2 font-medium">{en ? "Business function" : "业务职能"}</th>
               <th className="px-3 py-2 font-medium">{en ? "Workflow" : "工作流"}</th>
-              {screenCriteria.map((cr) => (
-                <th key={cr.id} className="px-3 py-2 font-medium" title={cr.shortLabel[locale]}>
-                  <div className="flex items-center gap-1">
-                    <span className="line-clamp-2 leading-tight">{cr.shortLabel[locale]}</span>
-                    <InlineAnchor
-                      label={cr.question[locale]}
-                      body={
-                        <>
-                          <span className="font-semibold">{en ? "Pass:" : "通过:"}</span>{" "}
-                          {cr.passExamples[locale][0]}
-                          <br />
-                          <span className="font-semibold">{en ? "Fail:" : "未通过:"}</span>{" "}
-                          {cr.failExamples[locale][0]}
-                        </>
-                      }
-                    />
-                  </div>
-                </th>
-              ))}
+              {screenCriteria.map((cr) => {
+                const meta = CRITERION_META[cr.id];
+                const Icon = meta.icon;
+                return (
+                  <th
+                    key={cr.id}
+                    className="px-2 py-2 text-center font-medium"
+                    title={cr.shortLabel[locale]}
+                  >
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="flex items-center gap-1">
+                        <Icon className="h-4 w-4 text-slate-400" strokeWidth={1.5} aria-hidden />
+                        <InlineAnchor
+                          label={cr.shortLabel[locale]}
+                          body={
+                            <>
+                              <span className="block italic text-slate-500">{cr.question[locale]}</span>
+                              <span className="mt-1 block">
+                                <span className="font-semibold">{en ? "Pass:" : "通过:"}</span>{" "}
+                                {cr.passExamples[locale][0]}
+                              </span>
+                              <span className="block">
+                                <span className="font-semibold">{en ? "Fail:" : "未通过:"}</span>{" "}
+                                {cr.failExamples[locale][0]}
+                              </span>
+                            </>
+                          }
+                        />
+                      </span>
+                      <span className="text-[10px] font-semibold tracking-wide text-slate-500">
+                        {meta.abbr}
+                      </span>
+                      <span className="sr-only">{cr.shortLabel[locale]}</span>
+                    </div>
+                  </th>
+                );
+              })}
               <th className="px-3 py-2 text-right font-medium">{en ? "Score" : "得分"}</th>
               <th className="px-3 py-2 font-medium">{en ? "Status" : "状态"}</th>
               <th className="px-3 py-2 text-right font-medium">
@@ -291,7 +343,7 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-border">
             {visible.map((c) => {
               const score = scoreFor(c.id);
               const pass = score >= SCREEN_PASS_THRESHOLD;
@@ -299,28 +351,28 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
               const editing = editingId === c.id;
               return (
                 <Fragment key={c.id}>
-                  <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <tr className="hover:bg-surface-muted/40">
                     <td className="px-3 py-3 align-top">
                       <button
                         type="button"
                         onClick={() => setExpandedRow(expanded ? null : c.id)}
-                        className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                        className="text-ink-faint hover:text-foreground"
                         aria-label={en ? "Toggle evidence" : "切换证据"}
                       >
                         {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                       </button>
                     </td>
-                    <td className="px-3 py-3 align-top text-slate-600 dark:text-slate-300">
-                      {fnOf(c) || <span className="text-slate-400">—</span>}
+                    <td className="px-3 py-3 align-top text-ink-muted">
+                      {fnOf(c) || <span className="text-ink-faint">—</span>}
                     </td>
                     <td className="px-3 py-3 align-top">
                       <div className="font-medium">{c.name}</div>
-                      <div className="text-xs text-slate-500">{c.sourceSystem}</div>
+                      <div className="text-xs text-ink-faint">{c.sourceSystem}</div>
                     </td>
                     {screenCriteria.map((cr) => {
                       const a = answers[c.id][cr.id];
                       return (
-                        <td key={cr.id} className="px-3 py-3 align-top">
+                        <td key={cr.id} className="px-2 py-3 text-center align-middle">
                           {editing ? (
                             <button
                               type="button"
@@ -341,21 +393,19 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
                         </td>
                       );
                     })}
-                    <td className="px-3 py-3 text-right align-top font-mono">
-                      {score}/{SCREEN_TOTAL}
+                    <td className="px-3 py-3 align-middle">
+                      <ScoreCell
+                        score={score}
+                        total={SCREEN_TOTAL}
+                        items={screenCriteria.map((cr) => answers[c.id][cr.id].yes)}
+                      />
                     </td>
-                    <td className="px-3 py-3 align-top">
-                      <span
-                        className={
-                          pass
-                            ? "inline-flex rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
-                            : "inline-flex rounded-md bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"
-                        }
-                      >
+                    <td className="px-3 py-3 align-middle">
+                      <StatusChip state={pass ? "ready" : "block"}>
                         {pass ? "PASS" : "FAIL"}
-                      </span>
+                      </StatusChip>
                     </td>
-                    <td className="px-3 py-3 text-right align-top">
+                    <td className="px-3 py-3 text-right align-middle">
                       {editing ? (
                         <div className="inline-flex items-center gap-1">
                           <button
@@ -452,10 +502,10 @@ export function ScreenMatrix({ projectId, candidates }: ScreenMatrixProps) {
             })}
           </tbody>
         </table>
-      </div>
+      </Card>
 
-      <div className="flex items-center justify-between rounded-md border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-800 dark:bg-slate-900">
-        <span className="text-slate-600 dark:text-slate-400">
+      <div className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3 text-sm">
+        <span className="text-ink-muted">
           {en
             ? `${passCount} of ${candidates.length} advance to Layer 2 (2x2 Funnel)`
             : `${candidates.length} 个候选中有 ${passCount} 个进入 Layer 2 (2x2 漏斗)`}
@@ -494,6 +544,11 @@ function EvidencePanel({
   const [agentLoading, setAgentLoading] = useState(false);
   const [agentError, setAgentError] = useState<string | null>(null);
   const [notStated, setNotStated] = useState<ReadonlyArray<ScreenCriterionId>>([]);
+  // Per-criterion accordion overrides; falls back to the default-open rule
+  // (open when the gate failed or the dimension was not stated in the SOP).
+  const [manualOpen, setManualOpen] = useState<Partial<Record<ScreenCriterionId, boolean>>>({});
+  const toggleCard = (id: ScreenCriterionId, currentlyOpen: boolean) =>
+    setManualOpen((prev) => ({ ...prev, [id]: !currentlyOpen }));
 
   const onFileSelected = async (file: File | undefined) => {
     if (!file) return;
@@ -597,7 +652,7 @@ function EvidencePanel({
               onClick={onRunAgent}
               disabled={!sopFile || agentLoading}
               title={sopFile ? undefined : en ? "Upload a SOP first" : "请先上传 SOP"}
-              className="inline-flex items-center gap-1 rounded-md border border-brand-100 px-2 py-1 text-xs text-brand-600 hover:bg-brand-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-brand-800/50 dark:text-brand-300 dark:hover:bg-brand-800/30"
+              className="inline-flex items-center gap-1.5 rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 disabled:cursor-not-allowed disabled:bg-brand-600/40"
             >
               <Sparkles className="h-3.5 w-3.5" />
               {agentLoading
@@ -634,77 +689,91 @@ function EvidencePanel({
         {screenCriteria.map((cr) => {
           const a = answers[cr.id];
           const isNotStated = notStated.includes(cr.id);
+          // Pre-open the cards that need attention; collapse the passing ones
+          // into a "证据 · Yes" accordion to reduce noise (proposal §5.4).
+          const defaultOpen = !a.yes || isNotStated;
+          const open = manualOpen[cr.id] ?? defaultOpen;
           return (
             <div
               key={cr.id}
               className={
-                "rounded-md border p-3 " +
+                "rounded-md border " +
                 (a.yes
-                  ? "border-emerald-200 bg-emerald-50/40 dark:border-emerald-900/40 dark:bg-emerald-950/20"
-                  : "border-rose-200 bg-rose-50/40 dark:border-rose-900/40 dark:bg-rose-950/20")
+                  ? "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+                  : "border-state-block/30 bg-state-block-bg/60 dark:border-rose-900/40 dark:bg-rose-950/20")
               }
             >
-              <div className="mb-1 flex items-center justify-between gap-2 text-xs">
-                <span className="font-semibold">{cr.shortLabel[locale]}</span>
-                <div className="flex items-center gap-1">
-                  {isNotStated && (
-                    <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
-                      {en ? "not stated in SOP" : "SOP 未提及"}
-                    </span>
+              <button
+                type="button"
+                onClick={() => toggleCard(cr.id, open)}
+                aria-expanded={open}
+                className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-xs"
+              >
+                <span className="flex items-center gap-1.5 font-semibold">
+                  {open ? (
+                    <ChevronDown className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                  ) : (
+                    <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-400" />
                   )}
-                  <span
-                    className={
-                      a.yes
-                        ? "rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
-                        : "rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"
-                    }
-                  >
-                    {a.yes ? "Yes" : "No"}
-                  </span>
-                </div>
-              </div>
-              {cr.factField && (
-                <label className="block text-xs">
-                  <span className="text-slate-500">{cr.factField[locale]}</span>
-                  <input
-                    value={a.factValue ?? ""}
-                    disabled={readOnly}
-                    onChange={(e) => onUpdate(cr.id, { factValue: e.target.value })}
-                    placeholder={cr.factField.placeholder}
-                    className={fieldClass}
-                  />
-                </label>
-              )}
-              <label className="mt-2 block text-xs">
-                <span className="text-slate-500">
-                  {a.yes ? (en ? "Evidence" : "证据") : (en ? "Gap description" : "缺口描述")}
+                  {cr.shortLabel[locale]}
                 </span>
-                <textarea
-                  rows={2}
-                  value={a.evidence ?? ""}
-                  disabled={readOnly}
-                  onChange={(e) => onUpdate(cr.id, { evidence: e.target.value })}
-                  className={`${fieldClass} resize-y`}
-                />
-              </label>
-              {!a.yes && (
-                <label className="mt-2 block text-xs">
-                  <span className="text-slate-500">
-                    {en ? "Mitigation feasibility" : "缓解方案可行性"}
-                  </span>
-                  <textarea
-                    rows={2}
-                    value={a.mitigation ?? ""}
-                    disabled={readOnly}
-                    onChange={(e) => onUpdate(cr.id, { mitigation: e.target.value })}
-                    placeholder={
-                      en
-                        ? "Describe gap + mitigation; only 1 No allowed."
-                        : "描述缺口与缓解方案;仅允许 1 项 No。"
-                    }
-                    className={`${fieldClass} resize-y`}
-                  />
-                </label>
+                <span className="flex items-center gap-1">
+                  {isNotStated && (
+                    <StatusChip state="warn" size="sm">
+                      {en ? "not stated" : "未提及"}
+                    </StatusChip>
+                  )}
+                  <StatusChip state={a.yes ? "ready" : "block"} size="sm">
+                    {a.yes ? (en ? "Yes" : "是") : en ? "No" : "否"}
+                  </StatusChip>
+                </span>
+              </button>
+              {open && (
+                <div className="space-y-2 px-3 pb-3">
+                  {cr.factField && (
+                    <label className="block text-xs">
+                      <span className="text-slate-500">{cr.factField[locale]}</span>
+                      <input
+                        value={a.factValue ?? ""}
+                        disabled={readOnly}
+                        onChange={(e) => onUpdate(cr.id, { factValue: e.target.value })}
+                        placeholder={cr.factField.placeholder}
+                        className={fieldClass}
+                      />
+                    </label>
+                  )}
+                  <label className="block text-xs">
+                    <span className="text-slate-500">
+                      {a.yes ? (en ? "Evidence" : "证据") : en ? "Gap description" : "缺口描述"}
+                    </span>
+                    <textarea
+                      rows={2}
+                      value={a.evidence ?? ""}
+                      disabled={readOnly}
+                      onChange={(e) => onUpdate(cr.id, { evidence: e.target.value })}
+                      className={`${fieldClass} resize-y`}
+                    />
+                  </label>
+                  {!a.yes && (
+                    <label className="block text-xs">
+                      <span className="text-slate-500">
+                        {en ? "Mitigation feasibility" : "缓解方案可行性"}
+                      </span>
+                      <textarea
+                        rows={2}
+                        value={a.mitigation ?? ""}
+                        disabled={readOnly}
+                        onChange={(e) => onUpdate(cr.id, { mitigation: e.target.value })}
+                        placeholder={
+                          en
+                            ? "Describe gap + mitigation; only 1 No allowed."
+                            : "描述缺口与缓解方案;仅允许 1 项 No。"
+                        }
+                        className={`${fieldClass} resize-y`}
+                      />
+                    </label>
+                  )}
+                </div>
               )}
             </div>
           );

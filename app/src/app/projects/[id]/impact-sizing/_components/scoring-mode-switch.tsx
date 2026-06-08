@@ -44,7 +44,7 @@ export function ScoringModeSwitch({ projectId, mode }: ScoringModeSwitchProps) {
 
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      <span className="text-sm font-medium text-slate-600 dark:text-slate-400">{t.label}</span>
+      <span className="text-sm font-medium text-ink-muted">{t.label}</span>
       <SegTabs<ScoringMode>
         value={value}
         onChange={onChange}
@@ -53,7 +53,7 @@ export function ScoringModeSwitch({ projectId, mode }: ScoringModeSwitchProps) {
           { value: "useCase", label: t.useCase },
         ]}
       />
-      <span className="text-xs text-slate-400">
+      <span className="text-xs text-ink-faint">
         {status === "saving" ? "…" : t.notice}
       </span>
     </div>

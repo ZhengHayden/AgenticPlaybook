@@ -16,11 +16,13 @@ interface WorkflowPortfolioProps {
 }
 
 // Static badge classes per quadrant (Tailwind cannot purge-safely interpolate).
+// Mapped to the reference priority-quadrant tokens: q1 Quick Win (green),
+// q2 Sponsor & Align (blue), q3 Invest & Prove (amber), q4 Defer (slate).
 const quadrantBadge: Record<QuadrantId, string> = {
-  quickWin: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  sponsorAlign: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  investProve: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
-  deferMature: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
+  quickWin: "bg-q1-soft text-q1",
+  sponsorAlign: "bg-q2-soft text-q2",
+  investProve: "bg-q3-soft text-q3",
+  deferMature: "bg-q4-soft text-q4",
 };
 
 const WORKFLOW_STATUSES: ReadonlyArray<WorkflowStatus> = [
@@ -118,10 +120,10 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
     <section>
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold tracking-tight">
+          <h2 className="font-display text-lg font-semibold tracking-tight">
             {locale === "en" ? "Agentic Roadmap" : "智能体路线图"}
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="mt-0.5 text-xs text-ink-muted">
             {locale === "en"
               ? "Workflows ranked by their origin candidate's Priority Score."
               : "按来源候选的优先级评分排序的工作流。"}
@@ -130,7 +132,7 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
         <button
           type="button"
           onClick={() => setShowAdd(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-accent-violet px-3.5 py-2 text-sm font-semibold text-white transition hover:opacity-90"
         >
           <Plus className="h-4 w-4" /> {locale === "en" ? "Add workflow" : "添加工作流"}
         </button>
@@ -231,9 +233,9 @@ export function WorkflowPortfolio({ project }: WorkflowPortfolioProps) {
           </p>
         </div>
       ) : (
-        <div className="mt-3 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="mt-3 overflow-x-auto rounded-xl border border-border bg-surface">
           <table className="w-full min-w-[900px] text-sm">
-            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
+            <thead className="bg-surface-muted/50 text-left text-xs uppercase tracking-wide text-ink-faint">
               <tr>
                 <th className="w-8 px-3 py-2 font-medium">#</th>
                 <th className="px-3 py-2 font-medium">{locale === "en" ? "Function" : "职能"}</th>

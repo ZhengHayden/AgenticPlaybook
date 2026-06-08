@@ -120,7 +120,7 @@ export function UseCaseScoring({ projectId, candidates, allCandidates }: UseCase
 
   if (candidates.length === 0) {
     return (
-      <p className="rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900">
+      <p className="rounded-xl border border-border bg-surface p-4 text-sm text-ink-muted">
         {en
           ? "No workflows have passed the Readiness Check yet. Complete a workflow's Readiness Check (≥5 of 6) first."
           : "尚无通过准备度检查的工作流。请先完成工作流的准备度检查(6 项中 ≥5 项)。"}
@@ -164,10 +164,10 @@ export function UseCaseScoring({ projectId, candidates, allCandidates }: UseCase
     <div className="space-y-4">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold">
+          <h2 className="font-display text-base font-semibold">
             {en ? "Layer 3 · Detailed Scoring (by use case)" : "Layer 3 · 详细评分(按用例)"}
           </h2>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-ink-muted">
             {en
               ? "Score each use case; a workflow ranks by its best use case."
               : "对每个用例评分;工作流按其最佳用例排序。"}
@@ -197,7 +197,7 @@ export function UseCaseScoring({ projectId, candidates, allCandidates }: UseCase
       </header>
 
       {error && (
-        <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+        <p className="rounded-md border border-danger/30 bg-danger-soft p-2 text-xs text-danger">
           {error}
         </p>
       )}
@@ -208,16 +208,16 @@ export function UseCaseScoring({ projectId, candidates, allCandidates }: UseCase
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h3 className="text-sm font-semibold">{selected.name}</h3>
+              <h3 className="font-display text-sm font-semibold">{selected.name}</h3>
               {selected.businessFunction && (
-                <p className="text-xs text-slate-500">{selected.businessFunction}</p>
+                <p className="text-xs text-ink-muted">{selected.businessFunction}</p>
               )}
             </div>
             <span className="inline-flex items-center gap-2 text-xs">
-              <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono dark:bg-slate-800">
+              <span className="rounded-md bg-surface-muted px-2 py-0.5 font-mono">
                 {en ? "Top" : "最高"} {roll.priority.toFixed(2)}
               </span>
-              <span className="text-slate-500">
+              <span className="text-ink-muted">
                 {en
                   ? `${roll.aboveFloor} of ${roll.total} ≥ ${PRIORITY_FLOOR}`
                   : `${roll.total} 个中 ${roll.aboveFloor} 个 ≥ ${PRIORITY_FLOOR}`}
@@ -226,7 +226,7 @@ export function UseCaseScoring({ projectId, candidates, allCandidates }: UseCase
           </div>
 
           {selectedUcs.length === 0 ? (
-            <p className="rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-400 dark:border-slate-800 dark:bg-slate-900">
+            <p className="rounded-xl border border-border bg-surface p-4 text-sm text-ink-faint">
               {en ? "Add use-case ideas in Readiness first." : "请先在准备度检查中添加用例想法。"}
             </p>
           ) : (
@@ -242,12 +242,12 @@ export function UseCaseScoring({ projectId, candidates, allCandidates }: UseCase
                       onClick={() => setActiveId(uc.id)}
                       className={
                         active
-                          ? "rounded-md bg-brand-600 px-3 py-1 text-xs font-medium text-white"
-                          : "rounded-md bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                          ? "rounded-md bg-primary px-3 py-1 text-xs font-medium text-white"
+                          : "rounded-md bg-surface-muted px-3 py-1 text-xs font-medium text-ink-muted hover:text-foreground"
                       }
                     >
                       {uc.name || (en ? "Untitled" : "未命名")}
-                      {!scored && <span className="ml-1 text-amber-400">•</span>}
+                      {!scored && <span className="ml-1 text-warning">•</span>}
                     </button>
                   );
                 })}

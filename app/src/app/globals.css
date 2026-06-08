@@ -1,38 +1,212 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
+/* ============================================================================
+   Agentic Leap palette (Req/Agentic Leap/src/index.css), ported to the app's
+   Tailwind v4 token system. Semantic HSL triplets live on :root so dark mode
+   (prefers-color-scheme) can mirror them; @theme inline below maps them to the
+   color/​font utilities. Legacy token names (brand-*, state-*, ink, surface,
+   hairline, canvas, subtle) are re-pointed onto the new values so every
+   existing component — and /knowledge — adopts the look with no breakage.
+   ============================================================================ */
+
 :root {
-  /* SLDS canvas grey — flat, paired with the body bg in layout.tsx */
-  --background: #f3f3f3;
-  --foreground: #0f172a;
-}
+  /* Neutral canvas & surfaces */
+  --background: 220 20% 98%;
+  --surface: 0 0% 100%;
+  --surface-muted: 220 16% 96%;
+  --border: 220 13% 91%;
+  --border-strong: 220 13% 84%;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Ink */
+  --foreground: 222 47% 11%;
+  --muted-foreground: 220 9% 46%;
+  --faint-foreground: 220 9% 60%;
 
-  /* Brand — Salesforce Lightning blue ramp. Single accent; color is
-     reserved for actions and state, never decoration. */
-  --color-brand-50: #eaf5fe;
-  --color-brand-100: #cfe9fe;
-  --color-brand-300: #1b96ff; /* focus ring */
-  --color-brand-600: #0176d3; /* primary action / links */
-  --color-brand-700: #014486; /* hover / pressed */
-  --color-brand-800: #032d60; /* darkest accent */
+  /* Brand */
+  --primary: 222 89% 55%;
+  --primary-deep: 224 76% 38%;
+  --primary-soft: 222 89% 96%;
+  --primary-ring: 222 89% 72%;
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  /* AI / agentic accent */
+  --accent-violet: 258 90% 66%;
+  --accent-violet-soft: 258 90% 96%;
+
+  /* Semantic state */
+  --success: 152 60% 40%;
+  --success-soft: 150 55% 94%;
+  --warning: 35 92% 50%;
+  --warning-soft: 38 95% 94%;
+  --danger: 0 78% 55%;
+  --danger-soft: 0 85% 96%;
+  --info: 199 89% 48%;
+  --info-soft: 199 89% 95%;
+
+  /* Priority quadrants — Quick Win / Sponsor & Align / Invest & Prove / Defer */
+  --q1: 152 60% 40%;
+  --q1-soft: 150 55% 94%;
+  --q2: 222 89% 55%;
+  --q2-soft: 222 89% 96%;
+  --q3: 35 92% 50%;
+  --q3-soft: 38 95% 94%;
+  --q4: 220 9% 46%;
+  --q4-soft: 220 16% 94%;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #020617; /* slate-950 */
-    --foreground: #f8fafc;
+    --background: 222 47% 8%;
+    --surface: 222 47% 11%;
+    --surface-muted: 222 47% 14%;
+    --border: 222 47% 18%;
+    --border-strong: 222 47% 24%;
+
+    --foreground: 210 40% 98%;
+    --muted-foreground: 215 20% 65%;
+    --faint-foreground: 215 16% 52%;
+
+    --primary: 222 89% 62%;
+    --primary-deep: 224 76% 52%;
+    --primary-soft: 222 60% 18%;
+    --primary-ring: 222 89% 60%;
+
+    --accent-violet: 258 90% 70%;
+    --accent-violet-soft: 258 40% 20%;
+
+    --success: 152 55% 50%;
+    --success-soft: 152 40% 16%;
+    --warning: 35 92% 58%;
+    --warning-soft: 35 50% 16%;
+    --danger: 0 78% 62%;
+    --danger-soft: 0 50% 18%;
+    --info: 199 89% 56%;
+    --info-soft: 199 50% 16%;
+
+    --q1: 152 55% 50%;
+    --q1-soft: 152 40% 16%;
+    --q2: 222 89% 62%;
+    --q2-soft: 222 60% 18%;
+    --q3: 35 92% 58%;
+    --q3-soft: 35 50% 16%;
+    --q4: 215 20% 65%;
+    --q4-soft: 222 47% 16%;
   }
 }
 
-/* ---- Gameboard style foundation ---- */
+@theme inline {
+  /* Fonts */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-display: "Inter Tight", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  /* Canvas / surfaces (new names) */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-surface: hsl(var(--surface));
+  --color-surface-muted: hsl(var(--surface-muted));
+
+  /* Canvas / surfaces (legacy names, re-pointed) */
+  --color-canvas: hsl(var(--background));
+  --color-subtle: hsl(var(--surface-muted));
+  --color-hairline: hsl(var(--border));
+  --color-hairline-strong: hsl(var(--border-strong));
+
+  /* Ink (legacy names, re-pointed) */
+  --color-ink: hsl(var(--foreground));
+  --color-ink-muted: hsl(var(--muted-foreground));
+  --color-ink-faint: hsl(var(--faint-foreground));
+
+  /* Borders / inputs / focus ring */
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--border));
+  --color-ring: hsl(var(--primary-ring));
+
+  /* Brand — new `primary` names + legacy `brand-*` ramp re-pointed */
+  --color-primary: hsl(var(--primary));
+  --color-primary-deep: hsl(var(--primary-deep));
+  --color-primary-soft: hsl(var(--primary-soft));
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-brand-50: hsl(var(--primary-soft));
+  --color-brand-100: hsl(var(--primary-soft));
+  --color-brand-300: hsl(var(--primary-ring));
+  --color-brand-600: hsl(var(--primary));
+  --color-brand-700: hsl(var(--primary-deep));
+  --color-brand-800: hsl(var(--primary-deep));
+
+  /* AI accent */
+  --color-accent-violet: hsl(var(--accent-violet));
+  --color-accent-violet-soft: hsl(var(--accent-violet-soft));
+  --color-accent-violet-foreground: hsl(0 0% 100%);
+
+  /* Semantic state — new names */
+  --color-success: hsl(var(--success));
+  --color-success-soft: hsl(var(--success-soft));
+  --color-warning: hsl(var(--warning));
+  --color-warning-soft: hsl(var(--warning-soft));
+  --color-danger: hsl(var(--danger));
+  --color-danger-soft: hsl(var(--danger-soft));
+  --color-info: hsl(var(--info));
+  --color-info-soft: hsl(var(--info-soft));
+
+  /* Semantic state — legacy `state-*` names re-pointed */
+  --color-state-ready: hsl(var(--success));
+  --color-state-ready-bg: hsl(var(--success-soft));
+  --color-state-warn: hsl(var(--warning));
+  --color-state-warn-bg: hsl(var(--warning-soft));
+  --color-state-block: hsl(var(--danger));
+  --color-state-block-bg: hsl(var(--danger-soft));
+  --color-state-info: hsl(var(--info));
+  --color-state-info-bg: hsl(var(--info-soft));
+  --color-state-neutral: hsl(var(--q4));
+  --color-state-neutral-bg: hsl(var(--q4-soft));
+
+  /* Priority quadrants */
+  --color-q1: hsl(var(--q1));
+  --color-q1-soft: hsl(var(--q1-soft));
+  --color-q2: hsl(var(--q2));
+  --color-q2-soft: hsl(var(--q2-soft));
+  --color-q3: hsl(var(--q3));
+  --color-q3-soft: hsl(var(--q3-soft));
+  --color-q4: hsl(var(--q4));
+  --color-q4-soft: hsl(var(--q4-soft));
+
+  /* Radius scale (reference §2.3) */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 1rem;
+}
+
+/* Typography helpers (reference §2.2) */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+.font-mono-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+.eyebrow {
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: hsl(var(--muted-foreground));
+}
+
+body {
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Foundation styles ---- */
 
 /* Slim, rounded scrollbars (light); softened for dark mode. */
 ::-webkit-scrollbar {
@@ -71,12 +245,13 @@ select.heat {
   padding-right: 1.4rem;
 }
 
-/* Card hover — opt-in via the .card-lift class. SLDS-flat: no translate,
-   just a hairline border darken + faint shadow. */
+/* Card hover — opt-in via the .card-lift class. */
 .card-lift {
-  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 .card-lift:hover {
-  border-color: #cbd5e1; /* slate-300 */
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  border-color: hsl(var(--border-strong));
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
 }

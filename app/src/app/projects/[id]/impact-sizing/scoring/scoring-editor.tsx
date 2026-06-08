@@ -66,7 +66,7 @@ function WorkflowScoring({
 
   if (candidates.length === 0) {
     return (
-      <p className="rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900">
+      <p className="rounded-xl border border-border bg-surface p-4 text-sm text-ink-muted">
         {en
           ? "No candidates have passed the Readiness Check yet. Complete a candidate's Readiness Check (≥5 of 6) first."
           : "尚无通过准备度检查的候选。请先在准备度检查页完成候选评估(6 项中 ≥5 项)。"}
@@ -129,10 +129,10 @@ function WorkflowScoring({
     <div className="space-y-4">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold">
+          <h2 className="font-display text-lg font-semibold tracking-tight">
             {locale === "en" ? "Layer 3 · Detailed Scoring" : "Layer 3 · 详细评分"}
           </h2>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-ink-muted">
             {locale === "en"
               ? "Quick Win / Sponsor & Align / Invest & Prove candidates only."
               : "仅 Quick Win / Sponsor & Align / Invest & Prove 候选。"}
@@ -143,7 +143,7 @@ function WorkflowScoring({
             type="button"
             onClick={onSave}
             disabled={status === "saving" || !dirty}
-            className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40"
+            className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-deep disabled:opacity-40"
           >
             {saveLabel}
           </button>
@@ -162,7 +162,7 @@ function WorkflowScoring({
       </header>
 
       {error && (
-        <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+        <p className="rounded-md border border-danger/30 bg-danger-soft p-2 text-xs text-danger">
           {error}
         </p>
       )}
@@ -171,9 +171,9 @@ function WorkflowScoring({
         <ScoringSidebar groups={navGroups} selectedId={candidate.id} onSelect={setSelectedId} />
         <div className="min-w-0 flex-1 space-y-3">
           <div>
-            <h3 className="text-sm font-semibold">{candidate.name}</h3>
+            <h3 className="font-display text-base font-semibold">{candidate.name}</h3>
             {candidate.businessFunction && (
-              <p className="text-xs text-slate-500">{candidate.businessFunction}</p>
+              <p className="text-xs text-ink-muted">{candidate.businessFunction}</p>
             )}
           </div>
           <ScoreUnitEditor value={s} maxDdiRaw={maxDdiRaw} onChange={update} />

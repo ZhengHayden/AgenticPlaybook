@@ -3,6 +3,8 @@
 import type { ReactNode } from "react";
 import { useLocale } from "@/lib/locale-context";
 import { PhasePath, type PhasePathStep } from "@/components/ui/phase-path";
+import { StatTile, type StatTileAccent } from "@/components/ui/stat-tile";
+import { Pill } from "@/components/ui/pill";
 import type { ScoringMode } from "@/content/sample-data";
 import type { ImpactSizingKpis } from "@/content/impact-sizing-kpis";
 import { ScoringModeSwitchSlot } from "./scoring-mode-switch-slot";
@@ -55,53 +57,38 @@ export function ImpactSizingShell({
     { href: `${base}/gate`, label: t.impactSizing.gate },
   ];
 
-  const highlights: Array<{ label: string; value: string; tone?: "brand" }> = [
-    { label: kpiLabel.candidates, value: String(kpis.candidates) },
-    { label: kpiLabel.screened, value: String(kpis.screened) },
-    { label: kpiLabel.notReady, value: String(kpis.notReady) },
+  const highlights: Array<{ label: string; value: string; accent: StatTileAccent }> = [
+    { label: kpiLabel.candidates, value: String(kpis.candidates), accent: "primary" },
+    { label: kpiLabel.screened, value: String(kpis.screened), accent: "success" },
+    { label: kpiLabel.notReady, value: String(kpis.notReady), accent: "warning" },
     {
       label: kpiLabel.top,
       value: kpis.topPriority > 0 ? kpis.topPriority.toFixed(1) : "—",
-      tone: "brand",
+      accent: "violet",
     },
   ];
 
   return (
     <div>
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-baseline gap-3">
-          <h1 className="text-xl font-semibold tracking-tight">{t.phases.impactSizing}</h1>
-          <span className="text-xs text-slate-500">{VARIANT_LABEL[variant][locale]}</span>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <h1 className="font-display text-[28px] font-semibold leading-9 tracking-tight">
+            {t.phases.impactSizing}
+          </h1>
+          <Pill tone="violet">{VARIANT_LABEL[variant][locale]}</Pill>
         </div>
         <ScoringModeSwitchSlot projectId={projectId} mode={scoringMode} />
       </div>
 
       <PhasePath steps={steps} />
 
-      <dl className="mt-4 flex flex-wrap items-stretch gap-px overflow-hidden rounded-md border border-slate-200 bg-slate-200 dark:border-slate-800 dark:bg-slate-800">
+      <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {highlights.map((h) => (
-          <div
-            key={h.label}
-            className="flex-1 bg-white px-4 py-2.5 dark:bg-slate-900"
-            style={{ minWidth: "9rem" }}
-          >
-            <dt className="text-[11px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
-              {h.label}
-            </dt>
-            <dd
-              className={
-                h.tone === "brand"
-                  ? "mt-0.5 text-lg font-bold tabular-nums text-brand-700 dark:text-brand-300"
-                  : "mt-0.5 text-lg font-bold tabular-nums text-slate-800 dark:text-slate-100"
-              }
-            >
-              {h.value}
-            </dd>
-          </div>
+          <StatTile key={h.label} label={h.label} value={h.value} accent={h.accent} />
         ))}
-      </dl>
+      </div>
 
-      <div className="mt-5">{children}</div>
+      <div className="mt-6">{children}</div>
     </div>
   );
 }

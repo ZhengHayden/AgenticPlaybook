@@ -58,29 +58,29 @@ export function ScoringSidebar({ groups, selectedId, onSelect }: ScoringSidebarP
   return (
     <aside className="w-full shrink-0 lg:w-72">
       <div className="relative mb-2">
-        <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+        <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-faint" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={en ? "Search workflows…" : "搜索工作流…"}
           aria-label={en ? "Search workflows" : "搜索工作流"}
-          className="w-full rounded-md border border-slate-200 bg-white py-1.5 pl-7 pr-2 text-sm dark:border-slate-700 dark:bg-slate-950"
+          className="w-full rounded-md border border-border bg-surface py-1.5 pl-7 pr-2 text-sm"
         />
       </div>
 
-      <div className="max-h-[72vh] overflow-y-auto rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <div className="max-h-[72vh] overflow-y-auto rounded-xl border border-border bg-surface">
         {filtered.length === 0 ? (
-          <p className="p-3 text-xs text-slate-400">{en ? "No matches." : "无匹配。"}</p>
+          <p className="p-3 text-xs text-ink-faint">{en ? "No matches." : "无匹配。"}</p>
         ) : (
           filtered.map((g) => {
             const open = q !== "" || !collapsed.has(g.fn);
             const clears = g.rows.filter((r) => r.passesFloor).length;
             return (
-              <div key={g.fn} className="border-b border-slate-100 last:border-b-0 dark:border-slate-800">
+              <div key={g.fn} className="border-b border-border last:border-b-0">
                 <button
                   type="button"
                   onClick={() => toggle(g.fn)}
-                  className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/50"
+                  className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-xs font-semibold text-ink-muted hover:bg-surface-muted/40"
                 >
                   <span className="flex min-w-0 items-center gap-1">
                     {open ? (
@@ -90,7 +90,7 @@ export function ScoringSidebar({ groups, selectedId, onSelect }: ScoringSidebarP
                     )}
                     <span className="truncate">{g.fn}</span>
                   </span>
-                  <span className="shrink-0 text-[10px] font-normal tabular-nums text-slate-400">
+                  <span className="shrink-0 text-[10px] font-normal tabular-nums text-ink-faint">
                     {clears}/{g.rows.length}
                   </span>
                 </button>
@@ -106,21 +106,21 @@ export function ScoringSidebar({ groups, selectedId, onSelect }: ScoringSidebarP
                             className={
                               active
                                 ? "flex w-full items-center justify-between gap-2 border-l-2 border-brand-600 bg-brand-50 px-3 py-1.5 text-left text-xs dark:bg-brand-800/30"
-                                : "flex w-full items-center justify-between gap-2 border-l-2 border-transparent px-3 py-1.5 text-left text-xs hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                                : "flex w-full items-center justify-between gap-2 border-l-2 border-transparent px-3 py-1.5 text-left text-xs hover:bg-surface-muted/40"
                             }
                           >
-                            <span className="min-w-0 flex-1 truncate text-slate-700 dark:text-slate-200">
+                            <span className="min-w-0 flex-1 truncate text-ink-muted">
                               {r.name}
                             </span>
                             <span className="flex shrink-0 items-center gap-1.5 font-mono">
-                              {r.meta && <span className="text-[10px] text-slate-400">{r.meta}</span>}
+                              {r.meta && <span className="text-[10px] text-ink-faint">{r.meta}</span>}
                               <span
                                 className={
                                   r.priority <= 0
-                                    ? "text-slate-300 dark:text-slate-600"
+                                    ? "text-ink-faint"
                                     : r.passesFloor
-                                      ? "text-emerald-600 dark:text-emerald-400"
-                                      : "text-rose-600 dark:text-rose-400"
+                                      ? "text-success"
+                                      : "text-danger"
                                 }
                               >
                                 {r.priority > 0 ? r.priority.toFixed(1) : "—"}

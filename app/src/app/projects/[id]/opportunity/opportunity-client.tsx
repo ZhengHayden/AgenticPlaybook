@@ -31,7 +31,7 @@ export function OpportunityClient({ client, initialModel }: OpportunityClientPro
           <button
             type="button"
             onClick={() => setWizardOpen(true)}
-            className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
+            className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-muted"
           >
             {t.scan.recompute}
           </button>
@@ -52,16 +52,16 @@ export function OpportunityClient({ client, initialModel }: OpportunityClientPro
   }
 
   return (
-    <section className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center dark:border-slate-700 dark:bg-slate-900/40">
-      <Radar className="h-8 w-8 text-slate-400" />
+    <section className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border bg-surface-muted/40 p-10 text-center">
+      <Radar className="h-8 w-8 text-ink-faint" />
       <div className="space-y-1">
-        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{t.scan.noScanYet}</p>
-        <p className="text-xs text-slate-500">{t.scan.noScanYetHint}</p>
+        <p className="text-sm font-medium text-foreground">{t.scan.noScanYet}</p>
+        <p className="text-xs text-ink-muted">{t.scan.noScanYetHint}</p>
       </div>
       <button
         type="button"
         onClick={() => setWizardOpen(true)}
-        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-deep"
       >
         {t.scan.startScan}
       </button>

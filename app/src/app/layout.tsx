@@ -15,10 +15,10 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-[#f3f3f3] font-sans text-[13px] text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+      <body className="min-h-screen bg-background font-sans text-[14px] text-foreground antialiased">
         <LocaleProvider>
           <TopNav />
-          <main className="mx-auto max-w-7xl px-6 py-8">{children}</main>
+          <main className="mx-auto max-w-[1440px] px-6 py-8">{children}</main>
         </LocaleProvider>
       </body>
     </html>

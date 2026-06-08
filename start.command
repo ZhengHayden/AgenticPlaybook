@@ -18,6 +18,27 @@ APP_DIR="$SCRIPT_DIR/app"
 
 cd "$APP_DIR"
 
+# ── Ensure node/npm are on PATH ─────────────────────────────────────
+# A double-clicked .command launches with the system default PATH,
+# which omits Homebrew (/opt/homebrew/bin on Apple Silicon,
+# /usr/local/bin on Intel). brew shellenv is only sourced by an
+# interactive login shell — not by Finder — so load it here when npm
+# is missing, making this launcher work however it is started.
+if ! command -v npm >/dev/null 2>&1; then
+  for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [ -x "$brew_bin" ]; then
+      eval "$("$brew_bin" shellenv)"
+      break
+    fi
+  done
+fi
+
+if ! command -v npm >/dev/null 2>&1; then
+  echo "❌  Could not find 'npm' on PATH." >&2
+  echo "    Install Node.js (e.g. 'brew install node') and try again." >&2
+  exit 1
+fi
+
 # ── Free the fixed port if a server is already LISTENing on it ──────
 # Only target the process that holds the LISTEN socket (never clients
 # such as a browser with an open connection to the port), and kill its

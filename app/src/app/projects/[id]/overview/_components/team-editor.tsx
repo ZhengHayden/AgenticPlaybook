@@ -17,7 +17,7 @@ const DEFAULT_TEAM: ReadonlyArray<TeamMember> = [
 ];
 
 const inputCls =
-  "w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950";
+  "w-full rounded-md border border-border bg-surface px-2 py-1 text-sm";
 
 function initialMembers(project: Project): TeamMember[] {
   const source = project.team ?? DEFAULT_TEAM;
@@ -62,7 +62,7 @@ export function TeamEditor({ project }: TeamEditorProps) {
   return (
     <section>
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t.project.team}</h3>
+        <h3 className="font-display text-lg font-semibold tracking-tight">{t.project.team}</h3>
         {!editing && (
           <button
             type="button"
@@ -75,7 +75,7 @@ export function TeamEditor({ project }: TeamEditorProps) {
       </div>
 
       {editing ? (
-        <div className="mt-2 space-y-2 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+        <div className="mt-2 space-y-2 rounded-xl border border-border bg-surface p-4">
           {members.map((member, index) => (
             <div key={index} className="flex items-center gap-2">
               <input
@@ -123,14 +123,14 @@ export function TeamEditor({ project }: TeamEditorProps) {
               type="button"
               onClick={onSave}
               disabled={saving}
-              className="rounded-md bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
+              className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-white hover:bg-primary-deep disabled:opacity-40"
             >
               {saving ? (en ? "Saving…" : "保存中…") : en ? "Save" : "保存"}
             </button>
           </div>
         </div>
       ) : (
-        <ul className="mt-2 space-y-1 rounded-xl border border-slate-200 bg-white p-4 text-sm dark:border-slate-800 dark:bg-slate-900">
+        <ul className="mt-2 space-y-1 rounded-xl border border-border bg-surface p-4 text-sm">
           {members.length === 0 ? (
             <li className="text-slate-400">{en ? "No team members yet." : "尚无团队成员。"}</li>
           ) : (

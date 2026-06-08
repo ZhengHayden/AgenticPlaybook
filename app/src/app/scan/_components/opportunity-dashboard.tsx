@@ -72,21 +72,21 @@ export function OpportunityDashboard({ model: initialModel, showClientLink = fal
               onChange={setMode}
               tabs={MODES.map((m) => ({ value: m.id, label: t.scan[m.labelKey] }))}
             />
-            <span className="text-sm text-slate-500">
+            <span className="text-sm text-ink-muted">
               {t.scan[MODES.find((m) => m.id === mode)!.descKey]}:{" "}
-              <span className="font-semibold text-slate-800 dark:text-slate-200">
+              <span className="font-semibold text-foreground">
                 {formatValue(totalValue(model.totals, mode), mode)}
               </span>
             </span>
           </div>
 
-          <p className="text-xs text-slate-400">{t.scan.clickHint}</p>
+          <p className="text-xs text-ink-faint">{t.scan.clickHint}</p>
 
-          <div className="rounded-md border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="rounded-xl border border-border bg-surface p-4">
             <Heatmap model={model} mode={mode} onCellClick={setSelectedFn} />
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-slate-500">
+          <div className="flex items-center gap-2 text-xs text-ink-muted">
             <span>{t.scan.legendLow}</span>
             <span
               className="h-3 w-40 rounded-sm"
@@ -96,7 +96,7 @@ export function OpportunityDashboard({ model: initialModel, showClientLink = fal
           </div>
 
           {model.warnings.length > 0 && (
-            <details className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-200">
+            <details className="rounded-md border border-warning/30 bg-warning-soft p-3 text-xs text-warning">
               <summary className="cursor-pointer font-medium">
                 {t.scan.warnings} ({model.warnings.length})
               </summary>

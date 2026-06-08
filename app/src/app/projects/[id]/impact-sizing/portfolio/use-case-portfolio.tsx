@@ -12,7 +12,13 @@ import {
   type QuadrantId,
 } from "@/content/funnel-rubric";
 import { screenCriteria, SCREEN_PASS_THRESHOLD } from "@/content/binary-screen";
-import { cohortMaxDdiRaw, computeUnitPriority, PRIORITY_FLOOR } from "@/content/scoring-rubric";
+import {
+  cohortMaxDdiRaw,
+  computeUnitPriority,
+  computeVm,
+  computeDdiRaw,
+  PRIORITY_FLOOR,
+} from "@/content/scoring-rubric";
 import {
   SOLUTION_BADGE,
   SOLUTION_LABELS,
@@ -20,6 +26,16 @@ import {
   isDesignEligible,
 } from "@/content/solution-proposal";
 import { ChevronDown, ChevronRight, Download } from "lucide-react";
+import { Card, SectionHeader } from "@/components/ui/card";
+import { QuadrantMatrix, type QuadrantKey, type QuadrantPoint } from "@/components/charts/quadrant-matrix";
+
+/** Map the rubric quadrant ids to the q1–q4 priority tokens. */
+const QUADRANT_KEY: Record<QuadrantId, QuadrantKey> = {
+  quickWin: "q1",
+  sponsorAlign: "q2",
+  investProve: "q3",
+  deferMature: "q4",
+};
 
 interface UseCasePortfolioProps {
   projectId: string;
@@ -39,15 +55,15 @@ interface UseCaseRow {
 }
 
 const quadrantBadge: Record<InheritedQuadrant, string> = {
-  quickWin: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  sponsorAlign: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  investProve: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
-  deferMature: "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-  failed: "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
+  quickWin: "bg-success-soft text-success",
+  sponsorAlign: "bg-warning-soft text-warning",
+  investProve: "bg-info-soft text-info",
+  deferMature: "bg-surface-muted text-ink-muted",
+  failed: "bg-danger-soft text-danger",
 };
 
 const inputClass =
-  "mt-0.5 w-full rounded border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950";
+  "mt-0.5 w-full rounded border border-border bg-surface px-2 py-1 text-sm";
 
 const isScored = (u: ProjectUseCase): boolean =>
   Boolean(u.vm && u.ddi && u.risk && u.totalSteps);
@@ -112,6 +128,31 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
   const ranked = visibleRows.filter((r) => r.scored).sort((a, b) => b.priority - a.priority);
   const unscored = visibleRows.filter((r) => !r.scored);
 
+  // Matrix points for scored use cases that inherit a real (non-failed) quadrant.
+  const points: QuadrantPoint[] = ranked
+    .filter((r) => r.parentQuadrant !== "failed")
+    .map((r) => {
+      const vm = computeVm(r.useCase.vm!);
+      const ddiRaw = computeDdiRaw(r.useCase.ddi!, r.useCase.totalSteps!);
+      return {
+        key: r.useCase.id,
+        label: r.useCase.name || (en ? "Untitled" : "未命名"),
+        impact: Math.min(100, (vm / 5) * 100),
+        effort: Math.min(100, (1 - (maxDdiRaw > 0 ? ddiRaw / maxDdiRaw : 0)) * 100),
+        priority: r.priority,
+        quadrant: QUADRANT_KEY[r.parentQuadrant as QuadrantId],
+      };
+    });
+
+  const avgPriority = ranked.length
+    ? ranked.reduce((s, r) => s + r.priority, 0) / ranked.length
+    : 0;
+  const quadDistribution = quadrants.map((q) => ({
+    id: q.id,
+    label: q.shortName[locale],
+    count: ranked.filter((r) => r.parentQuadrant === q.id).length,
+  }));
+
   const setDisposition = (useCaseId: string, value: SolutionProposal | undefined) => {
     setEdits((prev) => ({ ...prev, [useCaseId]: value }));
     setDirty(true);
@@ -150,20 +191,20 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
         : quadrants.find((q) => q.id === r.parentQuadrant)?.shortName[locale];
     return (
       <Fragment key={u.id}>
-        <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <tr className="hover:bg-surface-muted/40">
           <td className="px-3 py-3">
             <button
               type="button"
               onClick={() => setExpandedRow(expanded ? null : u.id)}
-              className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              className="text-ink-faint hover:text-ink-muted"
               aria-label={en ? "Toggle editor" : "切换编辑"}
             >
               {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </button>
           </td>
-          <td className="px-3 py-3 text-slate-400">{index === null ? "—" : index + 1}</td>
+          <td className="px-3 py-3 text-ink-faint">{index === null ? "—" : index + 1}</td>
           <td className="px-3 py-3 font-medium">{u.name || (en ? "Untitled" : "未命名")}</td>
-          <td className="px-3 py-3 text-slate-500">{r.parent.name}</td>
+          <td className="px-3 py-3 text-ink-muted">{r.parent.name}</td>
           <td className="px-3 py-3">
             <span
               className={`inline-flex rounded-md px-2 py-0.5 text-xs font-semibold ${quadrantBadge[r.parentQuadrant]}`}
@@ -176,14 +217,14 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
               <span
                 className={
                   passesFloor
-                    ? "font-mono text-emerald-700 dark:text-emerald-300"
-                    : "font-mono text-rose-700 dark:text-rose-300"
+                    ? "font-mono text-success"
+                    : "font-mono text-danger"
                 }
               >
                 {r.priority.toFixed(2)}
               </span>
             ) : (
-              <span className="text-slate-400">—</span>
+              <span className="text-ink-faint">—</span>
             )}
           </td>
           <td className="px-3 py-3">
@@ -193,26 +234,26 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
                   {SOLUTION_LABELS[proposal][locale]}
                 </span>
                 {eligible && (
-                  <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                  <span className="text-[10px] font-semibold text-success">
                     {en ? "Design-eligible" : "可进入 Design"}
                   </span>
                 )}
               </span>
             ) : (
-              <span className="text-xs text-slate-400">{en ? "Not decided" : "未决定"}</span>
+              <span className="text-xs text-ink-faint">{en ? "Not decided" : "未决定"}</span>
             )}
           </td>
         </tr>
         {expanded && (
-          <tr className="bg-slate-50/60 dark:bg-slate-950/40">
+          <tr className="bg-surface-muted/40">
             <td></td>
             <td colSpan={COLSPAN - 1} className="px-3 py-4">
               {u.description && (
-                <p className="mb-3 text-xs text-slate-500">{u.description}</p>
+                <p className="mb-3 text-xs text-ink-muted">{u.description}</p>
               )}
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
                 <label className="block text-xs">
-                  <span className="text-slate-500">{en ? "Solution proposal" : "方案决策"}</span>
+                  <span className="text-ink-muted">{en ? "Solution proposal" : "方案决策"}</span>
                   <select
                     value={proposal ?? ""}
                     onChange={(e) =>
@@ -230,8 +271,8 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
                 </label>
                 {u.expectedKpis && u.expectedKpis.length > 0 && (
                   <div className="text-xs md:col-span-2 lg:col-span-2">
-                    <span className="text-slate-500">{en ? "Expected KPIs" : "预期 KPI"}</span>
-                    <p className="mt-0.5 text-slate-600 dark:text-slate-300">
+                    <span className="text-ink-muted">{en ? "Expected KPIs" : "预期 KPI"}</span>
+                    <p className="mt-0.5 text-ink-muted">
                       {u.expectedKpis.join(" · ")}
                     </p>
                   </div>
@@ -247,7 +288,7 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold">
+        <h2 className="font-display text-base font-semibold">
           {en ? "Prioritized Use-Case Portfolio" : "优先级排序的用例组合"}
         </h2>
         <div className="flex items-center gap-2">
@@ -261,13 +302,13 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-sm hover:bg-surface-muted/40"
           >
             <Download className="h-4 w-4" /> PDF
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-sm hover:bg-surface-muted/40"
           >
             <Download className="h-4 w-4" /> XLSX
           </button>
@@ -275,28 +316,88 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
       </div>
 
       {error && (
-        <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+        <p className="rounded-md border border-danger/30 bg-danger-soft p-2 text-xs text-danger">
           {error}
         </p>
       )}
 
       {rows.length === 0 ? (
-        <p className="rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900">
+        <p className="rounded-xl border border-border bg-surface p-4 text-sm text-ink-muted">
           {en
             ? "No scored use cases yet. Add use-case ideas in the Readiness Check, then score them under Impact Sizing."
             : "暂无已评分的用例。请先在准备度检查中添加用例想法,再到影响评估中评分。"}
         </p>
       ) : (
         <>
+          {points.length > 0 && (
+            <div className="grid grid-cols-12 gap-5">
+              <Card className="col-span-12 p-5 xl:col-span-8">
+                <SectionHeader
+                  title={en ? "Prioritization Matrix" : "优先级矩阵"}
+                  sub={
+                    en
+                      ? "Impact (VM) vs implementation effort · bubble = Priority"
+                      : "影响力(VM)对实施难度 · 气泡 = 优先级"
+                  }
+                />
+                <QuadrantMatrix
+                  points={points}
+                  xLabel={en ? "Implementation effort →" : "实施难度 →"}
+                />
+              </Card>
+              <aside className="col-span-12 space-y-4 xl:col-span-4">
+                <Card className="p-5">
+                  <div className="eyebrow">{en ? "Portfolio Priority" : "组合优先级"}</div>
+                  <div className="mt-2 font-display text-[40px] font-semibold leading-none tabular-nums">
+                    {avgPriority.toFixed(2)}
+                  </div>
+                  <div className="mt-1 text-[11px] text-ink-faint">
+                    {en
+                      ? `avg over ${ranked.length} prioritized use cases`
+                      : `${ranked.length} 个已排序用例的均值`}
+                  </div>
+                  <div className="mt-4 flex justify-between rounded-lg border border-border bg-surface-muted/40 p-3 font-mono-num text-xs">
+                    <span className="text-ink-muted">{en ? "Floor" : "门槛"}</span>
+                    <span className="font-semibold">{PRIORITY_FLOOR.toFixed(2)}</span>
+                  </div>
+                </Card>
+                <Card className="p-5">
+                  <div className="eyebrow mb-2">{en ? "Quadrant distribution" : "象限分布"}</div>
+                  <div className="space-y-2">
+                    {quadDistribution.map((d) => (
+                      <div key={d.id} className="flex items-center gap-3">
+                        <span
+                          className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${quadrantBadge[d.id]}`}
+                        >
+                          {d.label}
+                        </span>
+                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-muted">
+                          <div
+                            className="h-full"
+                            style={{
+                              width: `${ranked.length ? (d.count / ranked.length) * 100 : 0}%`,
+                              background: `hsl(var(--${QUADRANT_KEY[d.id]}))`,
+                            }}
+                          />
+                        </div>
+                        <span className="w-6 text-right font-mono-num text-xs">{d.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </aside>
+            </div>
+          )}
+
           <div className="flex flex-wrap items-center gap-2">
-            <label className="text-xs font-medium text-slate-600 dark:text-slate-400">
+            <label className="text-xs font-medium text-ink-muted">
               {en ? "Workflow" : "工作流"}
             </label>
             <select
               value={wfFilter}
               onChange={(e) => setWfFilter(e.target.value)}
               aria-label={en ? "Filter by workflow" : "按工作流筛选"}
-              className="max-w-[18rem] rounded-md border border-slate-200 bg-white px-2 py-1 text-sm dark:border-slate-700 dark:bg-slate-950"
+              className="max-w-[18rem] rounded-md border border-border bg-surface px-2 py-1 text-sm"
             >
               <option value="all">{en ? "All workflows" : "全部工作流"}</option>
               {workflowOptions.map((c) => (
@@ -306,15 +407,15 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
               ))}
             </select>
             {wfFilter !== "all" && (
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-ink-faint">
                 {en ? `${visibleRows.length} shown` : `显示 ${visibleRows.length} 个`}
               </span>
             )}
           </div>
 
-          <div className="overflow-x-auto rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+          <div className="overflow-x-auto rounded-xl border border-border bg-surface">
             <table className="w-full min-w-[820px] text-sm">
-              <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950">
+              <thead className="bg-surface-muted text-left text-xs uppercase tracking-wide text-ink-muted">
                 <tr>
                   <th className="w-8 px-3 py-2">
                     <span className="sr-only">{en ? "Expand" : "展开"}</span>
@@ -327,7 +428,7 @@ export function UseCasePortfolio({ projectId, candidates }: UseCasePortfolioProp
                   <th className="px-3 py-2 font-medium">{en ? "Solution" : "方案决策"}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-border">
                 {ranked.map((r, idx) => renderRow(r, idx))}
                 {unscored.map((r) => renderRow(r, null))}
               </tbody>
