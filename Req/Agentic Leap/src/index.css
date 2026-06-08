@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 98%;
+    --surface: 0 0% 100%;
+    --surface-muted: 220 16% 96%;
+    --foreground: 222 47% 11%;
+    --muted-foreground: 220 9% 46%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 222 89% 55%;
+    --primary-foreground: 0 0% 100%;
+    --primary-deep: 224 76% 38%;
+    --primary-soft: 222 89% 96%;
+
+    --secondary: 220 16% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 220 16% 96%;
+    --accent: 220 16% 96%;
+    --accent-foreground: 222 47% 11%;
+    --accent-violet: 258 90% 66%;
+    --accent-violet-soft: 258 90% 96%;
+
+    --success: 152 60% 40%;
+    --success-soft: 150 55% 94%;
+    --warning: 35 92% 50%;
+    --warning-soft: 38 95% 94%;
+    --danger: 0 78% 55%;
+    --danger-soft: 0 85% 96%;
+    --info: 199 89% 48%;
+    --info-soft: 199 89% 95%;
+
+    --destructive: 0 78% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --q1: 152 60% 40%;
+    --q1-soft: 150 55% 94%;
+    --q2: 222 89% 55%;
+    --q2-soft: 222 89% 96%;
+    --q3: 35 92% 50%;
+    --q3-soft: 38 95% 94%;
+    --q4: 220 9% 46%;
+    --q4-soft: 220 16% 94%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 222 89% 55%;
+    --radius: 0.625rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 222 89% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 16% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 222 89% 55%;
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --surface: 222 47% 11%;
+    --surface-muted: 222 47% 14%;
+    --foreground: 210 40% 98%;
+    --muted-foreground: 215 20% 65%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 222 89% 60%;
+    --primary-foreground: 222 47% 8%;
+    --primary-deep: 224 76% 48%;
+    --primary-soft: 222 60% 18%;
+    --secondary: 222 47% 14%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 222 47% 14%;
+    --accent: 222 47% 14%;
+    --accent-foreground: 210 40% 98%;
+    --border: 222 47% 18%;
+    --input: 222 47% 18%;
+    --ring: 222 89% 60%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+  .font-display { font-family: 'Inter Tight', Inter, system-ui, sans-serif; letter-spacing: -0.01em; }
+  .font-mono-num { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground; }
+}
